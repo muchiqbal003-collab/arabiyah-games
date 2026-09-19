@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَلْعَبُ العَرَبِيَّة — Arab Playground</title>
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ===== Animasi Background ===== -->
+<div class="bg-animation">
+  <div class="bg-circle c1"></div>
+  <div class="bg-circle c2"></div>
+  <div class="bg-circle c3"></div>
+  <div class="bg-circle c4"></div>
+  <div class="floating-arabic">
+    <span>ض</span><span>ص</span><span>ث</span><span>ق</span><span>ف</span>
+    <span>غ</span><span>ع</span><span>خ</span><span>ح</span><span>ج</span>
+  </div>
+</div>
+
+<!-- ===== Header ===== -->
+<header class="main-header">
+  <div class="logo">
+    <div class="logo-icon">🎓</div>
+    <div class="logo-text">
+      <h1>مَلْعَبُ العَرَبِيَّة</h1>
+      <p>Arab Playground — Belajar Bahasa Arab Sambil Bermain</p>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <button class="nav-btn" id="aboutBtn">ℹ️ عن الموقع</button>
+    <button class="nav-btn" id="helpBtn">❓ مساعدة</button>
+  </nav>
+</header>
+
+<!-- ===== Hero Section ===== -->
+<section class="hero">
+  <div class="hero-content">
+    <h2>اختر لعبتك المفضلة وابدأ التعلم! 🎮</h2>
+    <p>١٢ لعبة تفاعلية لتعلّم المفردات والجمل العربية — مناسبة للفردي والجماعي</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="num" id="totalGames">١٢</span>
+        <span class="label">لعبة</span>
+      </div>
+      <div class="hero-stat">
+        <span class="num" id="totalWords">+٥٠٠</span>
+        <span class="label">كلمة</span>
+      </div>
+      <div class="hero-stat">
+        <span class="num">∞</span>
+        <span class="label">متعة</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Filter Kategori ===== -->
+<section class="filters">
+  <div class="filter-group">
+    <button class="filter-btn active" data-filter="all">🎯 الكل</button>
+    <button class="filter-btn" data-filter="solo">👤 فردي</button>
+    <button class="filter-btn" data-filter="team">👥 فرق</button>
+    <button class="filter-btn" data-filter="versus">⚔️ مواجهة</button>
+  </div>
+  <div class="search-group">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث عن لعبة..." autocomplete="off">
+  </div>
+</section>
+
+<!-- ===== Games Grid ===== -->
+<main class="games-section">
+  <div class="games-grid" id="gamesGrid">
+
+    <!-- Game Card 1: Quiz -->
+    <a href="games/quiz/index.html" class="game-card" data-category="solo team versus" data-name="اختبار">
+      <div class="game-card-bg bg-quiz"></div>
+      <div class="game-card-icon">📝</div>
+      <div class="game-card-content">
+        <h3>اختبار الاختيار من متعدد</h3>
+        <p>اختبر معرفتك بالمفردات العربية</p>
+        <div class="game-card-tags">
+          <span class="tag solo">فردي</span>
+          <span class="tag team">فرق</span>
+          <span class="tag versus">مواجهة</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 2: TTS -->
+    <a href="games/tts/index.html" class="game-card" data-category="solo team" data-name="كلمات متقاطعة">
+      <div class="game-card-bg bg-tts"></div>
+      <div class="game-card-icon">🧩</div>
+      <div class="game-card-content">
+        <h3>الكلمات المتقاطعة</h3>
+        <p>حل الألغاز واكتب الإجابات بالعربية</p>
+        <div class="game-card-tags">
+          <span class="tag solo">فردي</span>
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 3: Tug of War -->
+    <a href="games/tug-of-war/index.html" class="game-card" data-category="versus team" data-name="شد الحبل">
+      <div class="game-card-bg bg-tug"></div>
+      <div class="game-card-icon">🪢</div>
+      <div class="game-card-content">
+        <h3>شَدُّ الحَبْل</h3>
+        <p>تحدَّ الفريق الآخر واسحب الحبل!</p>
+        <div class="game-card-tags">
+          <span class="tag versus">مواجهة</span>
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 4: Guess Image -->
+    <a href="games/guess-image/index.html" class="game-card" data-category="solo team" data-name="خمن الصورة">
+      <div class="game-card-bg bg-image"></div>
+      <div class="game-card-icon">🖼️</div>
+      <div class="game-card-content">
+        <h3>خَمِّنِ الصُّورَة</h3>
+        <p>شاهد الصورة واذكر اسمها بالعربية</p>
+        <div class="game-card-tags">
+          <span class="tag solo">فردي</span>
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 5: Guess Sentence -->
+    <a href="games/guess-sentence/index.html" class="game-card" data-category="team" data-name="خمن الجملة">
+      <div class="game-card-bg bg-sentence"></div>
+      <div class="game-card-icon">💬</div>
+      <div class="game-card-content">
+        <h3>خَمِّنِ الجُمْلَة</h3>
+        <p>اشرح الجملة لرفاقك بالعربية</p>
+        <div class="game-card-tags">
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 6: Arrange -->
+    <a href="games/arrange/index.html" class="game-card" data-category="solo team" data-name="رتب الجملة">
+      <div class="game-card-bg bg-arrange"></div>
+      <div class="game-card-icon">🧱</div>
+      <div class="game-card-content">
+        <h3>رَتِّبِ الجُمْلَة</h3>
+        <p>رتب الكلمات لتكوين جملة صحيحة</p>
+        <div class="game-card-tags">
+          <span class="tag solo">فردي</span>
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 7: True/False -->
+    <a href="games/true-false/index.html" class="game-card" data-category="solo team versus" data-name="صح خطأ">
+      <div class="game-card-bg bg-truefalse"></div>
+      <div class="game-card-icon">⚡</div>
+      <div class="game-card-content">
+        <h3>صَحّ أَمْ خَطَأ</h3>
+        <p>أجب بسرعة: صح أم خطأ؟</p>
+        <div class="game-card-tags">
+          <span class="tag solo">فردي</span>
+          <span class="tag versus">مواجهة</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 8: Word Chain -->
+    <a href="games/word-chain/index.html" class="game-card" data-category="team" data-name="وصل الكلمة">
+      <div class="game-card-bg bg-chain"></div>
+      <div class="game-card-icon">🔗</div>
+      <div class="game-card-content">
+        <h3>وَصْلُ الكَلِمَة</h3>
+        <p>سلسلة الكلمات: كل كلمة تبدأ بحرف نهاية السابقة</p>
+        <div class="game-card-tags">
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 9: Wheel -->
+    <a href="games/wheel/index.html" class="game-card" data-category="team" data-name="عجلة">
+      <div class="game-card-bg bg-wheel"></div>
+      <div class="game-card-icon">🎡</div>
+      <div class="game-card-content">
+        <h3>عَجَلَةُ المُفْرَدَات</h3>
+        <p>أدر العجلة واذكر ٥ كلمات من الفئة</p>
+        <div class="game-card-tags">
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 10: Memory -->
+    <a href="games/memory/index.html" class="game-card" data-category="solo team" data-name="ذاكرة">
+      <div class="game-card-bg bg-memory"></div>
+      <div class="game-card-icon">🧠</div>
+      <div class="game-card-content">
+        <h3>لُعْبَةُ الذَّاكِرَة</h3>
+        <p>طابق الصورة مع الكلمة العربية</p>
+        <div class="game-card-tags">
+          <span class="tag solo">فردي</span>
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 11: Hangman -->
+    <a href="games/hangman/index.html" class="game-card" data-category="solo team" data-name="مشنقة">
+      <div class="game-card-bg bg-hangman"></div>
+      <div class="game-card-icon">🪢</div>
+      <div class="game-card-content">
+        <h3>المِشْنَقَة</h3>
+        <p>خمّن الحروف لتكشف الكلمة المخفية</p>
+        <div class="game-card-tags">
+          <span class="tag solo">فردي</span>
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+    <!-- Game Card 12: Pictionary -->
+    <a href="games/pictionary/index.html" class="game-card" data-category="team" data-name="رسم">
+      <div class="game-card-bg bg-pictionary"></div>
+      <div class="game-card-icon">🎨</div>
+      <div class="game-card-content">
+        <h3>الرَّسْمُ وَالتَّخْمِين</h3>
+        <p>ارسم الكلمة ودع فريقك يخمنها</p>
+        <div class="game-card-tags">
+          <span class="tag team">فرق</span>
+        </div>
+      </div>
+      <div class="game-card-arrow">←</div>
+    </a>
+
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">🔍</div>
+    <h3>لا توجد نتائج</h3>
+    <p>جرّب كلمة بحث أخرى أو غيّر الفلتر</p>
+  </div>
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="main-footer">
+  <div class="footer-content">
+    <div class="footer-col">
+      <h4>🎓 مَلْعَبُ العَرَبِيَّة</h4>
+      <p>منصة تعليمية تفاعلية لتعلّم اللغة العربية للناطقين بغيرها</p>
+    </div>
+    <div class="footer-col">
+      <h4>🔗 روابط سريعة</h4>
+      <a href="editor/manage.html">📝 إدارة الأسئلة</a>
+      <a href="#about">ℹ️ عن الموقع</a>
+      <a href="#help">❓ مساعدة</a>
+    </div>
+    <div class="footer-col">
+      <h4>📚 المصدر</h4>
+      <p>مفردات من كتاب «العربية بين يديك»</p>
+      <p>الوحدات ١ - ١٤</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 مَلْعَبُ العَرَبِيَّة — جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+
+<!-- ===== About Modal ===== -->
+<div class="modal" id="aboutModal">
+  <div class="modal-content">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>ℹ️ عن الموقع</h2>
+    <p>مَلْعَبُ العَرَبِيَّة هي منصة تعليمية تفاعلية تهدف إلى تعليم اللغة العربية للناطقين بغيرها من خلال الألعاب.</p>
+    <h3>✨ المميزات</h3>
+    <ul>
+      <li>١٢ لعبة تفاعلية متنوعة</li>
+      <li>مفردات من كتاب «العربية بين يديك»</li>
+      <li>أنماط لعب: فردي، فرق، مواجهة</li>
+      <li>يعمل بدون إنترنت (Offline)</li>
+      <li>إمكانية إضافة أسئلة مخصصة</li>
+    </ul>
+    <h3>🎯 الفئة المستهدفة</h3>
+    <p>طلاب اللغة العربية من المستوى المبتدئ إلى المتوسط</p>
+  </div>
+</div>
+
+<!-- ===== Help Modal ===== -->
+<div class="modal" id="helpModal">
+  <div class="modal-content">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>❓ مساعدة</h2>
+    <h3>🎮 كيف ألعب؟</h3>
+    <ol>
+      <li>اختر لعبة من القائمة</li>
+      <li>اختر نمط اللعب (فردي / فرق / مواجهة)</li>
+      <li>اتبع التعليمات على الشاشة</li>
+      <li>اجمع النقاط وافز!</li>
+    </ol>
+    <h3>👥 نمط الفرق</h3>
+    <p>في نمط الفرق، اجلسوا معًا حول شاشة واحدة. كل فريق يأخذ دوره في الإجابة.</p>
+    <h3>📝 إضافة أسئلة</h3>
+    <p>يمكن للمعلم إضافة أسئلة مخصصة من صفحة <a href="editor/manage.html">إدارة الأسئلة</a>.</p>
+    <h3>💾 الحفظ</h3>
+    <p>جميع الأسئلة والإعدادات تُحفظ تلقائيًا في متصفحك (localStorage).</p>
+  </div>
+</div>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

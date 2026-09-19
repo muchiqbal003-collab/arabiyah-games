@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تَكْوِينُ الكَلِمَات - TTS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Tajawal',sans-serif; }
+
+  body {
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+    display:flex; justify-content:center; align-items:flex-start;
+    padding:20px; overflow-x:hidden;
+  }
+
+  .container {
+    width:100%; max-width:1400px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(20px);
+    border-radius:24px;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 25px 60px rgba(0,0,0,0.5);
+    padding:28px;
+  }
+
+  .header { text-align:center; margin-bottom:20px; }
+
+  .header h1 {
+    color:#00d2ff; font-size:1.8rem; font-weight:800;
+    margin-bottom:6px;
+    text-shadow:0 0 20px rgba(0,210,255,0.4);
+  }
+
+  .header p { color:#a0a0c0; font-size:0.95rem; }
+
+  .page-tabs {
+    display:flex; justify-content:center; gap:10px;
+    margin-bottom:16px; flex-wrap:wrap;
+  }
+
+  .page-tab {
+    padding:10px 22px; border-radius:12px;
+    border:2px solid rgba(0,210,255,0.3);
+    background:rgba(255,255,255,0.05);
+    color:#a0a0c0; font-weight:700; cursor:pointer;
+    transition:all 0.3s ease; font-size:0.95rem;
+  }
+
+  .page-tab:hover { background:rgba(0,210,255,0.15); color:#fff; }
+  .page-tab.active {
+    background:linear-gradient(135deg,#00d2ff,#3a7bd5);
+    color:#fff; border-color:#00d2ff;
+    box-shadow:0 6px 20px rgba(0,210,255,0.4);
+  }
+
+  .page-content { display:none; }
+  .page-content.active { display:block; animation:fadeIn 0.5s ease; }
+
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateY(10px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .page-title {
+    color:#fff; font-size:1.3rem; font-weight:700;
+    text-align:center; margin-bottom:4px;
+  }
+
+  .page-subtitle {
+    color:#a0a0c0; text-align:center;
+    font-size:0.9rem; margin-bottom:16px;
+  }
+
+  .tts-wrapper {
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:20px;
+    margin-bottom:16px;
+    align-items:flex-start;
+  }
+
+  @media (max-width:1000px) {
+    .tts-wrapper { grid-template-columns:1fr; }
+  }
+
+  .grid-box {
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    padding:20px;
+    overflow:auto;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    min-height:500px;
+    max-height:80vh;
+    position:relative;
+  }
+
+  /* Zoom controls */
+  .zoom-controls {
+    position:absolute;
+    top:10px; left:10px;
+    display:flex; gap:6px;
+    z-index:10;
+  }
+
+  .zoom-btn {
+    width:34px; height:34px;
+    border-radius:8px;
+    border:1px solid rgba(0,210,255,0.4);
+    background:rgba(0,0,0,0.5);
+    color:#00d2ff;
+    font-size:1.1rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.2s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    backdrop-filter:blur(10px);
+  }
+
+  .zoom-btn:hover {
+    background:rgba(0,210,255,0.2);
+    transform:scale(1.1);
+  }
+
+  .zoom-btn:active { transform:scale(0.95); }
+
+  .zoom-level {
+    color:#00d2ff;
+    font-size:0.8rem;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    padding:0 8px;
+    background:rgba(0,0,0,0.5);
+    border-radius:8px;
+    border:1px solid rgba(0,210,255,0.4);
+  }
+
+  /* Crossword table */
+  .crossword-scroll {
+    overflow:auto;
+    max-width:100%;
+    max-height:100%;
+  }
+
+  table.crossword {
+    border-collapse:collapse;
+    margin:0 auto;
+    direction:rtl;
+    transition: transform 0.2s ease;
+    transform-origin: top center;
+  }
+
+  table.crossword td {
+    padding:0;
+    position:relative;
+    text-align:center;
+    vertical-align:middle;
+  }
+
+  table.crossword td.block {
+    background:transparent;
+    border:none;
+    width:var(--cell-size, 55px);
+    height:var(--cell-size, 55px);
+  }
+
+  table.crossword td.cell {
+    background:rgba(0,210,255,0.08);
+    border:1.5px solid rgba(0,210,255,0.5);
+    width:var(--cell-size, 55px);
+    height:var(--cell-size, 55px);
+    transition: all 0.2s;
+  }
+
+  table.crossword td.cell:hover {
+    background:rgba(0,210,255,0.15);
+    border-color:#00d2ff;
+  }
+
+  table.crossword td.cell input {
+    width:100%; height:100%;
+    border:none; background:transparent;
+    text-align:center;
+    font-family:'Tajawal',sans-serif;
+    font-size:calc(var(--cell-size, 55px) * 0.42);
+    font-weight:700;
+    color:#fff;
+    outline:none;
+    caret-color:#00d2ff;
+    transition: background 0.2s;
+  }
+
+  table.crossword td.cell input:focus {
+    background:rgba(0,210,255,0.25);
+    box-shadow:inset 0 0 0 2px #00d2ff;
+  }
+
+  table.crossword td.correct {
+    background:rgba(46,213,115,0.35) !important;
+    border-color:#2ed573 !important;
+  }
+
+  table.crossword td.correct input { color:#2ed573; }
+
+  table.crossword td.wrong {
+    background:rgba(255,71,87,0.3) !important;
+    border-color:#ff4757 !important;
+  }
+
+  table.crossword td.wrong input { color:#ff4757; }
+
+  table.crossword td.revealed {
+    background:rgba(255,215,0,0.3) !important;
+    border-color:#ffd700 !important;
+  }
+
+  table.crossword td.revealed input { color:#ffd700; }
+
+  table.crossword td .num {
+    position:absolute;
+    top:2px; right:4px;
+    font-size:calc(var(--cell-size, 55px) * 0.22);
+    color:#00d2ff;
+    font-weight:800;
+    line-height:1;
+    z-index:2;
+    pointer-events:none;
+    text-shadow:0 0 4px rgba(0,0,0,0.5);
+  }
+
+  /* Clues panel */
+  .clues {
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    padding:16px;
+    max-height:80vh;
+    overflow-y:auto;
+  }
+
+  .clues h3 {
+    color:#00d2ff;
+    font-size:1rem;
+    font-weight:700;
+    margin-bottom:10px;
+    text-align:center;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    padding-bottom:8px;
+  }
+
+  .clues h4 {
+    font-size:0.9rem;
+    font-weight:700;
+    margin:12px 0 6px;
+    padding-bottom:4px;
+    border-bottom:1px dashed rgba(255,255,255,0.1);
+  }
+
+  .clues h4.across { color:#2ed573; }
+  .clues h4.down { color:#ff6b6b; }
+
+  .clue-item {
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    padding:8px 0;
+    font-size:0.88rem;
+    color:#e0e0f0;
+    line-height:1.5;
+    border-bottom:1px dashed rgba(255,255,255,0.06);
+    transition: background 0.2s;
+    border-radius:6px;
+  }
+
+  .clue-item:last-child { border-bottom:none; }
+
+  .clue-item.highlight {
+    background:rgba(0,210,255,0.15);
+    padding-right:8px;
+  }
+
+  .clue-num {
+    display:inline-flex;
+    justify-content:center;
+    align-items:center;
+    min-width:26px; height:26px;
+    background:rgba(0,210,255,0.2);
+    color:#00d2ff;
+    border-radius:6px;
+    font-weight:700;
+    font-size:0.8rem;
+    flex-shrink:0;
+  }
+
+  .clue-num.across { background:rgba(46,213,115,0.2); color:#2ed573; }
+  .clue-num.down { background:rgba(255,107,107,0.2); color:#ff6b6b; }
+
+  .clue-text { flex:1; }
+
+  .reveal-btn {
+    background:rgba(255,215,0,0.12);
+    color:#ffd700;
+    border:1px solid rgba(255,215,0,0.35);
+    border-radius:6px;
+    padding:3px 10px;
+    font-size:0.72rem;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:5px;
+    font-family:'Tajawal',sans-serif;
+    transition:all 0.2s;
+  }
+
+  .reveal-btn:hover { background:rgba(255,215,0,0.25); }
+  .reveal-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .action-row {
+    display:flex; justify-content:center; gap:12px;
+    flex-wrap:wrap; margin-top:10px;
+  }
+
+  .btn {
+    padding:12px 28px;
+    border:none; border-radius:14px;
+    font-size:1rem; font-weight:700;
+    cursor:pointer; transition:all 0.3s ease;
+    font-family:'Tajawal',sans-serif;
+  }
+
+  .btn-check {
+    background:linear-gradient(135deg,#00d2ff,#3a7bd5);
+    color:#fff;
+    box-shadow:0 6px 20px rgba(0,210,255,0.3);
+  }
+
+  .btn-check:hover {
+    transform:translateY(-2px);
+    box-shadow:0 10px 28px rgba(0,210,255,0.5);
+  }
+
+  .btn-reset {
+    background:rgba(255,255,255,0.08);
+    color:#a0a0c0;
+    border:1px solid rgba(255,255,255,0.15);
+  }
+
+  .btn-reset:hover { background:rgba(255,255,255,0.15); color:#fff; }
+
+  .feedback-msg {
+    text-align:center; font-weight:700;
+    font-size:1rem; margin-top:12px;
+    min-height:24px; transition:all 0.3s;
+  }
+
+  .feedback-msg.ok { color:#2ed573; }
+  .feedback-msg.no { color:#ff4757; }
+
+  .legend {
+    display:flex; justify-content:center; gap:16px;
+    flex-wrap:wrap; margin-bottom:14px;
+    font-size:0.82rem; color:#a0a0c0;
+  }
+
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+
+  .legend .dot {
+    width:16px; height:16px; border-radius:4px; display:inline-block;
+  }
+
+  .legend .dot.empty { background:rgba(0,210,255,0.12); border:1px solid rgba(0,210,255,0.5); }
+  .legend .dot.correct { background:rgba(46,213,115,0.4); border:1px solid #2ed573; }
+  .legend .dot.wrong { background:rgba(255,71,87,0.4); border:1px solid #ff4757; }
+  .legend .dot.revealed { background:rgba(255,215,0,0.4); border:1px solid #ffd700; }
+
+  /* Info panel */
+  .info-panel {
+    text-align:center;
+    color:#a0a0c0;
+    font-size:0.85rem;
+    margin-bottom:10px;
+  }
+
+  .info-panel .stat {
+    display:inline-block;
+    background:rgba(0,210,255,0.1);
+    border:1px solid rgba(0,210,255,0.3);
+    border-radius:8px;
+    padding:4px 12px;
+    margin:0 4px;
+    color:#00d2ff;
+    font-weight:700;
+  }
+
+  /* Fullscreen mode */
+  .fullscreen-mode {
+    position:fixed !important;
+    top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
+    z-index:9999;
+    max-width:none !important;
+    max-height:none !important;
+    border-radius:0 !important;
+    padding:20px !important;
+    background:linear-gradient(135deg,#0f0c29,#302b63,#24243e) !important;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="header">
+    <h1>🧩 تَكْوِينُ الكَلِمَات</h1>
+    <p>اختبار المفردات - العربية بين يديك | ٤ مجموعات × ١٠ أسئلة</p>
+  </div>
+
+  <div class="page-tabs" id="tabs">
+    <button class="page-tab active" data-page="1">المجموعة ١</button>
+    <button class="page-tab" data-page="2">المجموعة ٢</button>
+    <button class="page-tab" data-page="3">المجموعة ٣</button>
+    <button class="page-tab" data-page="4">المجموعة ٤</button>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot empty"></span> فارغ</span>
+    <span><span class="dot correct"></span> صحيح</span>
+    <span><span class="dot wrong"></span> خطأ</span>
+    <span><span class="dot revealed"></span> مُظْهَر</span>
+  </div>
+
+  <div id="pagesContainer"></div>
+</div>
+
+<script>
+/* ============================================================
+   BANK KATA PER HALAMAN (tanpa harakat)
+============================================================ */
+const ttsPages = [
+  {
+    title: "المجموعة الأولى",
+    subtitle: "الْبَيْتُ وَالْأُسْرَة",
+    words: [
+      { answer:"بيت",   clue:"مَكَانُ السَّكَنِ الَّذِي نَعِيشُ فِيهِ مَعَ الْأُسْرَةِ" },
+      { answer:"باب",   clue:"مَا تَدْخُلُ مِنْهُ إِلَى الْغُرْفَةِ" },
+      { answer:"اسرة",  clue:"الْجَمَاعَةُ الَّتِي تَتَكَوَّنُ مِنْ أَبٍ وَأُمٍّ وَأَوْلَادٍ" },
+      { answer:"غرفة",  clue:"حُجْرَةٌ فِي الْبَيْتِ لِلنَّوْمِ أَوِ الْجُلُوسِ" },
+      { answer:"سرير",  clue:"مَا تَنَامُ عَلَيْهِ فِي غُرْفَةِ النَّوْمِ" },
+      { answer:"مطبخ",  clue:"مَكَانُ الطَّبْخِ فِي الْبَيْتِ" },
+      { answer:"حمام",  clue:"مَكَانُ الِاسْتِحْمَامِ" },
+      { answer:"نافذة", clue:"فَتْحَةٌ فِي الْجِدَارِ نَرَى مِنْهَا الْخَارِجَ" },
+      { answer:"مفتاح", clue:"مَا نَفْتَحُ بِهِ الْبَابَ" },
+      { answer:"مكتب",  clue:"مَكَانُ الْقِرَاءَةِ وَالْكِتَابَةِ فِي الْبَيْتِ" }
+    ]
+  },
+  {
+    title: "المجموعة الثانية",
+    subtitle: "الْمَدْرَسَةُ وَالْعَمَل",
+    words: [
+      { answer:"مدرسة", clue:"مَكَانُ التَّعَلُّمِ لِلطُّلَّابِ" },
+      { answer:"كتاب",  clue:"مَا نَقْرَأُ فِيهِ الدُّرُوسَ" },
+      { answer:"قلم",   clue:"مَا نَكْتُبُ بِهِ" },
+      { answer:"درس",   clue:"الْعَمَلِيَّةُ التَّعْلِيمِيَّةُ الَّتِي يَشْرَحُهَا الْمُعَلِّمُ" },
+      { answer:"معلم",  clue:"مَنْ يُعَلِّمُ الطُّلَّابَ فِي الْفَصْلِ" },
+      { answer:"طالب",  clue:"مَنْ يَتَعَلَّمُ فِي الْمَدْرَسَةِ" },
+      { answer:"طبيب",  clue:"مَنْ يُعَالِجُ الْمَرْضَى فِي الْمُسْتَشْفَى" },
+      { answer:"مهندس", clue:"مَنْ يَبْنِي الْبُيُوتَ وَالْجُسُورَ" },
+      { answer:"مكتبة", clue:"مَكَانٌ نَقْرَأُ فِيهِ الْكُتُبَ وَنَسْتَعِيرُهَا" },
+      { answer:"جامعة", clue:"مَكَانُ الدِّرَاسَةِ بَعْدَ الثَّانَوِيَّةِ" }
+    ]
+  },
+  {
+    title: "المجموعة الثالثة",
+    subtitle: "الطَّعَامُ وَالشَّرَاب",
+    words: [
+      { answer:"فطور", clue:"وَجْبَةُ الطَّعَامِ فِي الصَّبَاحِ" },
+      { answer:"غداء", clue:"وَجْبَةُ الطَّعَامِ وَسَطَ النَّهَارِ" },
+      { answer:"عشاء", clue:"وَجْبَةُ الطَّعَامِ فِي الْمَسَاءِ" },
+      { answer:"ماء",  clue:"مَا نَشْرَبُهُ وَلَا حَيَاةَ بِدُونِهِ" },
+      { answer:"لحم",  clue:"طَعَامٌ يُؤْخَذُ مِنَ الْبَقَرِ وَالْغَنَمِ" },
+      { answer:"سمك",  clue:"حَيَوَانٌ يَعِيشُ فِي الْمَاءِ وَنَأْكُلُهُ" },
+      { answer:"خبز",  clue:"طَعَامٌ نَصْنَعُهُ مِنَ الدَّقِيقِ" },
+      { answer:"تمر",  clue:"ثَمَرَةٌ حُلْوَةٌ تُؤْخَذُ مِنَ النَّخْلِ" },
+      { answer:"شاي",  clue:"شَرَابٌ سَاخِنٌ يُشْرَبُ بَعْدَ الطَّعَامِ" },
+      { answer:"قهوة", clue:"شَرَابٌ يُصْنَعُ مِنْ حَبِّ الْبُنِّ" }
+    ]
+  },
+  {
+    title: "المجموعة الرابعة",
+    subtitle: "السَّفَرُ وَالْعِبَادَة",
+    words: [
+      { answer:"سفر",   clue:"الِانْتِقَالُ مِنْ مَكَانٍ إِلَى مَكَانٍ آخَرَ" },
+      { answer:"مطار",  clue:"مَكَانٌ تُقْلِعُ مِنْهُ الطَّائِرَاتُ" },
+      { answer:"حج",    clue:"نُسُكٌ يَكُونُ فِي مَكَّةَ فِي وَقْتٍ مُعَيَّنٍ" },
+      { answer:"عمرة",  clue:"نُسُكٌ لَيْسَ لَهُ وَقْتٌ مُعَيَّنٌ" },
+      { answer:"صلاة",  clue:"عِبَادَةٌ تُؤَدَّى خَمْسَ مَرَّاتٍ فِي الْيَوْمِ" },
+      { answer:"مسجد",  clue:"مَكَانُ صَلَاةِ الْمُسْلِمِينَ" },
+      { answer:"طريق",  clue:"مَا نَسِيرُ عَلَيْهِ بَيْنَ الْمَدِينَتَيْنِ" },
+      { answer:"فندق",  clue:"مَكَانٌ يَنْزِلُ فِيهِ الْمُسَافِرُ" },
+      { answer:"تذكرة", clue:"وَرَقَةٌ نُسَافِرُ بِهَا" },
+      { answer:"جواز",  clue:"كِتَابٌ يُعْطَى لِلْمُسَافِرِ لِيَعْبُرَ الْحُدُودَ" }
+    ]
+  }
+];
+
+/* ============================================================
+   ALGORITMA TTS BARU — LEBIH PINTAR
+   Strategi:
+   1. Kata terpanjang ditaruh di tengah (mendatar).
+   2. Kata berikutnya dicoba di semua posisi yang memungkinkan
+      dengan huruf yang sama (semua kombinasi).
+   3. Setiap kandidat penempatan diberi SKOR:
+      +10 per huruf yang bersilangan dengan kata lain
+      -5 jika jarak dari cluster utama terlalu jauh
+      -3 jika menciptakan "isolated word" (tidak bersilangan)
+   4. Pilih penempatan dengan skor tertinggi.
+   5. Kalau tidak ada yang bisa disilang, taruh dekat cluster.
+============================================================ */
+
+function createEmptyGrid(size) {
+  return Array.from({ length: size }, () => Array.from({ length: size }, () => null));
+}
+
+function canPlaceWord(grid, word, row, col, dir, size) {
+  const len = word.length;
+
+  // Cek batas
+  if (dir === "across") {
+    if (col < 0 || col + len > size) return false;
+    if (row < 0 || row >= size) return false;
+  } else {
+    if (row < 0 || row + len > size) return false;
+    if (col < 0 || col >= size) return false;
+  }
+
+  let crossings = 0;
+
+  for (let i = 0; i < len; i++) {
+    const r = dir === "across" ? row : row + i;
+    const c = dir === "across" ? col + i : col;
+
+    const existing = grid[r][c];
+
+    if (existing !== null) {
+      // Sel sudah terisi: harus sama hurufnya (persilangan)
+      if (existing !== word[i]) return false;
+      crossings++;
+    } else {
+      // Sel kosong: cek tetangga tegak lurus harus kosong
+      if (dir === "across") {
+        if (r > 0 && grid[r-1][c] !== null) return false;
+        if (r < size-1 && grid[r+1][c] !== null) return false;
+      } else {
+        if (c > 0 && grid[r][c-1] !== null) return false;
+        if (c < size-1 && grid[r][c+1] !== null) return false;
+      }
+    }
+  }
+
+  // Cek ujung sebelum & sesudah (harus kosong)
+  if (dir === "across") {
+    if (col > 0 && grid[row][col-1] !== null) return false;
+    if (col + len < size && grid[row][col+len] !== null) return false;
+  } else {
+    if (row > 0 && grid[row-1][col] !== null) return false;
+    if (row + len < size && grid[row+len][col] !== null) return false;
+  }
+
+  // Minimal harus ada 1 persilangan (kecuali kata pertama)
+  return { ok: true, crossings };
+}
+
+function placeWordOnGrid(grid, word, row, col, dir) {
+  const positions = [];
+  for (let i = 0; i < word.length; i++) {
+    const r = dir === "across" ? row : row + i;
+    const c = dir === "across" ? col + i : col;
+    grid[r][c] = word[i];
+    positions.push({ r, c, ch: word[i] });
+  }
+  return positions;
+}
+
+function buildCrossword(words) {
+  const SIZE = 50;
+  const grid = createEmptyGrid(SIZE);
+  const placements = [];
+
+  // Urutkan kata berdasarkan panjang (terpanjang dulu)
+  const sortedWords = [...words].sort((a, b) => b.answer.length - a.answer.length);
+
+  // Kata pertama: taruh di tengah, mendatar
+  const first = sortedWords[0];
+  const centerR = Math.floor(SIZE / 2);
+  const centerC = Math.floor((SIZE - first.answer.length) / 2);
+  placeWordOnGrid(grid, first.answer, centerR, centerC, "across");
+  placements.push({
+    answer: first.answer,
+    clue: first.clue,
+    row: centerR,
+    col: centerC,
+    dir: "across"
+  });
+
+  // Kata berikutnya
+  for (let w = 1; w < sortedWords.length; w++) {
+    const word = sortedWords[w];
+    let bestPlacement = null;
+    let bestScore = -Infinity;
+
+    // Coba semua kata yang sudah ditempatkan
+    for (const existing of placements) {
+      // Coba setiap huruf di kata existing
+      for (let i = 0; i < existing.answer.length; i++) {
+        const exCh = existing.answer[i];
+        const exR = existing.dir === "across" ? existing.row : existing.row + i;
+        const exC = existing.dir === "across" ? existing.col + i : existing.col;
+
+        // Coba setiap huruf di kata baru
+        for (let j = 0; j < word.answer.length; j++) {
+          if (word.answer[j] !== exCh) continue;
+
+          // Coba 2 arah: menurun & mendatar (berlawanan dengan existing)
+          const dirs = existing.dir === "across" ? ["down"] : ["across"];
+
+          for (const dir of dirs) {
+            const newRow = dir === "down" ? exR - j : exR;
+            const newCol = dir === "across" ? exC - j : exC;
+
+            const result = canPlaceWord(grid, word.answer, newRow, newCol, dir, SIZE);
+            if (!result.ok) continue;
+
+            // Hitung skor
+            let score = result.crossings * 10;
+
+            // Bonus: dekat dengan cluster utama (dekat dengan pusat grid)
+            const distToCenter = Math.abs(newRow - centerR) + Math.abs(newCol - centerC);
+            score -= distToCenter * 0.5;
+
+            // Bonus: lebih dari 1 persilangan
+            if (result.crossings > 1) score += result.crossings * 5;
+
+            if (score > bestScore) {
+              bestScore = score;
+              bestPlacement = { row: newRow, col: newCol, dir };
+            }
+          }
+        }
+      }
+    }
+
+    // Kalau ada penempatan terbaik
+    if (bestPlacement) {
+      placeWordOnGrid(grid, word.answer, bestPlacement.row, bestPlacement.col, bestPlacement.dir);
+      placements.push({
+        answer: word.answer,
+        clue: word.clue,
+        row: bestPlacement.row,
+        col: bestPlacement.col,
+        dir: bestPlacement.dir
+      });
+    } else {
+      // Fallback: taruh dekat cluster (cari tempat kosong terdekat dari center)
+      let fallback = null;
+      let fallbackDist = Infinity;
+
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          for (const dir of ["across", "down"]) {
+            const result = canPlaceWord(grid, word.answer, r, c, dir, SIZE);
+            if (result.ok) {
+              const dist = Math.abs(r - centerR) + Math.abs(c - centerC);
+              if (dist < fallbackDist) {
+                fallbackDist = dist;
+                fallback = { row: r, col: c, dir };
+              }
+            }
+          }
+        }
+      }
+
+      if (fallback) {
+        placeWordOnGrid(grid, word.answer, fallback.row, fallback.col, fallback.dir);
+        placements.push({
+          answer: word.answer,
+          clue: word.clue,
+          row: fallback.row,
+          col: fallback.col,
+          dir: fallback.dir
+        });
+      }
+    }
+  }
+
+  // Hitung batas grid yang dipakai
+  let minR = SIZE, maxR = 0, minC = SIZE, maxC = 0;
+  placements.forEach(p => {
+    const len = p.answer.length;
+    for (let i = 0; i < len; i++) {
+      const r = p.dir === "across" ? p.row : p.row + i;
+      const c = p.dir === "across" ? p.col + i : p.col;
+      minR = Math.min(minR, r); maxR = Math.max(maxR, r);
+      minC = Math.min(minC, c); maxC = Math.max(maxC, c);
+    }
+  });
+
+  // Geser ke kiri-atas
+  placements.forEach(p => {
+    p.row -= minR;
+    p.col -= minC;
+  });
+
+  const rows = maxR - minR + 1;
+  const cols = maxC - minC + 1;
+
+  // Buat grid final
+  const finalGrid = Array.from({ length: rows }, () =>
+    Array.from({ length: cols }, () => null)
+  );
+
+  placements.forEach(p => {
+    for (let i = 0; i < p.answer.length; i++) {
+      const r = p.dir === "across" ? p.row : p.row + i;
+      const c = p.dir === "across" ? p.col + i : p.col;
+      if (!finalGrid[r][c]) {
+        finalGrid[r][c] = { char: p.answer[i] };
+      }
+    }
+  });
+
+  // Beri nomor urut berdasarkan posisi baca
+  // Kata yang mulai di sel yang sama dengan kata lain = nomor sama
+  const numberedCells = new Map();
+  const sortedByPos = [...placements].sort((a, b) => a.row - b.row || a.col - b.col);
+
+  let currentNum = 0;
+  const cellNumbers = new Map(); // key: "r,c" -> num
+
+  sortedByPos.forEach(p => {
+    const key = `${p.row},${p.col}`;
+    if (!cellNumbers.has(key)) {
+      currentNum++;
+      cellNumbers.set(key, currentNum);
+    }
+    p.num = cellNumbers.get(key);
+  });
+
+  // Simpan nomor di grid
+  finalGrid.forEach(row => row.forEach(cell => {
+    if (cell) cell.num = null;
+  }));
+  placements.forEach(p => {
+    const cell = finalGrid[p.row][p.col];
+    if (cell) cell.num = p.num;
+  });
+
+  return { grid: finalGrid, placements, rows, cols };
+}
+
+/* ============================================================
+   RENDER TABEL
+============================================================ */
+function buildTable(crossword, pageIdx) {
+  const { grid, rows, cols } = crossword;
+  let html = '<div class="crossword-scroll"><table class="crossword">';
+  for (let r = 0; r < rows; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) {
+      const cell = grid[r][c];
+      if (!cell) {
+        html += '<td class="block"></td>';
+      } else {
+        const num = cell.num ? cell.num : '';
+        html += `<td class="cell" data-row="${r}" data-col="${c}">`;
+        if (num) html += `<span class="num">${num}</span>`;
+        html += `<input type="text" maxlength="1" data-row="${r}" data-col="${c}" data-answer="${cell.char}">`;
+        html += '</td>';
+      }
+    }
+    html += '</tr>';
+  }
+  html += '</table></div>';
+  return html;
+}
+
+/* ============================================================
+   RENDER PETUNJUK
+============================================================ */
+function buildClues(crossword, pageIdx) {
+  const { placements } = crossword;
+  const across = placements.filter(p => p.dir === "across").sort((a,b) => a.num - b.num);
+  const down = placements.filter(p => p.dir === "down").sort((a,b) => a.num - b.num);
+
+  let html = '<div class="clues">';
+  html += '<h3>📝 الأسئلة</h3>';
+
+  if (across.length > 0) {
+    html += '<h4 class="across">➡️ أُفُقِيّ</h4>';
+    across.forEach(w => {
+      html += `<div class="clue-item" data-word-num="${w.num}" data-dir="across" data-page="${pageIdx+1}">
+        <span class="clue-num across">${w.num}</span>
+        <div class="clue-text">
+          ${w.clue}
+          <br>
+          <button class="reveal-btn" data-page="${pageIdx+1}" data-num="${w.num}" data-dir="across">
+            👁️ أظهر الحل
+          </button>
+        </div>
+      </div>`;
+    });
+  }
+
+  if (down.length > 0) {
+    html += '<h4 class="down">⬇️ عَمُودِيّ</h4>';
+    down.forEach(w => {
+      html += `<div class="clue-item" data-word-num="${w.num}" data-dir="down" data-page="${pageIdx+1}">
+        <span class="clue-num down">${w.num}</span>
+        <div class="clue-text">
+          ${w.clue}
+          <br>
+          <button class="reveal-btn" data-page="${pageIdx+1}" data-num="${w.num}" data-dir="down">
+            👁️ أظهر الحل
+          </button>
+        </div>
+      </div>`;
+    });
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/* ============================================================
+   BUILD CROSSWORDS
+============================================================ */
+const crosswords = ttsPages.map(p => buildCrossword(p.words));
+
+/* ============================================================
+   RENDER HALAMAN
+============================================================ */
+const pagesContainer = document.getElementById('pagesContainer');
+const tabs = document.querySelectorAll('.page-tab');
+
+function renderPages() {
+  ttsPages.forEach((page, idx) => {
+    const pageDiv = document.createElement('div');
+    pageDiv.className = 'page-content' + (idx === 0 ? ' active' : '');
+    pageDiv.id = 'page-' + (idx + 1);
+
+    const cw = crosswords[idx];
+    const wordCount = cw.placements.length;
+
+    pageDiv.innerHTML = `
+      <div class="page-title">${page.title}</div>
+      <div class="page-subtitle">${page.subtitle}</div>
+
+      <div class="info-panel">
+        <span class="stat">📝 ${wordCount} كلمات</span>
+        <span class="stat">📐 ${cw.rows} × ${cw.cols}</span>
+      </div>
+
+      <div class="tts-wrapper">
+        <div class="grid-box" data-page="${idx+1}">
+          <div class="zoom-controls">
+            <button class="zoom-btn" data-zoom="out" data-page="${idx+1}">−</button>
+            <span class="zoom-level" id="zoomLevel-${idx+1}">100%</span>
+            <button class="zoom-btn" data-zoom="in" data-page="${idx+1}">+</button>
+            <button class="zoom-btn" data-zoom="fit" data-page="${idx+1}" title="ملء الشاشة">⛶</button>
+          </div>
+          ${buildTable(cw, idx)}
+        </div>
+        ${buildClues(cw, idx)}
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-check" data-page="${idx+1}">✅ تحقق من الإجابة</button>
+        <button class="btn btn-reset" data-page="${idx+1}">🔄 مسح</button>
+      </div>
+      <div class="feedback-msg" id="feedback-${idx+1}"></div>
+    `;
+
+    pagesContainer.appendChild(pageDiv);
+  });
+}
+
+/* ============================================================
+   ZOOM CONTROLS
+============================================================ */
+const zoomLevels = {}; // { pageNum: cellSize }
+
+function updateCellSize(pageNum, size) {
+  zoomLevels[pageNum] = size;
+  const gridBox = document.querySelector(`.grid-box[data-page="${pageNum}"]`);
+  if (gridBox) {
+    gridBox.style.setProperty('--cell-size', size + 'px');
+  }
+  const levelEl = document.getElementById('zoomLevel-' + pageNum);
+  if (levelEl) {
+    const percent = Math.round((size / 55) * 100);
+    levelEl.textContent = percent + '%';
+  }
+}
+
+function autoFitPage(pageNum) {
+  const gridBox = document.querySelector(`.grid-box[data-page="${pageNum}"]`);
+  if (!gridBox) return;
+  const table = gridBox.querySelector('table.crossword');
+  if (!table) return;
+
+  const cw = crosswords[parseInt(pageNum) - 1];
+  const availableW = gridBox.clientWidth - 40;
+  const availableH = gridBox.clientHeight - 40;
+
+  const cellW = Math.floor(availableW / cw.cols);
+  const cellH = Math.floor(availableH / cw.rows);
+  let cellSize = Math.min(cellW, cellH, 80);
+  cellSize = Math.max(cellSize, 30);
+
+  updateCellSize(pageNum, cellSize);
+}
+
+/* ============================================================
+   INTERAKSI TAB
+============================================================ */
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + tab.dataset.page).classList.add('active');
+
+    // Auto-fit saat pindah tab
+    setTimeout(() => autoFitPage(tab.dataset.page), 100);
+  });
+});
+
+/* ============================================================
+   AUTO-FOCUS INPUT
+============================================================ */
+document.addEventListener('input', (e) => {
+  if (e.target.tagName !== 'INPUT') return;
+  if (!e.target.value) return;
+  const r = parseInt(e.target.dataset.row);
+  const c = parseInt(e.target.dataset.col);
+  const pageNum = getCurrentPage();
+
+  const candidates = [
+    { r: r, c: c - 1 },
+    { r: r, c: c + 1 },
+    { r: r + 1, c: c },
+    { r: r - 1, c: c }
+  ];
+
+  for (const cand of candidates) {
+    const next = document.querySelector(
+      `#page-${pageNum} td.cell[data-row="${cand.r}"][data-col="${cand.c}"] input`
+    );
+    if (next && !next.value) { next.focus(); return; }
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Backspace') return;
+  if (e.target.tagName !== 'INPUT') return;
+  if (e.target.value !== '') return;
+
+  const r = parseInt(e.target.dataset.row);
+  const c = parseInt(e.target.dataset.col);
+  const pageNum = getCurrentPage();
+
+  const candidates = [
+    { r: r, c: c + 1 },
+    { r: r, c: c - 1 },
+    { r: r - 1, c: c },
+    { r: r + 1, c: c }
+  ];
+
+  for (const cand of candidates) {
+    const prev = document.querySelector(
+      `#page-${pageNum} td.cell[data-row="${cand.r}"][data-col="${cand.c}"] input`
+    );
+    if (prev) { prev.focus(); prev.value = ''; return; }
+  }
+});
+
+function getCurrentPage() {
+  const active = document.querySelector('.page-tab.active');
+  return active ? active.dataset.page : '1';
+}
+
+/* ============================================================
+   CHECK / RESET / REVEAL
+============================================================ */
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('btn-check')) {
+    checkPage(e.target.dataset.page);
+  }
+  if (e.target.classList.contains('btn-reset')) {
+    resetPage(e.target.dataset.page);
+  }
+  if (e.target.classList.contains('reveal-btn')) {
+    revealOne(e.target);
+  }
+  if (e.target.classList.contains('zoom-btn')) {
+    handleZoom(e.target);
+  }
+});
+
+function handleZoom(btn) {
+  const pageNum = btn.dataset.page;
+  const action = btn.dataset.zoom;
+  const current = zoomLevels[pageNum] || 55;
+
+  if (action === 'in') {
+    updateCellSize(pageNum, Math.min(current + 8, 100));
+  } else if (action === 'out') {
+    updateCellSize(pageNum, Math.max(current - 8, 20));
+  } else if (action === 'fit') {
+    autoFitPage(pageNum);
+  }
+}
+
+function checkPage(pageNum) {
+  let allCorrect = true;
+  let filledCount = 0;
+  let correctCount = 0;
+  let totalCells = 0;
+
+  document.querySelectorAll(`#page-${pageNum} td.cell`).forEach(td => {
+    const input = td.querySelector('input');
+    if (!input) return;
+    totalCells++;
+    td.classList.remove('correct', 'wrong');
+    const correctChar = input.dataset.answer;
+    const val = input.value.trim();
+    if (val) {
+      filledCount++;
+      if (val === correctChar) {
+        td.classList.add('correct');
+        correctCount++;
+      } else {
+        td.classList.add('wrong');
+        allCorrect = false;
+      }
+    } else {
+      allCorrect = false;
+    }
+  });
+
+  const fb = document.getElementById('feedback-' + pageNum);
+  if (allCorrect && filledCount > 0) {
+    fb.textContent = '🎉 مُمْتَاز! جَمِيعُ الإِجَابَاتِ صَحِيحَة';
+    fb.className = 'feedback-msg ok';
+  } else {
+    fb.textContent = `📊 الإِجَابَاتُ الصَّحِيحَة: ${correctCount} / ${totalCells}`;
+    fb.className = 'feedback-msg no';
+  }
+}
+
+function revealOne(btn) {
+  const pageNum = btn.dataset.page;
+  const num = parseInt(btn.dataset.num);
+  const dir = btn.dataset.dir;
+
+  const crossword = crosswords[parseInt(pageNum) - 1];
+  const word = crossword.placements.find(p => p.num === num && p.dir === dir);
+  if (!word) return;
+
+  for (let i = 0; i < word.answer.length; i++) {
+    const r = word.dir === "across" ? word.row : word.row + i;
+    const c = word.dir === "across" ? word.col + i : word.col;
+    const input = document.querySelector(
+      `#page-${pageNum} td.cell[data-row="${r}"][data-col="${c}"] input`
+    );
+    if (input) {
+      input.value = word.answer[i];
+      input.parentElement.classList.remove('wrong', 'correct');
+      input.parentElement.classList.add('revealed');
+    }
+  }
+
+  btn.disabled = true;
+  btn.textContent = '✅ تم الإظهار';
+}
+
+function resetPage(pageNum) {
+  document.querySelectorAll(`#page-${pageNum} td.cell input`).forEach(input => {
+    input.value = '';
+    input.parentElement.classList.remove('correct', 'wrong', 'revealed');
+  });
+  document.querySelectorAll(`#page-${pageNum} .reveal-btn`).forEach(btn => {
+    btn.disabled = false;
+    btn.textContent = '👁️ أظهر الحل';
+  });
+  const fb = document.getElementById('feedback-' + pageNum);
+  fb.textContent = '';
+  fb.className = 'feedback-msg';
+}
+
+/* ============================================================
+   INIT
+============================================================ */
+renderPages();
+
+// Auto-fit semua halaman setelah render
+setTimeout(() => {
+  ttsPages.forEach((_, idx) => {
+    autoFitPage(idx + 1);
+  });
+}, 200);
+
+// Re-fit saat window resize
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    autoFitPage(getCurrentPage());
+  }, 200);
+});
+</script>
+</body>
+</html>

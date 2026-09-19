@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شَدُّ الحَبْل — Tarik Tambang</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 40%, #90EE90 100%);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ===== Background ===== */
+  .sky {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(180deg, #4A90D9 0%, #87CEEB 100%);
+    z-index: 0;
+  }
+
+  .sun {
+    position: absolute;
+    top: 40px; right: 80px;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, #FFD700, #FFA500);
+    border-radius: 50%;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.8);
+    animation: sunPulse 4s ease-in-out infinite;
+    z-index: 1;
+  }
+
+  @keyframes sunPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.85;
+    z-index: 1;
+  }
+
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .cloud1 { width: 100px; height: 35px; top: 60px; left: 10%; animation: cloudMove 30s linear infinite; }
+  .cloud1::before { width: 50px; height: 50px; top: -20px; left: 15px; }
+  .cloud1::after { width: 40px; height: 40px; top: -15px; right: 15px; }
+
+  .cloud2 { width: 80px; height: 28px; top: 120px; left: 50%; animation: cloudMove 40s linear infinite; }
+  .cloud2::before { width: 40px; height: 40px; top: -18px; left: 12px; }
+  .cloud2::after { width: 32px; height: 32px; top: -12px; right: 12px; }
+
+  @keyframes cloudMove {
+    from { transform: translateX(-200px); }
+    to { transform: translateX(calc(100vw + 200px)); }
+  }
+
+  .ground {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 45%;
+    background: linear-gradient(180deg, #7CB342 0%, #558B2F 100%);
+    z-index: 1;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 25px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .team-score {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 20px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid transparent;
+  }
+
+  .team-score.team-a { border-color: #4A90D9; box-shadow: 0 0 20px rgba(74, 144, 217, 0.4); }
+  .team-score.team-b { border-color: #E74C3C; box-shadow: 0 0 20px rgba(231, 76, 60, 0.4); }
+
+  .team-name { color: #fff; font-weight: 700; font-size: 1rem; }
+
+  .team-points {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-weight: 900;
+    font-size: 1.6rem;
+    padding: 4px 16px;
+    border-radius: 12px;
+    min-width: 55px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+    transition: all 0.3s;
+  }
+
+  .team-points.bump { animation: scoreBump 0.5s; }
+  @keyframes scoreBump {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+
+  .score-controls { display: flex; flex-direction: column; gap: 3px; }
+
+  .score-btn {
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    cursor: pointer;
+    color: #fff;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-btn.plus { background: #2ed573; }
+  .score-btn.minus { background: #ff4757; }
+  .score-btn:hover { transform: scale(1.1); }
+  .score-btn:active { transform: scale(0.9); }
+
+  .round-info { color: #fff; text-align: center; }
+  .round-info .round { font-size: 0.9rem; opacity: 0.8; }
+  .round-info .timer {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #FFD700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  }
+
+  /* ===== Arena ===== */
+  .arena {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 80px;
+  }
+
+  .rope-container {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Tali */
+  .rope {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 12px;
+    width: 70%;
+    background: linear-gradient(180deg, #D2A679 0%, #8B5A2B 50%, #D2A679 100%);
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 2;
+  }
+
+  .rope::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: 0; right: 0;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, #8B5A2B 0 8px, #D2A679 8px 16px);
+    border-radius: 6px 6px 0 0;
+  }
+
+  /* Garis tengah */
+  .center-line {
+    position: absolute;
+    top: 15%;
+    bottom: 15%;
+    left: 50%;
+    width: 6px;
+    background: linear-gradient(180deg, transparent, #E74C3C 20%, #E74C3C 80%, transparent);
+    transform: translateX(-50%);
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+    z-index: 1;
+  }
+
+  .center-line::before {
+    content: '⚑';
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    color: #E74C3C;
+    text-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+  }
+
+  /* ===== Karakter ===== */
+  .team-characters {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+    transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 3;
+  }
+
+  .team-characters.team-a { left: 5%; }
+  .team-characters.team-b { right: 5%; flex-direction: row-reverse; }
+
+  .character {
+    width: 75px;
+    height: 140px;
+    position: relative;
+    transition: all 0.5s;
+  }
+
+  .character.pulling { animation: pullAnim 0.6s ease-in-out infinite; }
+  .character.struggling { animation: struggleAnim 0.5s ease-in-out infinite; }
+  .character.falling { animation: fallAnim 1s ease-in forwards; }
+
+  @keyframes pullAnim {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-5deg); }
+  }
+  @keyframes struggleAnim {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(5deg); }
+  }
+  @keyframes fallAnim {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(90deg) translateY(30px); }
+  }
+
+  .character svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+
+  /* Debu di kaki */
+  .dust {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 20px;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .dust.active { opacity: 1; animation: dustAnim 0.8s infinite; }
+  @keyframes dustAnim {
+    0%, 100% { transform: translateX(0) scale(1); opacity: 0.6; }
+    50% { transform: translateX(-10px) scale(1.2); opacity: 1; }
+  }
+
+  /* ===== Question Panel ===== */
+  .question-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 750px;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 18px;
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+  }
+
+  .question-text {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 12px;
+    min-height: 35px;
+  }
+
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .option {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 10px 12px;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  .option:hover:not(.disabled) {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #FFD700;
+    transform: translateY(-2px);
+  }
+
+  .option.correct { background: rgba(46, 213, 115, 0.3); border-color: #2ed573; color: #2ed573; }
+  .option.wrong { background: rgba(255, 71, 87, 0.3); border-color: #ff4757; color: #ff4757; }
+  .option.disabled { cursor: not-allowed; opacity: 0.5; }
+
+  /* ===== Team Buttons ===== */
+  .controls {
+    position: absolute;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 15;
+  }
+
+  .team-btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Tajawal', sans-serif;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  .team-btn.a { background: linear-gradient(135deg, #4A90D9, #2E5C8A); }
+  .team-btn.b { background: linear-gradient(135deg, #E74C3C, #A93226); }
+  .team-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  .team-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .team-btn.active { transform: scale(1.08); border: 3px solid #FFD700; }
+
+  /* ===== Win Overlay ===== */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .overlay.show { display: flex; animation: fadeIn 0.5s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .overlay-content { text-align: center; padding: 40px; animation: bounceIn 0.8s; }
+  @keyframes bounceIn { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+  .overlay-icon { font-size: 6rem; margin-bottom: 20px; animation: iconBounce 1s infinite; }
+  @keyframes iconBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+  .overlay-title { color: #FFD700; font-size: 3rem; font-weight: 900; margin-bottom: 15px; text-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+  .overlay-subtitle { color: #fff; font-size: 1.3rem; margin-bottom: 30px; }
+
+  .overlay-btns { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+
+  .overlay-btn {
+    padding: 15px 40px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  .overlay-btn.primary {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+  }
+
+  .overlay-btn.secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .overlay-btn:hover { transform: translateY(-3px) scale(1.05); }
+
+  /* ===== Confetti ===== */
+  .confetti {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    top: -20px;
+    z-index: 99;
+    animation: confettiFall 4s linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== Setup Screen ===== */
+  .setup-screen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .setup-screen.hide { display: none; }
+
+  .setup-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 35px;
+    max-width: 700px;
+    width: 100%;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    text-align: center;
+  }
+
+  .setup-title {
+    color: #FFD700;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 8px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+
+  .setup-sub { color: #a0a0c0; margin-bottom: 25px; }
+
+  .team-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+  @media (max-width: 550px) { .team-inputs { grid-template-columns: 1fr; } }
+
+  .team-input-group {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 15px;
+    border: 2px solid;
+  }
+
+  .team-input-group.a { border-color: #4A90D9; }
+  .team-input-group.b { border-color: #E74C3C; }
+
+  .team-input-group label { display: block; color: #fff; font-weight: 700; margin-bottom: 8px; font-size: 1rem; }
+
+  .team-input-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Tajawal', sans-serif;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .team-input-group input:focus { outline: none; border-color: #FFD700; }
+
+  .settings-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+
+  .setting-item label { display: block; color: #a0a0c0; font-size: 0.85rem; margin-bottom: 6px; }
+
+  .setting-item select, .setting-item input {
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .setting-item select option { background: #302b63; color: #fff; }
+
+  /* Editor Panel */
+  .editor-toggle {
+    margin: 15px 0;
+    padding: 10px 25px;
+    background: rgba(255, 215, 0, 0.15);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    border-radius: 12px;
+    color: #FFD700;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+  }
+
+  .editor-toggle:hover { background: rgba(255, 215, 0, 0.25); }
+
+  .editor-panel {
+    display: none;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: right;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .editor-panel.show { display: block; }
+
+  .editor-panel h3 {
+    color: #FFD700;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .editor-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+
+  .editor-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .editor-btn.add { background: #2ed573; color: #fff; }
+  .editor-btn.random { background: #00d2ff; color: #fff; }
+  .editor-btn.clear { background: #ff4757; color: #fff; }
+  .editor-btn.restore { background: #ffa502; color: #fff; }
+  .editor-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  .question-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .question-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .question-item .q-text {
+    color: #fff;
+    font-size: 0.85rem;
+    flex: 1;
+    text-align: right;
+  }
+
+  .question-item .q-num {
+    color: #FFD700;
+    font-weight: 900;
+    font-size: 0.8rem;
+    min-width: 25px;
+  }
+
+  .question-item .del-btn {
+    background: #ff4757;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    font-weight: 900;
+    transition: all 0.2s;
+  }
+
+  .question-item .del-btn:hover { transform: scale(1.1); }
+
+  .add-form {
+    background: rgba(46, 213, 115, 0.1);
+    border: 1px solid rgba(46, 213, 115, 0.3);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .add-form.show { display: block; }
+
+  .add-form input {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.9rem;
+    text-align: right;
+  }
+
+  .add-form input:focus { outline: none; border-color: #2ed573; }
+  .add-form input::placeholder { color: rgba(255,255,255,0.4); }
+
+  .add-form-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+
+  .add-form-row input[type="radio"] { width: auto; margin: 0; cursor: pointer; }
+
+  .add-form-row label { color: #fff; font-size: 0.85rem; cursor: pointer; }
+
+  .start-btn {
+    padding: 16px 50px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Tajawal', sans-serif;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+    margin-top: 10px;
+  }
+
+  .start-btn:hover { transform: translateY(-3px) scale(1.05); }
+
+  .info-badge {
+    display: inline-block;
+    background: rgba(0, 210, 255, 0.15);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    color: #00d2ff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Setup Screen ===== -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-card">
+    <div class="setup-title">🪢 شَدُّ الحَبْل</div>
+    <div class="setup-sub">Tarik Tambang — Versus 2 Kelompok</div>
+
+    <div class="team-inputs">
+      <div class="team-input-group a">
+        <label>🔵 الفريق الأول</label>
+        <input type="text" id="teamAName" value="الفريق الأزرق" maxlength="20">
+      </div>
+      <div class="team-input-group b">
+        <label>🔴 الفريق الثاني</label>
+        <input type="text" id="teamBName" value="الفريق الأحمر" maxlength="20">
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <div class="setting-item">
+        <label>⏱️ وقت السؤال</label>
+        <select id="timerSetting">
+          <option value="0">بدون وقت</option>
+          <option value="10">١٠ ثوان</option>
+          <option value="15" selected>١٥ ثانية</option>
+          <option value="20">٢٠ ثانية</option>
+          <option value="30">٣٠ ثانية</option>
+          <option value="60">٦٠ ثانية</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🎯 عدد الأسئلة</label>
+        <select id="countSetting">
+          <option value="5">٥ أسئلة</option>
+          <option value="10" selected>١٠ أسئلة</option>
+          <option value="15">١٥ سؤالاً</option>
+          <option value="20">٢٠ سؤالاً</option>
+          <option value="30">٣٠ سؤالاً</option>
+          <option value="50">٥٠ سؤالاً</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🏆 نقاط الفوز</label>
+        <select id="maxScoreSetting">
+          <option value="3">٣ نقاط</option>
+          <option value="5" selected>٥ نقاط</option>
+          <option value="7">٧ نقاط</option>
+          <option value="10">١٠ نقاط</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="editor-toggle" id="editorToggle">📝 إدارة الأسئلة (Tambah/Hapus Soal)</button>
+
+    <div class="editor-panel" id="editorPanel">
+      <h3>
+        <span>📋 قائمة الأسئلة (<span id="questionCount">٠</span>)</span>
+      </h3>
+      <div class="editor-actions">
+        <button class="editor-btn add" id="addQuestionBtn">➕ إضافة سؤال</button>
+        <button class="editor-btn random" id="shuffleBtn">🔀 خلط عشوائي</button>
+        <button class="editor-btn restore" id="restoreBtn">↩️ استعادة الافتراضي</button>
+        <button class="editor-btn clear" id="clearBtn">🗑️ حذف الكل</button>
+      </div>
+
+      <div class="add-form" id="addForm">
+        <input type="text" id="newQuestion" placeholder="السؤال (مثال: ما معنى كلمة «مُدَرِّس»؟)" dir="rtl">
+        <div class="add-form-row">
+          <input type="radio" name="correctOpt" value="0" id="opt0" checked>
+          <label for="opt0">أ)</label>
+          <input type="text" id="newOpt0" placeholder="الخيار الأول" dir="rtl">
+        </div>
+        <div class="add-form-row">
+          <input type="radio" name="correctOpt" value="1" id="opt1">
+          <label for="opt1">ب)</label>
+          <input type="text" id="newOpt1" placeholder="الخيار الثاني" dir="rtl">
+        </div>
+        <div class="add-form-row">
+          <input type="radio" name="correctOpt" value="2" id="opt2">
+          <label for="opt2">ج)</label>
+          <input type="text" id="newOpt2" placeholder="الخيار الثالث" dir="rtl">
+        </div>
+        <div class="add-form-row">
+          <input type="radio" name="correctOpt" value="3" id="opt3">
+          <label for="opt3">د)</label>
+          <input type="text" id="newOpt3" placeholder="الخيار الرابع" dir="rtl">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="editor-btn add" id="saveQuestionBtn" style="flex:1;">💾 حفظ</button>
+          <button class="editor-btn clear" id="cancelAddBtn" style="flex:1;">✖️ إلغاء</button>
+        </div>
+      </div>
+
+      <div class="question-list" id="questionList"></div>
+    </div>
+
+    <span class="info-badge">💾 جميع الأسئلة محفوظة محليًا في المتصفح</span>
+
+    <br>
+    <button class="start-btn" id="startBtn">🚀 ابدأ اللعب</button>
+  </div>
+</div>
+
+<!-- ===== Sky & Ground ===== -->
+<div class="sky"></div>
+<div class="sun"></div>
+<div class="cloud cloud1"></div>
+<div class="cloud cloud2"></div>
+<div class="ground"></div>
+
+<!-- ===== Header ===== -->
+<div class="header">
+  <div class="team-score team-a">
+    <span class="team-name" id="teamANameDisplay">🔵 الفريق الأزرق</span>
+    <span class="team-points" id="teamAScore">٠</span>
+    <div class="score-controls">
+      <button class="score-btn plus" data-team="a">+</button>
+      <button class="score-btn minus" data-team="a">−</button>
+    </div>
+  </div>
+  <div class="round-info">
+    <div class="round">السؤال <span id="questionNum">١</span> / <span id="totalQuestions">١٠</span></div>
+    <div class="timer" id="timerDisplay">—</div>
+  </div>
+  <div class="team-score team-b">
+    <div class="score-controls">
+      <button class="score-btn plus" data-team="b">+</button>
+      <button class="score-btn minus" data-team="b">−</button>
+    </div>
+    <span class="team-points" id="teamBScore">٠</span>
+    <span class="team-name" id="teamBNameDisplay">🔴 الفريق الأحمر</span>
+  </div>
+</div>
+
+<!-- ===== Arena ===== -->
+<div class="arena">
+  <div class="rope-container">
+    <div class="center-line"></div>
+    <div class="rope" id="rope"></div>
+    <div class="team-characters team-a" id="teamAChars"></div>
+    <div class="team-characters team-b" id="teamBChars"></div>
+  </div>
+</div>
+
+<!-- ===== Controls ===== -->
+<div class="controls">
+  <button class="team-btn a" id="teamABtn">🔵 الفريق الأول</button>
+  <button class="team-btn b" id="teamBBtn">🔴 الفريق الثاني</button>
+</div>
+
+<!-- ===== Question Panel ===== -->
+<div class="question-panel">
+  <div class="question-text" id="questionText">جار التحميل...</div>
+  <div class="options" id="optionsContainer"></div>
+</div>
+
+<!-- ===== Win Overlay ===== -->
+<div class="overlay" id="overlay">
+  <div class="overlay-content">
+    <div class="overlay-icon" id="overlayIcon">🏆</div>
+    <div class="overlay-title" id="overlayTitle">فاز الفريق الأول!</div>
+    <div class="overlay-subtitle" id="overlaySubtitle"></div>
+    <div class="overlay-btns">
+      <button class="overlay-btn primary" id="playAgainBtn">🔄 العب مرة أخرى</button>
+      <button class="overlay-btn secondary" id="backToSetupBtn">⚙️ الإعدادات</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Bank Soal Default =====
+const DEFAULT_QUESTIONS = [
+  { q: "ما معنى كلمة «مُدَرِّس»؟", options: ["مُعَلِّم", "طَالِب", "طَبِيب", "مُهَنْدِس"], correct: 0 },
+  { q: "ما جمع كلمة «اسْم»؟", options: ["أَسْمَاء", "أَحْوَال", "إِخْوَة", "أَبْوَاب"], correct: 0 },
+  { q: "ما ضد كلمة «أَخٌ»؟", options: ["أُخْتٌ", "أَبٌ", "جَدٌّ", "عَمٌّ"], correct: 0 },
+  { q: "ما معنى كلمة «جَدّ»؟", options: ["أَبُ الأَب", "أَخُ الأَب", "أَخُ الأُمّ", "ابْنُ الأَب"], correct: 0 },
+  { q: "ما جمع كلمة «بَاب»؟", options: ["أَبْوَاب", "بِيبَان", "بَابَات", "أَبْبَاب"], correct: 0 },
+  { q: "ما ضد كلمة «جَمِيل»؟", options: ["قَبِيح", "رَائِع", "حَسَن", "بَدِيع"], correct: 0 },
+  { q: "ما ضد كلمة «حَيَاة»؟", options: ["مَوْت", "صِحَّة", "سَعَادَة", "فَرَح"], correct: 0 },
+  { q: "ما مرادف كلمة «اسْتَيْقَظَ»؟", options: ["صَحَا", "نَامَ", "رَقَدَ", "جَلَسَ"], correct: 0 },
+  { q: "ما ضد كلمة «بَعْد»؟", options: ["قَبْل", "عَقِب", "خِلَال", "أَثْنَاء"], correct: 0 },
+  { q: "ما جمع كلمة «صَحِيفَة»؟", options: ["صُحُف", "صَحَائِف", "صَحْفَات", "صِحَاف"], correct: 0 },
+  { q: "ما مرادف كلمة «عُطْلَة»؟", options: ["إِجَازَة", "عَمَل", "دِرَاسَة", "وَظِيفَة"], correct: 0 },
+  { q: "ما معنى كلمة «فَطُور»؟", options: ["وَجْبَة الصَّبَاح", "وَجْبَة الظُّهْر", "وَجْبَة المَسَاء", "وَجْبَة اللَّيْل"], correct: 0 },
+  { q: "ما جمع كلمة «سَمَك»؟", options: ["أَسْمَاك", "سُمُوك", "سِمَاك", "سَمَكَات"], correct: 0 },
+  { q: "ما ضد كلمة «سَمِين»؟", options: ["نَحِيف", "بَدِين", "ضَخْم", "كَبِير"], correct: 0 },
+  { q: "ما معنى كلمة «مُضِيفَة»؟", options: ["فَتَاة تَخْدُم رُكَّاب الطَّائِرَة", "فَتَاة تَطْبُخ", "فَتَاة تُدَرِّس", "فَتَاة تُعَالِج"], correct: 0 },
+  { q: "ما مرادف كلمة «سَافَرَ»؟", options: ["ارْتَحَلَ", "أَقَامَ", "جَلَسَ", "سَكَنَ"], correct: 0 },
+  { q: "ما معنى كلمة «صَلَاة»؟", options: ["الدُّعَاء", "الصَّوْم", "الزَّكَاة", "الحَجّ"], correct: 0 },
+  { q: "ما ضد كلمة «لَيْل»؟", options: ["نَهَار", "صَبَاح", "مَسَاء", "فَجْر"], correct: 0 },
+  { q: "ما جمع كلمة «فِكْرَة»؟", options: ["أَفْكَار", "فِكَر", "فَكَارِيد", "فَوَاكِر"], correct: 0 },
+  { q: "ما ضد كلمة «طَيِّب»؟", options: ["سَيِّئ", "جَمِيل", "جَيِّد", "حَسَن"], correct: 0 },
+  { q: "ما مرادف كلمة «اسْتَطَاعَ»؟", options: ["قَدَرَ", "عَجَزَ", "ضَعُفَ", "تَعِبَ"], correct: 0 },
+  { q: "ما ضد كلمة «بَعِيد»؟", options: ["قَرِيب", "نَاءٍ", "قَاصٍ", "نَازِح"], correct: 0 },
+  { q: "ما معنى كلمة «جَدْوَل»؟", options: ["مَجْرَى مَائِي صَغِير", "نَهْر كَبِير", "بَحْر وَاسِع", "مُحِيط"], correct: 0 },
+  { q: "ما جمع كلمة «أُسْبُوع»؟", options: ["أَسَابِيع", "أُسْبُوعَات", "أَسَابِع", "أُسْبُعُون"], correct: 0 },
+  { q: "ما مرادف كلمة «مَادَّة»؟", options: ["دَرْس", "كِتَاب", "قَلَم", "سَبُورَة"], correct: 0 },
+  { q: "ما معنى كلمة «حَاسُوب»؟", options: ["حَاسِب آلِيّ", "آلَة حَاسِبَة قَدِيمَة", "مِحْفَظَة", "مِسْطَرَة"], correct: 0 },
+  { q: "ما ضد كلمة «بَدَأَ»؟", options: ["انْتَهَى", "شَرَعَ", "ابْتَدَأَ", "بَاشَرَ"], correct: 0 },
+  { q: "ما جمع كلمة «شَهْر»؟", options: ["شُهُور", "أَشْهُر", "شَهَرَات", "شَوَاهِر"], correct: 0 },
+  { q: "ما معنى كلمة «حِصَّة»؟", options: ["نَصِيب", "فَتْرَة طَوِيلَة", "يَوْم كَامِل", "أُسْبُوع"], correct: 0 },
+  { q: "ما معنى كلمة «شَرِكَة»؟", options: ["مُؤَسَّسَة مَالِيَّة أَو تِجَارِيَّة", "مُسْتَشْفَى", "مَدْرَسَة", "مَسْجِد"], correct: 0 },
+  { q: "ما ضد كلمة «عَمَل»؟", options: ["بِطَالَة", "وَظِيفَة", "مِهْنَة", "حِرْفَة"], correct: 0 },
+  { q: "ما معنى كلمة «مُسْتَشْفَى»؟", options: ["المَكَان الَّذِي يُعَالِج فِيهِ الطَّبِيبُ المَرْضَى", "مَكَان بَيْع الأَدْوِيَة", "مَكَان الدِّرَاسَة", "مَكَان العِبَادَة"], correct: 0 },
+  { q: "ما مرادف كلمة «أَحَبَّ»؟", options: ["رَغِبَ فِي", "كَرِهَ", "أَبْغَضَ", "نَفَرَ"], correct: 0 },
+  { q: "ما جمع كلمة «مَرْحَلَة»؟", options: ["مَرَاحِل", "مَرْحَلَات", "مَرَاحِيل", "مَرْحَلُون"], correct: 0 },
+  { q: "ما معنى كلمة «تَسَوَّقَ»؟", options: ["عَمَلِيَّة البَيْع وَالشِّرَاء", "عَمَلِيَّة الطَّبْخ", "عَمَلِيَّة الغَسْل", "عَمَلِيَّة القِرَاءَة"], correct: 0 },
+  { q: "ما مرادف كلمة «مُعْجَم»؟", options: ["قَامُوس", "كِتَاب", "مَجَلَّة", "صَحِيفَة"], correct: 0 },
+  { q: "ما جمع كلمة «عُلْبَة»؟", options: ["عُلَب", "عُلْبَات", "عَلَائِب", "عَوَالِب"], correct: 0 },
+  { q: "ما معنى كلمة «دِينَار»؟", options: ["نَقْد ذَهَبِيّ", "نَقْد فِضِّيّ", "نَقْد وَرَقِيّ", "نَقْد نُحَاسِيّ"], correct: 0 },
+  { q: "ما جمع كلمة «قَمِيص»؟", options: ["قُمْصَان", "قَمَائِص", "قَمِيصَات", "قُمَصَاء"], correct: 0 },
+  { q: "ما ضد كلمة «أَسْوَد»؟", options: ["أَبْيَض", "أَحْمَر", "أَخْضَر", "أَزْرَق"], correct: 0 },
+  { q: "ما معنى كلمة «جَوّ»؟", options: ["الفَضَاء بَيْن السَّمَاء وَالأَرْض", "الأَرْض", "البَحْر", "الجَبَل"], correct: 0 },
+  { q: "ما ضد كلمة «خَارِج»؟", options: ["دَاخِل", "ظَاهِر", "بَاطِن", "جَوْف"], correct: 0 },
+  { q: "ما مرادف كلمة «أَمْطَرَ»؟", options: ["أَنْزَلَ المَطَر", "أَقْلَعَ", "أَمْسَكَ", "جَفَّ"], correct: 0 },
+  { q: "ما معنى كلمة «مِظَلَّة»؟", options: ["شَمْسِيَّة", "مَعْطِف", "قُبَّعَة", "حِذَاء"], correct: 0 },
+  { q: "ما ضد كلمة «ابْتَلَّ»؟", options: ["جَفَّ", "تَبَلَّلَ", "نَشَفَ", "بَلَّلَ"], correct: 0 },
+  { q: "ما معنى كلمة «شَاطِئ»؟", options: ["الجُزْء اليَابِس الَّذِي يُلَاصِق البَحْر أَو النَّهْر", "الجُزْء المَائِي", "الجَبَل", "الصَّحْرَاء"], correct: 0 },
+  { q: "ما جمع كلمة «إِنْسَان»؟", options: ["نَاس", "إِنْسَانَات", "أَنَاسِين", "إِنْسَانُون"], correct: 0 },
+  { q: "ما ضد كلمة «سَعِيد»؟", options: ["شَقِيّ", "فَرِح", "مَسْرُور", "مَرِح"], correct: 0 },
+  { q: "ما معنى كلمة «اعْتَمَرَ»؟", options: ["نُسُك كَالحَجّ لَيْسَ لَهُ وَقْت مُعَيَّن", "الحَجّ الأَكْبَر", "الصَّوْم", "الصَّلَاة"], correct: 0 },
+  { q: "ما معنى كلمة «رِحْلَة»؟", options: ["الانْتِقَال مِن مَكَان إِلَى آخَر لِلنُّزْهَة", "العَمَل", "الدِّرَاسَة", "الرَّاحَة"], correct: 0 },
+  { q: "ما معنى كلمة «جَوَاز السَّفَر»؟", options: ["كِتَاب أَو صَكّ يُعْطَاهُ المُسَافِر", "تَذْكِرَة الطَّائِرَة", "بِطَاقَة الهُوِيَّة", "رُخْصَة القِيَادَة"], correct: 0 },
+  { q: "ما ضد كلمة «قَرْيَة»؟", options: ["مَدِينَة", "رِيف", "كَفْر", "بَادِيَة"], correct: 0 },
+  { q: "ما معنى كلمة «هِوَايَة»؟", options: ["كُلُّ شَيْء يُحِبُّهُ الإِنْسَان وَيَقْضِي وَقْت الفَرَاغ فِيهِ", "العَمَل الرَّسْمِيّ", "الدِّرَاسَة", "الوَاجِب"], correct: 0 },
+  { q: "ما ضد كلمة «أَفَادَ»؟", options: ["ضَرَّ", "نَفَعَ", "سَاعَدَ", "أَعَانَ"], correct: 0 },
+  { q: "ما معنى كلمة «مَعْرَض»؟", options: ["مَكَان تُعْرَض فِيهِ الأَشْيَاء لِيَرَاهَا النَّاس", "مَكَان البَيْع", "مَكَان الدِّرَاسَة", "مَكَان العِبَادَة"], correct: 0 },
+  { q: "ما مرادف كلمة «سَبَحَ»؟", options: ["عَامَ", "غَرِقَ", "غَاصَ", "قَفَزَ"], correct: 0 },
+  { q: "ما معنى كلمة «تَذْكِرَة»؟", options: ["وَرَقَة أَو بِطَاقَة تُعْطَى لِمَن يُرِيد السَّفَر", "جَوَاز السَّفَر", "تَأْشِيرَة الدُّخُول", "بِطَاقَة الهُوِيَّة"], correct: 0 },
+  { q: "ما ضد كلمة «قَبِلَ»؟", options: ["رَفَضَ", "رَضِيَ", "وَافَقَ", "أَجَابَ"], correct: 0 },
+  { q: "ما ضد كلمة «فَقَدَ»؟", options: ["وَجَدَ", "أَضَاعَ", "ضَيَّعَ", "عَدِمَ"], correct: 0 },
+  { q: "ما معنى كلمة «حَجَّ»؟", options: ["قَصَدَ البَيْتَ الحَرَام لِلنُّسُك", "زَارَ المَدِينَة", "صَامَ رَمَضَان", "صَلَّى فِي المَسْجِد"], correct: 0 },
+  { q: "ما مرادف كلمة «صَامَ»؟", options: ["أَمْسَكَ", "أَفْطَرَ", "أَكَلَ", "شَرِبَ"], correct: 0 },
+  { q: "ما معنى كلمة «طَافَ»؟", options: ["دَارَ حَوْلَ الكَعْبَة", "سَعَى بَيْنَ الصَّفَا وَالمَرْوَة", "وَقَفَ بِعَرَفَة", "رَمَى الجِمَار"], correct: 0 },
+  { q: "ما معنى كلمة «شَوْط»؟", options: ["العَدْو مَرَّة إِلَى الغَايَة", "الدَّوْرَة الوَاحِدَة حَوْلَ الكَعْبَة", "المَسَافَة بَيْنَ الصَّفَا وَالمَرْوَة", "الوُقُوف بِعَرَفَة"], correct: 0 },
+  { q: "ما معنى كلمة «مَقَام»؟", options: ["مَوْضِع القَدَمَيْن", "مَكَان النَّوْم", "مَكَان الطَّعَام", "مَكَان الصَّلَاة"], correct: 0 },
+  { q: "ما معنى كلمة «مِيْقَات»؟", options: ["وَقْت مُخَصَّص لِلْعَمَل", "مَكَان الإِقَامَة", "مَكَان الطَّعَام", "مَكَان النَّوْم"], correct: 0 },
+  { q: "ما معنى كلمة «أَحْرَمَ»؟", options: ["دَخَلَ فِي عَمَل يَحْرُم عَلَيْهِ بِهِ مَا كَانَ حَلَالًا", "خَرَجَ مِنَ الإِحْرَام", "طَافَ بِالبَيْت", "سَعَى بَيْنَ الصَّفَا وَالمَرْوَة"], correct: 0 },
+  { q: "ما معنى كلمة «لَبَّى»؟", options: ["قَالَ لَبَّيْكَ اللَّهُمَّ لَبَّيْك", "طَافَ", "سَعَى", "رَمَى"], correct: 0 },
+  { q: "ما مرادف كلمة «سَعَى»؟", options: ["مَشَى وَتَرَدَّدَ بَيْنَ الصَّفَا وَالمَرْوَة", "جَرَى", "قَفَزَ", "وَقَفَ"], correct: 0 },
+  { q: "ما معنى كلمة «حَلَقَ»؟", options: ["أَزَالَ الشَّعْرَ عَنِ الرَّأْس", "غَسَلَ الرَّأْس", "مَشَطَ الشَّعْر", "جَفَّفَ الشَّعْر"], correct: 0 },
+  { q: "ما معنى كلمة «جَمْرَة»؟", options: ["قِطْعَة مُلْتَهِبَة مِنَ النَّار", "حَجَر صَغِير", "مَاء زَمْزَم", "تُرَاب"], correct: 0 },
+  { q: "ما معنى كلمة «هَدْي»؟", options: ["مَا يُهْدَى إِلَى الحَرَم مِنَ النَّعَم لِيُذْبَح", "مَا يُهْدَى مِنْ مَال", "مَا يُهْدَى مِنْ ثِيَاب", "مَا يُهْدَى مِنْ طَعَام"], correct: 0 },
+  { q: "ما معنى «طَوَاف الإِفَاضَة»؟", options: ["يُشْرَع لِلْحُجَّاج بَعْد وُقُوفِهِم بِعَرَفَة", "طَوَاف عِنْدَ الدُّخُول إِلَى مَكَّة", "طَوَاف عِنْدَ الخُرُوج مِنْ مَكَّة", "طَوَاف تَطَوُّع"], correct: 0 },
+  { q: "ما معنى «طَوَاف الوَدَاع»؟", options: ["يُشْرَع لِلْخَارِج مِنْ مَكَّة", "يُشْرَع لِلدَّاخِل إِلَى مَكَّة", "يُشْرَع بَعْدَ عَرَفَة", "يُشْرَع فِي أَيِّ وَقْت"], correct: 0 },
+];
+
+// ===== Storage =====
+const STORAGE_KEY = 'arab_tug_questions';
+const SETTINGS_KEY = 'arab_tug_settings';
+
+function loadQuestions() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) { console.error(e); }
+  return [...DEFAULT_QUESTIONS];
+}
+
+function saveQuestions(qs) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(qs)); } catch (e) { console.error(e); }
+}
+
+function saveSettings(s) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch (e) { console.error(e); }
+}
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return null;
+}
+
+// ===== State =====
+let state = {
+  teamA: { name: 'الفريق الأزرق', score: 0 },
+  teamB: { name: 'الفريق الأحمر', score: 0 },
+  currentQuestion: 0,
+  totalQuestions: 10,
+  questions: [],
+  timerDuration: 15,
+  timeLeft: 15,
+  timerInterval: null,
+  answered: false,
+  ropePosition: 0,
+  maxScore: 5,
+  questionsList: [],
+  activeTeam: null,
+};
+
+// ===== SVG Character =====
+function createCharacterSVG(team, index, pose = 'idle') {
+  const isTeamA = team === 'a';
+  const shirtColor = isTeamA ? '#4A90D9' : '#E74C3C';
+  const shirtDark = isTeamA ? '#2E5C8A' : '#A93226';
+  const skinColor = ['#F5C6A0', '#E8B08A', '#D4A574'][index % 3];
+  const hairColor = ['#2C1810', '#4A2C17', '#1A1A1A'][index % 3];
+  const pantsColor = isTeamA ? '#2C3E50' : '#34495E';
+
+  let bodyTilt = 0, armAngle = 0, legSpread = 0, expression = 'happy';
+
+  if (pose === 'pulling') { bodyTilt = isTeamA ? -10 : 10; armAngle = isTeamA ? -30 : 30; legSpread = 15; expression = 'determined'; }
+  else if (pose === 'struggling') { bodyTilt = isTeamA ? 15 : -15; armAngle = isTeamA ? 40 : -40; legSpread = 5; expression = 'worried'; }
+  else if (pose === 'winning') { armAngle = -60; expression = 'happy'; }
+  else if (pose === 'losing') { bodyTilt = 25; armAngle = 60; legSpread = -10; expression = 'sad'; }
+
+  const flip = isTeamA ? 1 : -1;
+
+  return `
+    <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(50, 190) scale(${flip}, 1) translate(-50, -190)">
+        <ellipse cx="50" cy="192" rx="25" ry="5" fill="rgba(0,0,0,0.3)"/>
+        <g transform="rotate(${bodyTilt}, 50, 180)">
+          <line x1="42" y1="150" x2="${42 - legSpread}" y2="190" stroke="${pantsColor}" stroke-width="10" stroke-linecap="round"/>
+          <line x1="58" y1="150" x2="${58 + legSpread}" y2="190" stroke="${pantsColor}" stroke-width="10" stroke-linecap="round"/>
+          <ellipse cx="${42 - legSpread}" cy="192" rx="8" ry="4" fill="#1A1A1A"/>
+          <ellipse cx="${58 + legSpread}" cy="192" rx="8" ry="4" fill="#1A1A1A"/>
+          <rect x="35" y="85" width="30" height="70" rx="8" fill="${shirtColor}"/>
+          <text x="50" y="125" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" font-family="Tajawal">${index + 1}</text>
+          <g transform="rotate(${armAngle}, 50, 95)">
+            <line x1="35" y1="95" x2="15" y2="110" stroke="${skinColor}" stroke-width="9" stroke-linecap="round"/>
+            <line x1="65" y1="95" x2="85" y2="110" stroke="${skinColor}" stroke-width="9" stroke-linecap="round"/>
+            <circle cx="15" cy="110" r="6" fill="${skinColor}"/>
+            <circle cx="85" cy="110" r="6" fill="${skinColor}"/>
+          </g>
+          <g>
+            <rect x="46" y="75" width="8" height="12" fill="${skinColor}"/>
+            <ellipse cx="50" cy="60" rx="18" ry="20" fill="${skinColor}"/>
+            <path d="M 32 55 Q 32 38 50 38 Q 68 38 68 55 Q 65 48 50 48 Q 35 48 32 55 Z" fill="${hairColor}"/>
+            ${expression === 'happy' ? `
+              <path d="M 42 58 Q 45 55 48 58" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M 52 58 Q 55 55 58 58" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/>
+            ` : expression === 'determined' ? `
+              <circle cx="44" cy="58" r="2.5" fill="#1A1A1A"/>
+              <circle cx="56" cy="58" r="2.5" fill="#1A1A1A"/>
+              <line x1="40" y1="53" x2="47" y2="55" stroke="#1A1A1A" stroke-width="2"/>
+              <line x1="60" y1="53" x2="53" y2="55" stroke="#1A1A1A" stroke-width="2"/>
+            ` : expression === 'worried' ? `
+              <circle cx="44" cy="58" r="2.5" fill="#1A1A1A"/>
+              <circle cx="56" cy="58" r="2.5" fill="#1A1A1A"/>
+              <line x1="40" y1="55" x2="47" y2="53" stroke="#1A1A1A" stroke-width="2"/>
+              <line x1="60" y1="55" x2="53" y2="53" stroke="#1A1A1A" stroke-width="2"/>
+            ` : `
+              <circle cx="44" cy="58" r="2.5" fill="#1A1A1A"/>
+              <circle cx="56" cy="58" r="2.5" fill="#1A1A1A"/>
+              <line x1="40" y1="56" x2="47" y2="58" stroke="#1A1A1A" stroke-width="1.5"/>
+              <line x1="60" y1="56" x2="53" y2="58" stroke="#1A1A1A" stroke-width="1.5"/>
+            `}
+            ${expression === 'happy' ? `<path d="M 44 68 Q 50 74 56 68" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/>` : expression === 'sad' ? `<path d="M 44 72 Q 50 66 56 72" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/>` : `<line x1="46" y1="69" x2="54" y2="69" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"/>`}
+          </g>
+          ${pose === 'struggling' ? `<circle cx="30" cy="50" r="2" fill="#87CEEB" opacity="0.8"/><circle cx="72" cy="45" r="2.5" fill="#87CEEB" opacity="0.8"/>` : ''}
+        </g>
+      </g>
+    </svg>
+  `;
+}
+
+// ===== Render Characters =====
+function renderCharacters() {
+  const teamAChars = document.getElementById('teamAChars');
+  const teamBChars = document.getElementById('teamBChars');
+  teamAChars.innerHTML = '';
+  teamBChars.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const charA = document.createElement('div');
+    charA.className = 'character';
+    charA.id = `charA${i}`;
+    charA.innerHTML = createCharacterSVG('a', i, 'idle');
+    teamAChars.appendChild(charA);
+    const charB = document.createElement('div');
+    charB.className = 'character';
+    charB.id = `charB${i}`;
+    charB.innerHTML = createCharacterSVG('b', i, 'idle');
+    teamBChars.appendChild(charB);
+  }
+}
+
+function updateCharacterPoses(poseA, poseB) {
+  for (let i = 0; i < 3; i++) {
+    document.getElementById(`charA${i}`).innerHTML = createCharacterSVG('a', i, poseA);
+    document.getElementById(`charB${i}`).innerHTML = createCharacterSVG('b', i, poseB);
+    document.getElementById(`charA${i}`).className = 'character ' + (poseA !== 'idle' ? poseA : '');
+    document.getElementById(`charB${i}`).className = 'character ' + (poseB !== 'idle' ? poseB : '');
+  }
+}
+
+// ===== Rope Position (Karakter IKUT TERTARIK) =====
+function updateRopePosition() {
+  const rope = document.getElementById('rope');
+  const teamAChars = document.getElementById('teamAChars');
+  const teamBChars = document.getElementById('teamBChars');
+
+  // ropePosition: -10 (B menang) to +10 (A menang)
+  const percent = (state.ropePosition / 10) * 32; // max 32% shift
+
+  // Tali bergeser
+  rope.style.transform = `translate(calc(-50% + ${percent}%), -50%)`;
+
+  // KARAKTER IKUT BERGESER (ini yang baru!)
+  // Tim A bergeser searah tali, Tim B juga searah tali
+  teamAChars.style.transform = `translateY(-50%) translateX(${percent}%)`;
+  teamBChars.style.transform = `translateY(-50%) translateX(${percent}%)`;
+
+  // Jika sudah sangat kalah, karakter "jatuh" (miring)
+  if (state.ropePosition >= 8) {
+    // Tim A hampir menang, Tim B hampir jatuh
+    updateCharacterPoses('pulling', 'struggling');
+    document.getElementById('teamBChars').style.transform += ' rotate(-15deg)';
+  } else if (state.ropePosition <= -8) {
+    updateCharacterPoses('struggling', 'pulling');
+    document.getElementById('teamAChars').style.transform += ' rotate(15deg)';
+  }
+}
+
+// ===== Game Logic =====
+function startGame() {
+  state.questions = [...state.questionsList];
+  state.currentQuestion = 0;
+  state.teamA.score = 0;
+  state.teamB.score = 0;
+  state.ropePosition = 0;
+
+  updateScoreDisplay();
+  updateRopePosition();
+  renderCharacters();
+  updateCharacterPoses('idle', 'idle');
+
+  document.getElementById('setupScreen').classList.add('hide');
+  document.getElementById('totalQuestions').textContent = toArabic(state.totalQuestions);
+
+  loadQuestion();
+}
+
+function loadQuestion() {
+  clearInterval(state.timerInterval);
+  state.answered = false;
+  state.activeTeam = null;
+  state.timeLeft = state.timerDuration;
+
+  const q = state.questions[state.currentQuestion];
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('questionNum').textContent = toArabic(state.currentQuestion + 1);
+
+  updateCharacterPoses('idle', 'idle');
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  const letters = ['أ', 'ب', 'ج', 'د'];
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span style="opacity:0.7;margin-left:8px;">${letters[idx]})</span> ${opt}`;
+    btn.dataset.index = idx;
+    btn.addEventListener('click', () => handleOptionClick(idx));
+    container.appendChild(btn);
+  });
+
+  document.getElementById('teamABtn').disabled = false;
+  document.getElementById('teamBBtn').disabled = false;
+  document.getElementById('teamABtn').className = 'team-btn a';
+  document.getElementById('teamBBtn').className = 'team-btn b';
+
+  if (state.timerDuration > 0) {
+    startTimer();
+  } else {
+    document.getElementById('timerDisplay').textContent = '—';
+  }
+}
+
+function startTimer() {
+  updateTimerDisplay();
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      if (!state.answered) timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  if (state.timerDuration === 0) {
+    document.getElementById('timerDisplay').textContent = '—';
+    return;
+  }
+  document.getElementById('timerDisplay').textContent = toArabic(state.timeLeft);
+}
+
+function timeUp() {
+  state.answered = true;
+  const q = state.questions[state.currentQuestion];
+  const options = document.querySelectorAll('.option');
+  options.forEach((opt, idx) => {
+    opt.classList.add('disabled');
+    if (idx === q.correct) opt.classList.add('correct');
+  });
+  document.getElementById('questionText').innerHTML = q.q + '<br><span style="color:#ff4757;font-size:1rem;">⏰ انتهى الوقت!</span>';
+  disableTeamButtons();
+  setTimeout(nextQuestion, 1800);
+}
+
+function handleOptionClick(idx) {
+  if (state.answered) return;
+  if (!state.activeTeam) {
+    // Belum pilih tim
+    document.getElementById('questionText').innerHTML = '⚠️ اختر الفريق أولاً (اضغط على زر الفريق)';
+    setTimeout(() => {
+      if (!state.answered) document.getElementById('questionText').textContent = state.questions[state.currentQuestion].q;
+    }, 1500);
+    return;
+  }
+
+  state.answered = true;
+  clearInterval(state.timerInterval);
+
+  const q = state.questions[state.currentQuestion];
+  const isCorrect = idx === q.correct;
+  const team = state.activeTeam;
+
+  const options = document.querySelectorAll('.option');
+  options.forEach((opt, i) => {
+    opt.classList.add('disabled');
+    if (i === q.correct) opt.classList.add('correct');
+    if (i === idx && !isCorrect) opt.classList.add('wrong');
+  });
+
+  if (isCorrect) {
+    // Tim yang jawab dapat poin
+    if (team === 'a') {
+      state.teamA.score++;
+      state.ropePosition = Math.min(10, state.ropePosition + 2);
+      updateCharacterPoses('pulling', 'struggling');
+    } else {
+      state.teamB.score++;
+      state.ropePosition = Math.max(-10, state.ropePosition - 2);
+      updateCharacterPoses('struggling', 'pulling');
+    }
+    document.getElementById('questionText').innerHTML = q.q + '<br><span style="color:#2ed573;font-size:1rem;">✅ إجابة صحيحة! +١</span>';
+  } else {
+    // Salah → tim lawan dapat poin
+    if (team === 'a') {
+      state.teamB.score++;
+      state.ropePosition = Math.max(-10, state.ropePosition - 2);
+      updateCharacterPoses('struggling', 'pulling');
+    } else {
+      state.teamA.score++;
+      state.ropePosition = Math.min(10, state.ropePosition + 2);
+      updateCharacterPoses('pulling', 'struggling');
+    }
+    document.getElementById('questionText').innerHTML = q.q + '<br><span style="color:#ff4757;font-size:1rem;">❌ خطأ! الفريق الآخر يأخذ النقطة</span>';
+  }
+
+  updateScoreDisplay();
+  updateRopePosition();
+  disableTeamButtons();
+  state.activeTeam = null;
+
+  if (state.teamA.score >= state.maxScore || state.teamB.score >= state.maxScore) {
+    setTimeout(() => endGame(), 1500);
+    return;
+  }
+  setTimeout(nextQuestion, 2000);
+}
+
+function updateScoreDisplay() {
+  document.getElementById('teamAScore').textContent = toArabic(state.teamA.score);
+  document.getElementById('teamBScore').textContent = toArabic(state.teamB.score);
+}
+
+function bumpScore(team) {
+  const el = document.getElementById(team === 'a' ? 'teamAScore' : 'teamBScore');
+  el.classList.add('bump');
+  setTimeout(() => el.classList.remove('bump'), 500);
+}
+
+function disableTeamButtons() {
+  document.getElementById('teamABtn').disabled = true;
+  document.getElementById('teamBBtn').disabled = true;
+  document.getElementById('teamABtn').className = 'team-btn a';
+  document.getElementById('teamBBtn').className = 'team-btn b';
+}
+
+function nextQuestion() {
+  if (state.currentQuestion < state.questions.length - 1 && state.teamA.score < state.maxScore && state.teamB.score < state.maxScore) {
+    state.currentQuestion++;
+    loadQuestion();
+  } else {
+    endGame();
+  }
+}
+
+function endGame() {
+  clearInterval(state.timerInterval);
+  const overlay = document.getElementById('overlay');
+  const icon = document.getElementById('overlayIcon');
+  const title = document.getElementById('overlayTitle');
+  const subtitle = document.getElementById('overlaySubtitle');
+
+  if (state.teamA.score > state.teamB.score) {
+    icon.textContent = '🏆';
+    title.textContent = `فاز ${state.teamA.name}!`;
+    updateCharacterPoses('winning', 'losing');
+  } else if (state.teamB.score > state.teamA.score) {
+    icon.textContent = '🏆';
+    title.textContent = `فاز ${state.teamB.name}!`;
+    updateCharacterPoses('losing', 'winning');
+  } else {
+    icon.textContent = '🤝';
+    title.textContent = 'تَعَادُل!';
+    updateCharacterPoses('idle', 'idle');
+  }
+
+  subtitle.textContent = `${state.teamA.name}: ${toArabic(state.teamA.score)}  —  ${state.teamB.name}: ${toArabic(state.teamB.score)}`;
+  overlay.classList.add('show');
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#95E1D3', '#F38181', '#AA96DA'];
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDelay = Math.random() * 0.5 + 's';
+      confetti.style.animationDuration = (3 + Math.random() * 2) + 's';
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 5000);
+    }, i * 30);
+  }
+}
+
+// ===== Helpers =====
+function toArabic(num) {
+  const d = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  return String(num).split('').map(x => d[parseInt(x)] || x).join('');
+}
+
+// ===== Editor =====
+function renderQuestionList() {
+  const list = document.getElementById('questionList');
+  list.innerHTML = '';
+  document.getElementById('questionCount').textContent = toArabic(state.questionsList.length);
+
+  state.questionsList.forEach((q, idx) => {
+    const item = document.createElement('div');
+    item.className = 'question-item';
+    item.innerHTML = `
+      <span class="q-num">${toArabic(idx + 1)}</span>
+      <span class="q-text">${q.q}</span>
+      <button class="del-btn" data-idx="${idx}">✖</button>
+    `;
+    item.querySelector('.del-btn').addEventListener('click', () => {
+      state.questionsList.splice(idx, 1);
+      saveQuestions(state.questionsList);
+      renderQuestionList();
+    });
+    list.appendChild(item);
+  });
+}
+
+function resetToDefault() {
+  if (confirm('هل تريد استعادة الأسئلة الافتراضية؟ سيتم حذف أسئلتك المخصصة.')) {
+    state.questionsList = [...DEFAULT_QUESTIONS];
+    saveQuestions(state.questionsList);
+    renderQuestionList();
+  }
+}
+
+function shuffleQuestions() {
+  state.questionsList = [...state.questionsList].sort(() => Math.random() - 0.5);
+  saveQuestions(state.questionsList);
+  renderQuestionList();
+}
+
+function clearAll() {
+  if (confirm('هل تريد حذف جميع الأسئلة؟')) {
+    state.questionsList = [];
+    saveQuestions(state.questionsList);
+    renderQuestionList();
+  }
+}
+
+// ===== Event Listeners =====
+document.getElementById('editorToggle').addEventListener('click', () => {
+  document.getElementById('editorPanel').classList.toggle('show');
+});
+
+document.getElementById('addQuestionBtn').addEventListener('click', () => {
+  document.getElementById('addForm').classList.toggle('show');
+});
+
+document.getElementById('saveQuestionBtn').addEventListener('click', () => {
+  const q = document.getElementById('newQuestion').value.trim();
+  const opts = [
+    document.getElementById('newOpt0').value.trim(),
+    document.getElementById('newOpt1').value.trim(),
+    document.getElementById('newOpt2').value.trim(),
+    document.getElementById('newOpt3').value.trim(),
+  ];
+  const correct = parseInt(document.querySelector('input[name="correctOpt"]:checked').value);
+
+  if (!q || opts.some(o => !o)) {
+    alert('⚠️ املأ جميع الحقول');
+    return;
+  }
+
+  state.questionsList.push({ q, options: opts, correct });
+  saveQuestions(state.questionsList);
+  renderQuestionList();
+
+  // Reset form
+  document.getElementById('newQuestion').value = '';
+  document.getElementById('newOpt0').value = '';
+  document.getElementById('newOpt1').value = '';
+  document.getElementById('newOpt2').value = '';
+  document.getElementById('newOpt3').value = '';
+  document.getElementById('opt0').checked = true;
+  document.getElementById('addForm').classList.remove('show');
+});
+
+document.getElementById('cancelAddBtn').addEventListener('click', () => {
+  document.getElementById('addForm').classList.remove('show');
+});
+
+document.getElementById('shuffleBtn').addEventListener('click', shuffleQuestions);
+document.getElementById('restoreBtn').addEventListener('click', resetToDefault);
+document.getElementById('clearBtn').addEventListener('click', clearAll);
+
+// Score +/- buttons
+document.querySelectorAll('.score-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const team = btn.dataset.team;
+    const delta = btn.classList.contains('plus') ? 1 : -1;
+    if (team === 'a') {
+      state.teamA.score = Math.max(0, state.teamA.score + delta);
+      state.ropePosition = Math.max(-10, Math.min(10, state.ropePosition + (delta * 2)));
+    } else {
+      state.teamB.score = Math.max(0, state.teamB.score + delta);
+      state.ropePosition = Math.max(-10, Math.min(10, state.ropePosition - (delta * 2)));
+    }
+    updateScoreDisplay();
+    bumpScore(team);
+    updateRopePosition();
+    if (state.ropePosition > 0) updateCharacterPoses('pulling', 'struggling');
+    else if (state.ropePosition < 0) updateCharacterPoses('struggling', 'pulling');
+    else updateCharacterPoses('idle', 'idle');
+  });
+});
+
+// Team selection
+document.getElementById('teamABtn').addEventListener('click', () => {
+  if (state.answered) return;
+  state.activeTeam = 'a';
+  document.getElementById('teamABtn').classList.add('active');
+  document.getElementById('teamBBtn').classList.remove('active');
+  document.getElementById('teamBBtn').disabled = true;
+});
+
+document.getElementById('teamBBtn').addEventListener('click', () => {
+  if (state.answered) return;
+  state.activeTeam = 'b';
+  document.getElementById('teamBBtn').classList.add('active');
+  document.getElementById('teamABtn').classList.remove('active');
+  document.getElementById('teamABtn').disabled = true;
+});
+
+// Start
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (state.questionsList.length === 0) {
+    alert('⚠️ لا توجد أسئلة! أضف أسئلة أولاً.');
+    return;
+  }
+
+  state.teamA.name = document.getElementById('teamAName').value || 'الفريق الأزرق';
+  state.teamB.name = document.getElementById('teamBName').value || 'الفريق الأحمر';
+  state.timerDuration = parseInt(document.getElementById('timerSetting').value);
+  state.maxScore = parseInt(document.getElementById('maxScoreSetting').value);
+  const requestedCount = parseInt(document.getElementById('countSetting').value);
+  state.totalQuestions = Math.min(requestedCount, state.questionsList.length);
+
+  // Ambil soal sesuai jumlah yang diminta (acak)
+  const shuffled = [...state.questionsList].sort(() => Math.random() - 0.5);
+  state.questions = shuffled.slice(0, state.totalQuestions);
+
+  document.getElementById('teamANameDisplay').textContent = '🔵 ' + state.teamA.name;
+  document.getElementById('teamBNameDisplay').textContent = '🔴 ' + state.teamB.name;
+
+  // Save settings
+  saveSettings({
+    teamAName: state.teamA.name,
+    teamBName: state.teamB.name,
+    timer: state.timerDuration,
+    maxScore: state.maxScore,
+    count: requestedCount,
+  });
+
+  startGame();
+});
+
+// Play again
+document.getElementById('playAgainBtn').addEventListener('click', () => {
+  document.getElementById('overlay').classList.remove('show');
+  startGame();
+});
+
+// Back to setup
+document.getElementById('backToSetupBtn').addEventListener('click', () => {
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('setupScreen').classList.remove('hide');
+});
+
+// ===== Init =====
+state.questionsList = loadQuestions();
+renderQuestionList();
+
+// Load saved settings
+const savedSettings = loadSettings();
+if (savedSettings) {
+  if (savedSettings.teamAName) document.getElementById('teamAName').value = savedSettings.teamAName;
+  if (savedSettings.teamBName) document.getElementById('teamBName').value = savedSettings.teamBName;
+  if (savedSettings.timer) document.getElementById('timerSetting').value = savedSettings.timer;
+  if (savedSettings.maxScore) document.getElementById('maxScoreSetting').value = savedSettings.maxScore;
+  if (savedSettings.count) document.getElementById('countSetting').value = savedSettings.count;
+}
+</script>
+</body>
+</html>

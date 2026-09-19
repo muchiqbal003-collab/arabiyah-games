@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار المفردات - العربية بين يديك</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ===== Robot Intro ===== */
+  #robot-screen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.8s ease, visibility 0.8s;
+  }
+
+  #robot-screen.hide {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .robot {
+    position: relative;
+    width: 140px;
+    height: 180px;
+    animation: robotFloat 2s ease-in-out infinite;
+  }
+
+  @keyframes robotFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .robot-head {
+    width: 100px;
+    height: 90px;
+    background: linear-gradient(145deg, #00d2ff, #3a7bd5);
+    border-radius: 50px 50px 40px 40px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0, 210, 255, 0.5);
+  }
+
+  .robot-eye {
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 30px;
+    animation: blink 3s infinite;
+  }
+
+  .robot-eye.left { left: 18px; }
+  .robot-eye.right { right: 18px; }
+
+  .robot-eye::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #0f0c29;
+    border-radius: 50%;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+  }
+
+  @keyframes blink {
+    0%, 90%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+  }
+
+  .robot-mouth {
+    width: 40px;
+    height: 8px;
+    background: #0f0c29;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .robot-antenna {
+    width: 6px;
+    height: 40px;
+    background: #00d2ff;
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 3px;
+  }
+
+  .robot-antenna::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+    50% { box-shadow: 0 0 0 12px rgba(255, 107, 107, 0); }
+  }
+
+  .robot-body {
+    width: 90px;
+    height: 70px;
+    background: linear-gradient(145deg, #3a7bd5, #00d2ff);
+    border-radius: 20px;
+    margin: 10px auto 0;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+  }
+
+  .robot-arm {
+    width: 20px;
+    height: 50px;
+    background: #3a7bd5;
+    border-radius: 10px;
+    position: absolute;
+    top: 5px;
+  }
+
+  .robot-arm.left {
+    left: -25px;
+    animation: waveLeft 1.5s ease-in-out infinite;
+  }
+
+  .robot-arm.right {
+    right: -25px;
+    animation: waveRight 1.5s ease-in-out infinite;
+  }
+
+  @keyframes waveLeft {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(30deg); }
+  }
+
+  @keyframes waveRight {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-30deg); }
+  }
+
+  .robot-title {
+    color: #00d2ff;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-top: 30px;
+    text-align: center;
+    animation: glowText 2s ease-in-out infinite;
+  }
+
+  @keyframes glowText {
+    0%, 100% { text-shadow: 0 0 10px rgba(0, 210, 255, 0.5); }
+    50% { text-shadow: 0 0 30px rgba(0, 210, 255, 1), 0 0 60px rgba(0, 210, 255, 0.5); }
+  }
+
+  .robot-sub {
+    color: #a0a0c0;
+    font-size: 1.1rem;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .loading-bar {
+    width: 250px;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    margin-top: 30px;
+    overflow: hidden;
+  }
+
+  .loading-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+    border-radius: 3px;
+    animation: loadBar 3.5s ease forwards;
+  }
+
+  @keyframes loadBar {
+    to { width: 100%; }
+  }
+
+  /* ===== Quiz Container ===== */
+  #quiz-container {
+    width: 100%;
+    max-width: 750px;
+    margin: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+    padding: 30px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  #quiz-container.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .header h1 {
+    color: #00d2ff;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .stats {
+    display: flex;
+    gap: 15px;
+  }
+
+  .stat-box {
+    background: rgba(0, 210, 255, 0.1);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 12px;
+    padding: 6px 14px;
+    color: #00d2ff;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    margin-bottom: 25px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .timer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .timer-circle {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: conic-gradient(#00d2ff 0deg, rgba(255,255,255,0.1) 0deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: background 0.3s;
+  }
+
+  .timer-circle::before {
+    content: '';
+    width: 42px;
+    height: 42px;
+    background: #1a1a2e;
+    border-radius: 50%;
+    position: absolute;
+  }
+
+  .timer-text {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .question-type {
+    color: #a0a0c0;
+    font-size: 0.95rem;
+    background: rgba(255,255,255,0.05);
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .question-text {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    line-height: 1.6;
+    text-align: center;
+    min-height: 60px;
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 25px;
+  }
+
+  @media (max-width: 550px) {
+    .options { grid-template-columns: 1fr; }
+    .question-text { font-size: 1.2rem; }
+  }
+
+  .option {
+    background: rgba(255, 255, 255, 0.06);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 18px 20px;
+    color: #e0e0f0;
+    font-size: 1.15rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: right;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option:hover:not(.disabled) {
+    background: rgba(0, 210, 255, 0.15);
+    border-color: #00d2ff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 210, 255, 0.2);
+  }
+
+  .option.correct {
+    background: rgba(46, 213, 115, 0.2);
+    border-color: #2ed573;
+    color: #2ed573;
+    animation: correctPulse 0.5s ease;
+  }
+
+  .option.wrong {
+    background: rgba(255, 71, 87, 0.2);
+    border-color: #ff4757;
+    color: #ff4757;
+    animation: wrongShake 0.5s ease;
+  }
+
+  .option.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  @keyframes correctPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .option .letter {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    background: rgba(0, 210, 255, 0.2);
+    border-radius: 8px;
+    margin-left: 10px;
+    font-weight: 700;
+    color: #00d2ff;
+    font-size: 0.9rem;
+  }
+
+  .option.correct .letter {
+    background: rgba(46, 213, 115, 0.3);
+    color: #2ed573;
+  }
+
+  .option.wrong .letter {
+    background: rgba(255, 71, 87, 0.3);
+    color: #ff4757;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .nav-btn {
+    flex: 1;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  .nav-btn.prev {
+    background: rgba(255, 255, 255, 0.08);
+    color: #a0a0c0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .nav-btn.prev:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+
+  .nav-btn.next {
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(0, 210, 255, 0.3);
+  }
+
+  .nav-btn.next:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 210, 255, 0.5);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* ===== Result Screen ===== */
+  #result-screen {
+    display: none;
+    text-align: center;
+    padding: 20px;
+  }
+
+  #result-screen.show {
+    display: block;
+    animation: fadeIn 0.6s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .result-icon {
+    font-size: 5rem;
+    margin-bottom: 15px;
+    animation: bounceIn 0.8s ease;
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .result-title {
+    color: #00d2ff;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .result-score {
+    color: #fff;
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 15px 0;
+  }
+
+  .result-detail {
+    color: #a0a0c0;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+  }
+
+  .restart-btn {
+    padding: 16px 40px;
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Tajawal', sans-serif;
+    box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4);
+  }
+
+  .restart-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(0, 210, 255, 0.6);
+  }
+
+  .feedback {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    min-height: 30px;
+    margin-bottom: 10px;
+    transition: all 0.3s;
+  }
+
+  .feedback.correct { color: #2ed573; }
+  .feedback.wrong { color: #ff4757; }
+
+  /* ===== Answer Key Screen ===== */
+  #answer-key-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    z-index: 999;
+    overflow-y: auto;
+    padding: 30px 20px;
+  }
+
+  #answer-key-screen.show {
+    display: block;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .answer-key-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 30px;
+  }
+
+  .answer-key-title {
+    color: #00d2ff;
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .answer-key-sub {
+    color: #a0a0c0;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1rem;
+  }
+
+  .answer-item {
+    background: rgba(255, 255, 255, 0.04);
+    border-right: 4px solid #00d2ff;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+  }
+
+  .answer-num {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    background: rgba(0, 210, 255, 0.2);
+    color: #00d2ff;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-left: 10px;
+  }
+
+  .answer-q {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    display: inline;
+  }
+
+  .answer-correct {
+    color: #2ed573;
+    font-weight: 700;
+    font-size: 1rem;
+    display: block;
+    margin-top: 6px;
+    padding-right: 42px;
+  }
+
+  .answer-correct::before {
+    content: '✅ الجواب: ';
+    color: #a0a0c0;
+    font-weight: 500;
+  }
+
+  .answer-key-btn {
+    display: block;
+    margin: 25px auto 0;
+    padding: 16px 40px;
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Tajawal', sans-serif;
+    box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4);
+  }
+
+  .answer-key-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(0, 210, 255, 0.6);
+  }
+</style>
+</head>
+<body>
+
+<!-- Robot Intro Screen -->
+<div id="robot-screen">
+  <div class="robot">
+    <div class="robot-antenna"></div>
+    <div class="robot-head">
+      <div class="robot-eye left"></div>
+      <div class="robot-eye right"></div>
+      <div class="robot-mouth"></div>
+    </div>
+    <div class="robot-body">
+      <div class="robot-arm left"></div>
+      <div class="robot-arm right"></div>
+    </div>
+  </div>
+  <div class="robot-title">اختبار المفردات</div>
+  <div class="robot-sub">العربية بين يديك — الوحدات ١ إلى ١٤</div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<!-- Quiz Container -->
+<div id="quiz-container">
+  <div class="header">
+    <h1>📚 اختبار المفردات</h1>
+    <div class="stats">
+      <div class="stat-box" id="scoreDisplay">النقاط: ٠</div>
+      <div class="stat-box" id="questionCounter">١ / ٥٠</div>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+  </div>
+
+  <div class="timer-row">
+    <div class="timer-circle" id="timerCircle">
+      <span class="timer-text" id="timerText">١٥</span>
+    </div>
+    <div class="question-type" id="questionType">ما المعنى؟</div>
+  </div>
+
+  <div class="question-text" id="questionText">جار التحميل...</div>
+
+  <div class="options" id="optionsContainer"></div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn prev" id="prevBtn" disabled>◀ السابق</button>
+    <button class="nav-btn next" id="nextBtn">التالي ▶</button>
+  </div>
+</div>
+
+<!-- Result Screen -->
+<div id="result-screen" style="position:fixed; inset:0; background:linear-gradient(135deg,#0f0c29,#302b63,#24243e); z-index:999; overflow-y:auto; padding:40px 20px;">
+  <div style="max-width:600px; margin:0 auto;">
+    <div class="result-icon" id="resultIcon">🏆</div>
+    <div class="result-title" id="resultTitle">أحسنت!</div>
+    <div class="result-score" id="resultScore">٠ / ٥٠</div>
+    <div class="result-detail" id="resultDetail">النسبة: ٠٪</div>
+    <button class="restart-btn" id="restartBtn">🔄 إعادة الاختبار</button>
+    <button class="restart-btn" id="showAnswerKeyBtn" style="margin-top:12px; background:linear-gradient(135deg,#2ed573,#1e9e54);">📖 عرض مفتاح الإجابات</button>
+  </div>
+</div>
+
+<!-- Answer Key Screen -->
+<div id="answer-key-screen">
+  <div class="answer-key-container">
+    <div class="answer-key-title">📖 مفتاح الإجابات الصحيحة</div>
+    <div class="answer-key-sub">جميع الأسئلة مع الجواب الصحيح</div>
+    <div id="answerKeyList"></div>
+    <button class="answer-key-btn" id="backToResultBtn">◀ العودة إلى النتيجة</button>
+  </div>
+</div>
+
+<script>
+// ===== Bank Soal dari Wahdah 1-14 (Bab Haj) =====
+const questionBank = [
+  // ===== الوحدة 1 =====
+  { q: "ما معنى كلمة «التَّحِيَّة»؟", type: "ما المعنى؟", options: ["السَّلَام", "التَّعَارُف", "الِاسْم", "الْحَال"], correct: 0 },
+  { q: "ما مرادف كلمة «الْحَال»؟", type: "ما المرادف؟", options: ["شَأْنٌ", "اسْمٌ", "أَخٌ", "مُدَرِّسٌ"], correct: 0 },
+  { q: "ما جمع كلمة «اسْم»؟", type: "ما الجمع؟", options: ["أَسْمَاء", "أَحْوَال", "إِخْوَة", "مُدَرِّسُون"], correct: 0 },
+  { q: "ما ضد كلمة «أَخٌ»؟", type: "ما الضد؟", options: ["أُخْتٌ", "أَبٌ", "جَدٌّ", "عَمٌّ"], correct: 0 },
+  { q: "ما معنى كلمة «مُدَرِّس»؟", type: "ما المعنى؟", options: ["مُعَلِّم", "طَالِب", "طَبِيب", "مُهَنْدِس"], correct: 0 },
+  { q: "ما مرادف كلمة «صَدِيق»؟", type: "ما المرادف؟", options: ["صَاحِب", "عَدُوّ", "أَخ", "جَار"], correct: 0 },
+  { q: "ما جمع كلمة «طَبِيب»؟", type: "ما الجمع؟", options: ["أَطِبَّاء", "طُلَّاب", "مُدَرِّسُون", "مُهَنْدِسُون"], correct: 0 },
+  { q: "ما معنى كلمة «أَهْلًا وَسَهْلًا»؟", type: "ما المعنى؟", options: ["عِبَارَة اسْتِقْبَال", "عِبَارَة وَدَاع", "عِبَارَة شُكْر", "عِبَارَة اعْتِذَار"], correct: 0 },
+
+  // ===== الوحدة 2 =====
+  { q: "ما معنى كلمة «صُورَة»؟", type: "ما المعنى؟", options: ["رَسْم", "كِتَاب", "بَاب", "قَلَم"], correct: 0 },
+  { q: "ما مرادف كلمة «أُسْرَة»؟", type: "ما المرادف؟", options: ["عَائِلَة", "بَيْت", "غُرْفَة", "مَدْرَسَة"], correct: 0 },
+  { q: "ما ضد كلمة «وَالِد»؟", type: "ما الضد؟", options: ["وَالِدَة", "جَدّ", "عَمّ", "خَال"], correct: 0 },
+  { q: "ما معنى كلمة «جَدّ»؟", type: "ما المعنى؟", options: ["أَبُ الأَب", "أَخُ الأَب", "أَخُ الأُمّ", "ابْنُ الأَب"], correct: 0 },
+  { q: "ما جمع كلمة «رَسُول»؟", type: "ما الجمع؟", options: ["رُسُل", "رُسَلَاء", "رَاسِلُون", "رِسَالَات"], correct: 0 },
+  { q: "ما ضد كلمة «عَمّ»؟", type: "ما الضد؟", options: ["عَمَّة", "خَالَة", "جَدَّة", "أُخْت"], correct: 0 },
+  { q: "ما معنى كلمة «حَمَّام»؟", type: "ما المعنى؟", options: ["دَوْرَاتُ المِيَاه", "مَطْبَخ", "غُرْفَة", "مَسْجِد"], correct: 0 },
+  { q: "ما جمع كلمة «غُرْفَة»؟", type: "ما الجمع؟", options: ["غُرَف", "غُرْفَات", "غَرَافِيد", "غَوَارِف"], correct: 0 },
+
+  // ===== الوحدة 3 =====
+  { q: "ما معنى كلمة «سَكَن»؟", type: "ما المعنى؟", options: ["مَسْكَن", "مَكْتَب", "مَدْرَسَة", "مَسْجِد"], correct: 0 },
+  { q: "ما مرادف كلمة «بَيْت»؟", type: "ما المرادف؟", options: ["مَنْزِل", "غُرْفَة", "شَقَّة", "مَطْبَخ"], correct: 0 },
+  { q: "ما جمع كلمة «بَاب»؟", type: "ما الجمع؟", options: ["أَبْوَاب", "بِيبَان", "بَابَات", "أَبْبَاب"], correct: 0 },
+  { q: "ما معنى كلمة «مَطَار»؟", type: "ما المعنى؟", options: ["مَكَان لِإِقْلَاع الطَّائِرَة", "مَكَان لِلسَّفَر بَحْرًا", "مَكَان لِلنَّوْم", "مَكَان لِلطَّعَام"], correct: 0 },
+  { q: "ما ضد كلمة «جَمِيل»؟", type: "ما الضد؟", options: ["قَبِيح", "رَائِع", "حَسَن", "بَدِيع"], correct: 0 },
+  { q: "ما جمع كلمة «سَرِير»؟", type: "ما الجمع؟", options: ["أَسِرَّة", "سَرَائِر", "سُرُور", "سِرَار"], correct: 0 },
+  { q: "ما معنى كلمة «أَثَاث»؟", type: "ما المعنى؟", options: ["أَمْتِعَةُ البَيْت", "أَدَوَاتُ المَطْبَخ", "مَلَابِس", "كُتُب"], correct: 0 },
+  { q: "ما ضد كلمة «دَخَلَ»؟", type: "ما الضد؟", options: ["خَرَجَ", "وَلَجَ", "جَلَسَ", "قَامَ"], correct: 0 },
+
+  // ===== الوحدة 4 =====
+  { q: "ما ضد كلمة «حَيَاة»؟", type: "ما الضد؟", options: ["مَوْت", "صِحَّة", "سَعَادَة", "فَرَح"], correct: 0 },
+  { q: "ما مرادف كلمة «اسْتَيْقَظَ»؟", type: "ما المرادف؟", options: ["صَحَا", "نَامَ", "رَقَدَ", "جَلَسَ"], correct: 0 },
+  { q: "ما ضد كلمة «بَعْد»؟", type: "ما الضد؟", options: ["قَبْل", "عَقِب", "خِلَال", "أَثْنَاء"], correct: 0 },
+  { q: "ما معنى كلمة «مُبَكِّرًا»؟", type: "ما المعنى؟", options: ["أَوَّلُ الوَقْت", "آخِرُ الوَقْت", "وَسَطُ الوَقْت", "طُولُ الوَقْت"], correct: 0 },
+  { q: "ما جمع كلمة «صَحِيفَة»؟", type: "ما الجمع؟", options: ["صُحُف", "صَحَائِف", "صَحْفَات", "صِحَاف"], correct: 0 },
+  { q: "ما مرادف كلمة «عُطْلَة»؟", type: "ما المرادف؟", options: ["إِجَازَة", "عَمَل", "دِرَاسَة", "وَظِيفَة"], correct: 0 },
+  { q: "ما معنى كلمة «مَغْسَلَة»؟", type: "ما المعنى؟", options: ["المَكَان العَام لِغَسْل المَلَابِس", "مَكَان الطَّبْخ", "مَكَان النَّوْم", "مَكَان الدِّرَاسَة"], correct: 0 },
+
+  // ===== الوحدة 5 =====
+  { q: "ما معنى كلمة «طَعَام»؟", type: "ما المعنى؟", options: ["مَا يَأْكُلُهُ الإِنْسَان", "مَا يَشْرَبُهُ الإِنْسَان", "مَا يَلْبَسُهُ الإِنْسَان", "مَا يَقْرَأُهُ الإِنْسَان"], correct: 0 },
+  { q: "ما معنى كلمة «فَطُور»؟", type: "ما المعنى؟", options: ["وَجْبَة الصَّبَاح", "وَجْبَة الظُّهْر", "وَجْبَة المَسَاء", "وَجْبَة اللَّيْل"], correct: 0 },
+  { q: "ما مرادف كلمة «غَدَاء»؟", type: "ما المرادف؟", options: ["وَجْبَة وَسَط النَّهَار", "وَجْبَة الصَّبَاح", "وَجْبَة المَسَاء", "وَجْبَة مُتَأَخِّرَة"], correct: 0 },
+  { q: "ما جمع كلمة «سَمَك»؟", type: "ما الجمع؟", options: ["أَسْمَاك", "سُمُوك", "سِمَاك", "سَمَكَات"], correct: 0 },
+  { q: "ما ضد كلمة «سَمِين»؟", type: "ما الضد؟", options: ["نَحِيف", "بَدِين", "ضَخْم", "كَبِير"], correct: 0 },
+  { q: "ما معنى كلمة «مُضِيفَة»؟", type: "ما المعنى؟", options: ["فَتَاة تَخْدُم رُكَّاب الطَّائِرَة", "فَتَاة تَطْبُخ", "فَتَاة تُدَرِّس", "فَتَاة تُعَالِج"], correct: 0 },
+  { q: "ما مرادف كلمة «سَافَرَ»؟", type: "ما المرادف؟", options: ["ارْتَحَلَ", "أَقَامَ", "جَلَسَ", "سَكَنَ"], correct: 0 },
+  { q: "ما جمع كلمة «تَمْر»؟", type: "ما الجمع؟", options: ["تُمُور", "تَمَرَات", "تِمَار", "تَمَارِي"], correct: 0 },
+
+  // ===== الوحدة 6 =====
+  { q: "ما معنى كلمة «صَلَاة»؟", type: "ما المعنى؟", options: ["الدُّعَاء", "الصَّوْم", "الزَّكَاة", "الحَجّ"], correct: 0 },
+  { q: "ما ضد كلمة «لَيْل»؟", type: "ما الضد؟", options: ["نَهَار", "صَبَاح", "مَسَاء", "فَجْر"], correct: 0 },
+  { q: "ما مرادف كلمة «مُنَبِّه»؟", type: "ما المرادف؟", options: ["سَاعَة ذَات جَرَس", "مِصْبَاح", "مِرْوَحَة", "مِكْوَاة"], correct: 0 },
+  { q: "ما معنى كلمة «جَانِب»؟", type: "ما المعنى؟", options: ["جَنْب", "أَمَام", "خَلْف", "فَوْق"], correct: 0 },
+  { q: "ما جمع كلمة «فِكْرَة»؟", type: "ما الجمع؟", options: ["أَفْكَار", "فِكَر", "فَكَارِيد", "فَوَاكِر"], correct: 0 },
+  { q: "ما ضد كلمة «طَيِّب»؟", type: "ما الضد؟", options: ["سَيِّئ", "جَمِيل", "جَيِّد", "حَسَن"], correct: 0 },
+  { q: "ما مرادف كلمة «اسْتَطَاعَ»؟", type: "ما المرادف؟", options: ["قَدَرَ", "عَجَزَ", "ضَعُفَ", "تَعِبَ"], correct: 0 },
+  { q: "ما ضد كلمة «بَعِيد»؟", type: "ما الضد؟", options: ["قَرِيب", "نَاءٍ", "قَاصٍ", "نَازِح"], correct: 0 },
+
+  // ===== الوحدة 7 =====
+  { q: "ما معنى كلمة «جَدْوَل»؟", type: "ما المعنى؟", options: ["مَجْرَى مَائِي صَغِير", "نَهْر كَبِير", "بَحْر وَاسِع", "مُحِيط"], correct: 0 },
+  { q: "ما جمع كلمة «أُسْبُوع»؟", type: "ما الجمع؟", options: ["أَسَابِيع", "أُسْبُوعَات", "أَسَابِع", "أُسْبُعُون"], correct: 0 },
+  { q: "ما مرادف كلمة «مَادَّة»؟", type: "ما المرادف؟", options: ["دَرْس", "كِتَاب", "قَلَم", "سَبُورَة"], correct: 0 },
+  { q: "ما معنى كلمة «حَاسُوب»؟", type: "ما المعنى؟", options: ["حَاسِب آلِيّ", "آلَة حَاسِبَة قَدِيمَة", "مِحْفَظَة", "مِسْطَرَة"], correct: 0 },
+  { q: "ما ضد كلمة «بَدَأَ»؟", type: "ما الضد؟", options: ["انْتَهَى", "شَرَعَ", "ابْتَدَأَ", "بَاشَرَ"], correct: 0 },
+  { q: "ما جمع كلمة «شَهْر»؟", type: "ما الجمع؟", options: ["شُهُور", "أَشْهُر", "شَهَرَات", "شَوَاهِر"], correct: 0 },
+  { q: "ما معنى كلمة «حِصَّة»؟", type: "ما المعنى؟", options: ["نَصِيب", "فَتْرَة طَوِيلَة", "يَوْم كَامِل", "أُسْبُوع"], correct: 0 },
+  { q: "ما مرادف كلمة «صَفّ»؟", type: "ما المرادف؟", options: ["فَصْل", "مَدْرَسَة", "جَامِعَة", "مَكْتَبَة"], correct: 0 },
+
+  // ===== الوحدة 8 =====
+  { q: "ما معنى كلمة «شَرِكَة»؟", type: "ما المعنى؟", options: ["مُؤَسَّسَة مَالِيَّة أَو تِجَارِيَّة", "مُسْتَشْفَى", "مَدْرَسَة", "مَسْجِد"], correct: 0 },
+  { q: "ما ضد كلمة «عَمَل»؟", type: "ما الضد؟", options: ["بِطَالَة", "وَظِيفَة", "مِهْنَة", "حِرْفَة"], correct: 0 },
+  { q: "ما معنى كلمة «مُسْتَشْفَى»؟", type: "ما المعنى؟", options: ["المَكَان الَّذِي يُعَالِج فِيهِ الطَّبِيبُ المَرْضَى", "مَكَان بَيْع الأَدْوِيَة", "مَكَان الدِّرَاسَة", "مَكَان العِبَادَة"], correct: 0 },
+  { q: "ما مرادف كلمة «أَحَبَّ»؟", type: "ما المرادف؟", options: ["رَغِبَ فِي", "كَرِهَ", "أَبْغَضَ", "نَفَرَ"], correct: 0 },
+  { q: "ما معنى كلمة «صَيْدَلَة»؟", type: "ما المعنى؟", options: ["العِلْم الَّذِي يَهْتَمُّ بِالبَحْث فِي الأَدْوِيَة", "عِلْم الطِّبّ", "عِلْم الهَنْدَسَة", "عِلْم الطَّيَرَان"], correct: 0 },
+  { q: "ما جمع كلمة «مَرْحَلَة»؟", type: "ما الجمع؟", options: ["مَرَاحِل", "مَرْحَلَات", "مَرَاحِيل", "مَرْحَلُون"], correct: 0 },
+  { q: "ما معنى كلمة «تَمْرِيض»؟", type: "ما المعنى؟", options: ["مِهْنَة العَامِل المُسَاعِد لِلطَّبِيب", "مِهْنَة الطَّبِيب", "مِهْنَة الصَّيْدَلِيّ", "مِهْنَة المُهَنْدِس"], correct: 0 },
+
+  // ===== الوحدة 9 =====
+  { q: "ما معنى كلمة «تَسَوَّقَ»؟", type: "ما المعنى؟", options: ["عَمَلِيَّة البَيْع وَالشِّرَاء", "عَمَلِيَّة الطَّبْخ", "عَمَلِيَّة الغَسْل", "عَمَلِيَّة القِرَاءَة"], correct: 0 },
+  { q: "ما مرادف كلمة «مُعْجَم»؟", type: "ما المرادف؟", options: ["قَامُوس", "كِتَاب", "مَجَلَّة", "صَحِيفَة"], correct: 0 },
+  { q: "ما معنى كلمة «قَاعِدَة»؟", type: "ما المعنى؟", options: ["أَسَاس", "فَرْع", "نَتِيجَة", "سَبَب"], correct: 0 },
+  { q: "ما معنى كلمة «مَطْلُوب»؟", type: "ما المعنى؟", options: ["الشَّيْء الَّذِي يُطْلَب", "الشَّيْء الَّذِي يُعْطَى", "الشَّيْء الَّذِي يُبَاع", "الشَّيْء الَّذِي يُشْتَرَى"], correct: 0 },
+  { q: "ما جمع كلمة «عُلْبَة»؟", type: "ما الجمع؟", options: ["عُلَب", "عُلْبَات", "عَلَائِب", "عَوَالِب"], correct: 0 },
+  { q: "ما معنى كلمة «دِينَار»؟", type: "ما المعنى؟", options: ["نَقْد ذَهَبِيّ", "نَقْد فِضِّيّ", "نَقْد وَرَقِيّ", "نَقْد نُحَاسِيّ"], correct: 0 },
+  { q: "ما جمع كلمة «قَمِيص»؟", type: "ما الجمع؟", options: ["قُمْصَان", "قَمَائِص", "قَمِيصَات", "قُمَصَاء"], correct: 0 },
+  { q: "ما ضد كلمة «أَسْوَد»؟", type: "ما الضد؟", options: ["أَبْيَض", "أَحْمَر", "أَخْضَر", "أَزْرَق"], correct: 0 },
+
+  // ===== الوحدة 10 =====
+  { q: "ما معنى كلمة «جَوّ»؟", type: "ما المعنى؟", options: ["الفَضَاء بَيْن السَّمَاء وَالأَرْض", "الأَرْض", "البَحْر", "الجَبَل"], correct: 0 },
+  { q: "ما ضد كلمة «خَارِج»؟", type: "ما الضد؟", options: ["دَاخِل", "ظَاهِر", "بَاطِن", "جَوْف"], correct: 0 },
+  { q: "ما مرادف كلمة «أَمْطَرَ»؟", type: "ما المرادف؟", options: ["أَنْزَلَ المَطَر", "أَقْلَعَ", "أَمْسَكَ", "جَفَّ"], correct: 0 },
+  { q: "ما معنى كلمة «مِظَلَّة»؟", type: "ما المعنى؟", options: ["شَمْسِيَّة", "مَعْطِف", "قُبَّعَة", "حِذَاء"], correct: 0 },
+  { q: "ما معنى كلمة «فَصْل الخَرِيف»؟", type: "ما المعنى؟", options: ["الفَصْل الَّذِي تَكْثُر فِيهِ الأَمْطَار", "الفَصْل الَّذِي يَكُون الجَوُّ فِيهِ بَارِدًا", "الفَصْل الَّذِي يَكُون الجَوُّ فِيهِ حَارًّا", "الفَصْل الَّذِي تَنْبُت فِيهِ الأَعْشَاب"], correct: 0 },
+  { q: "ما ضد كلمة «ابْتَلَّ»؟", type: "ما الضد؟", options: ["جَفَّ", "تَبَلَّلَ", "نَشَفَ", "بَلَّلَ"], correct: 0 },
+  { q: "ما مرادف كلمة «بَقِيَ»؟", type: "ما المرادف؟", options: ["دَامَ", "نَفِدَ", "فَنِيَ", "هَلَكَ"], correct: 0 },
+  { q: "ما معنى كلمة «شَاطِئ»؟", type: "ما المعنى؟", options: ["الجُزْء اليَابِس الَّذِي يُلَاصِق البَحْر أَو النَّهْر", "الجُزْء المَائِي", "الجَبَل", "الصَّحْرَاء"], correct: 0 },
+
+  // ===== الوحدة 11 =====
+  { q: "ما جمع كلمة «إِنْسَان»؟", type: "ما الجمع؟", options: ["نَاس", "إِنْسَانَات", "أَنَاسِين", "إِنْسَانُون"], correct: 0 },
+  { q: "ما مرادف كلمة «انْتَقَلَ»؟", type: "ما المرادف؟", options: ["تَحَوَّلَ", "سَكَنَ", "أَقَامَ", "ثَبَتَ"], correct: 0 },
+  { q: "ما ضد كلمة «سَعِيد»؟", type: "ما الضد؟", options: ["شَقِيّ", "فَرِح", "مَسْرُور", "مَرِح"], correct: 0 },
+  { q: "ما معنى كلمة «اعْتَمَرَ»؟", type: "ما المعنى؟", options: ["نُسُك كَالحَجّ لَيْسَ لَهُ وَقْت مُعَيَّن", "الحَجّ الأَكْبَر", "الصَّوْم", "الصَّلَاة"], correct: 0 },
+  { q: "ما معنى كلمة «رِحْلَة»؟", type: "ما المعنى؟", options: ["الانْتِقَال مِن مَكَان إِلَى آخَر لِلنُّزْهَة", "العَمَل", "الدِّرَاسَة", "الرَّاحَة"], correct: 0 },
+  { q: "ما معنى كلمة «جَوَاز السَّفَر»؟", type: "ما المعنى؟", options: ["كِتَاب أَو صَكّ يُعْطَاهُ المُسَافِر", "تَذْكِرَة الطَّائِرَة", "بِطَاقَة الهُوِيَّة", "رُخْصَة القِيَادَة"], correct: 0 },
+  { q: "ما مرادف كلمة «زَارَ»؟", type: "ما المرادف؟", options: ["عَادَ المَرِيضَ", "قَابَلَ", "لَقِيَ", "اجْتَمَعَ"], correct: 0 },
+  { q: "ما ضد كلمة «قَرْيَة»؟", type: "ما الضد؟", options: ["مَدِينَة", "رِيف", "كَفْر", "بَادِيَة"], correct: 0 },
+
+  // ===== الوحدة 12 =====
+  { q: "ما معنى كلمة «هِوَايَة»؟", type: "ما المعنى؟", options: ["كُلُّ شَيْء يُحِبُّهُ الإِنْسَان وَيَقْضِي وَقْت الفَرَاغ فِيهِ", "العَمَل الرَّسْمِيّ", "الدِّرَاسَة", "الوَاجِب"], correct: 0 },
+  { q: "ما معنى كلمة «رَاسَلَ»؟", type: "ما المعنى؟", options: ["أَرْسَلَ رِسَالَة", "اتَّصَلَ هَاتِفِيًّا", "قَابَلَ", "زَارَ"], correct: 0 },
+  { q: "ما معنى كلمة «مَجَلَّة»؟", type: "ما المعنى؟", options: ["صَحِيفَة أُسْبُوعِيَّة أَو شَهْرِيَّة", "كِتَاب", "جَرِيدَة يَوْمِيَّة", "قَامُوس"], correct: 0 },
+  { q: "ما ضد كلمة «أَفَادَ»؟", type: "ما الضد؟", options: ["ضَرَّ", "نَفَعَ", "سَاعَدَ", "أَعَانَ"], correct: 0 },
+  { q: "ما معنى كلمة «مَعْرَض»؟", type: "ما المعنى؟", options: ["مَكَان تُعْرَض فِيهِ الأَشْيَاء لِيَرَاهَا النَّاس", "مَكَان البَيْع", "مَكَان الدِّرَاسَة", "مَكَان العِبَادَة"], correct: 0 },
+  { q: "ما معنى كلمة «جَنَاح»؟", type: "ما المعنى؟", options: ["مَا يَطِير بِهِ الطَّائِر", "رَأْس الطَّائِر", "ذَيْل الطَّائِر", "مِنْقَار الطَّائِر"], correct: 0 },
+  { q: "ما معنى كلمة «خَطّ»؟", type: "ما المعنى؟", options: ["سَطْر", "نُقْطَة", "رَسْم", "لَوْن"], correct: 0 },
+  { q: "ما مرادف كلمة «سَبَحَ»؟", type: "ما المرادف؟", options: ["عَامَ", "غَرِقَ", "غَاصَ", "قَفَزَ"], correct: 0 },
+
+  // ===== الوحدة 13 =====
+  { q: "ما معنى كلمة «سَفَر»؟", type: "ما المعنى؟", options: ["قَطْع المَسَافَة", "الإِقَامَة", "الجُلُوس", "النَّوْم"], correct: 0 },
+  { q: "ما معنى كلمة «تَذْكِرَة»؟", type: "ما المعنى؟", options: ["وَرَقَة أَو بِطَاقَة تُعْطَى لِمَن يُرِيد السَّفَر", "جَوَاز السَّفَر", "تَأْشِيرَة الدُّخُول", "بِطَاقَة الهُوِيَّة"], correct: 0 },
+  { q: "ما معنى كلمة «تَأْشِيرَة»؟", type: "ما المعنى؟", options: ["خَتْم يُخْتَم عَلَى جَوَاز السَّفَر", "تَذْكِرَة", "بِطَاقَة", "رُخْصَة"], correct: 0 },
+  { q: "ما ضد كلمة «غَادَرَ»؟", type: "ما الضد؟", options: ["وَصَلَ", "ذَهَبَ", "رَحَلَ", "انْطَلَقَ"], correct: 0 },
+  { q: "ما معنى كلمة «وَظَّفَ»؟", type: "ما المعنى؟", options: ["أَسْنَدَ إِلَيْهِ وَظِيفَة", "طَرَدَ مِنَ العَمَل", "أَعْطَاهُ مَالًا", "عَلَّمَهُ"], correct: 0 },
+  { q: "ما مرادف كلمة «فُنْدُق»؟", type: "ما المرادف؟", options: ["نُزُل", "مَطْعَم", "مَقْهَى", "مَتْجَر"], correct: 0 },
+  { q: "ما ضد كلمة «قَبِلَ»؟", type: "ما الضد؟", options: ["رَفَضَ", "رَضِيَ", "وَافَقَ", "أَجَابَ"], correct: 0 },
+  { q: "ما ضد كلمة «فَقَدَ»؟", type: "ما الضد؟", options: ["وَجَدَ", "أَضَاعَ", "ضَيَّعَ", "عَدِمَ"], correct: 0 },
+
+  // ===== الوحدة 14 - باب الحج =====
+  { q: "ما معنى كلمة «حَجَّ»؟", type: "ما المعنى؟", options: ["قَصَدَ البَيْتَ الحَرَام لِلنُّسُك", "زَارَ المَدِينَة", "صَامَ رَمَضَان", "صَلَّى فِي المَسْجِد"], correct: 0 },
+  { q: "ما مرادف كلمة «صَامَ»؟", type: "ما المرادف؟", options: ["أَمْسَكَ", "أَفْطَرَ", "أَكَلَ", "شَرِبَ"], correct: 0 },
+  { q: "ما معنى كلمة «طَافَ»؟", type: "ما المعنى؟", options: ["دَارَ حَوْلَ الكَعْبَة", "سَعَى بَيْنَ الصَّفَا وَالمَرْوَة", "وَقَفَ بِعَرَفَة", "رَمَى الجِمَار"], correct: 0 },
+  { q: "ما معنى كلمة «شَوْط»؟", type: "ما المعنى؟", options: ["العَدْو مَرَّة إِلَى الغَايَة", "الدَّوْرَة الوَاحِدَة حَوْلَ الكَعْبَة", "المَسَافَة بَيْنَ الصَّفَا وَالمَرْوَة", "الوُقُوف بِعَرَفَة"], correct: 0 },
+  { q: "ما معنى كلمة «مَقَام»؟", type: "ما المعنى؟", options: ["مَوْضِع القَدَمَيْن", "مَكَان النَّوْم", "مَكَان الطَّعَام", "مَكَان الصَّلَاة"], correct: 0 },
+  { q: "ما معنى كلمة «مِيْقَات»؟", type: "ما المعنى؟", options: ["وَقْت مُخَصَّص لِلْعَمَل", "مَكَان الإِقَامَة", "مَكَان الطَّعَام", "مَكَان النَّوْم"], correct: 0 },
+  { q: "ما معنى كلمة «أَحْرَمَ»؟", type: "ما المعنى؟", options: ["دَخَلَ فِي عَمَل يَحْرُم عَلَيْهِ بِهِ مَا كَانَ حَلَالًا", "خَرَجَ مِنَ الإِحْرَام", "طَافَ بِالبَيْت", "سَعَى بَيْنَ الصَّفَا وَالمَرْوَة"], correct: 0 },
+  { q: "ما معنى كلمة «لَبَّى»؟", type: "ما المعنى؟", options: ["قَالَ لَبَّيْكَ اللَّهُمَّ لَبَّيْك", "طَافَ", "سَعَى", "رَمَى"], correct: 0 },
+  { q: "ما مرادف كلمة «سَعَى»؟", type: "ما المرادف؟", options: ["مَشَى وَتَرَدَّدَ بَيْنَ الصَّفَا وَالمَرْوَة", "جَرَى", "قَفَزَ", "وَقَفَ"], correct: 0 },
+  { q: "ما معنى كلمة «حَلَقَ»؟", type: "ما المعنى؟", options: ["أَزَالَ الشَّعْرَ عَنِ الرَّأْس", "غَسَلَ الرَّأْس", "مَشَطَ الشَّعْر", "جَفَّفَ الشَّعْر"], correct: 0 },
+  { q: "ما معنى كلمة «جَمْرَة»؟", type: "ما المعنى؟", options: ["قِطْعَة مُلْتَهِبَة مِنَ النَّار", "حَجَر صَغِير", "مَاء زَمْزَم", "تُرَاب"], correct: 0 },
+  { q: "ما معنى كلمة «هَدْي»؟", type: "ما المعنى؟", options: ["مَا يُهْدَى إِلَى الحَرَم مِنَ النَّعَم لِيُذْبَح", "مَا يُهْدَى مِنْ مَال", "مَا يُهْدَى مِنْ ثِيَاب", "مَا يُهْدَى مِنْ طَعَام"], correct: 0 },
+  { q: "ما معنى «طَوَاف الإِفَاضَة»؟", type: "ما المعنى؟", options: ["يُشْرَع لِلْحُجَّاج بَعْد وُقُوفِهِم بِعَرَفَة", "طَوَاف عِنْدَ الدُّخُول إِلَى مَكَّة", "طَوَاف عِنْدَ الخُرُوج مِنْ مَكَّة", "طَوَاف تَطَوُّع"], correct: 0 },
+  { q: "ما معنى «طَوَاف الوَدَاع»؟", type: "ما المعنى؟", options: ["يُشْرَع لِلْخَارِج مِنْ مَكَّة", "يُشْرَع لِلدَّاخِل إِلَى مَكَّة", "يُشْرَع بَعْدَ عَرَفَة", "يُشْرَع فِي أَيِّ وَقْت"], correct: 0 },
+  { q: "ما معنى «الوُقُوف بِعَرَفَة»؟", type: "ما المعنى؟", options: ["البَقَاء بِعَرَفَة مِنْ زَوَال الشَّمْس إِلَى غُرُوبِهَا يَوْم التَّاسِع", "البَقَاء بِمِنًى", "الطَّوَاف حَوْلَ الكَعْبَة", "السَّعْي بَيْنَ الصَّفَا وَالمَرْوَة"], correct: 0 },
+  { q: "ما معنى كلمة «رَمَى»؟", type: "ما المعنى؟", options: ["قَذَفَ", "أَخَذَ", "أَعْطَى", "حَمَلَ"], correct: 0 },
+  { q: "ما معنى كلمة «ذَبَحَ»؟", type: "ما المعنى؟", options: ["قَطَعَ الحُلْقُوم", "طَبَخَ", "أَكَلَ", "شَرِبَ"], correct: 0 },
+  { q: "ما معنى كلمة «خَلَعَ»؟", type: "ما المعنى؟", options: ["نَزَعَ", "لَبِسَ", "اِرْتَدَى", "اِسْتَتَرَ"], correct: 0 },
+  { q: "ما ضد كلمة «غَرَبَ»؟", type: "ما الضد؟", options: ["طَلَعَ", "اِخْتَفَى", "خَفِيَ", "اِسْتَتَرَ"], correct: 0 },
+  { q: "ما مرادف كلمة «قَصَرَ»؟", type: "ما المرادف؟", options: ["قَصَّرَ", "أَتَمَّ", "أَكْمَلَ", "أَطَالَ"], correct: 0 },
+];
+
+// ===== Shuffle Options (agar jawaban benar acak posisinya) =====
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Acak opsi & tentukan ulang index correct
+questionBank.forEach(item => {
+  const correctText = item.options[item.correct];
+  const shuffled = shuffleArray(item.options);
+  item.options = shuffled;
+  item.correct = shuffled.indexOf(correctText);
+});
+
+// ===== State =====
+let currentQuestion = 0;
+let score = 0;
+let timerInterval = null;
+let timeLeft = 15;
+let answered = false;
+let userAnswers = new Array(questionBank.length).fill(null);
+
+// ===== DOM Elements =====
+const robotScreen = document.getElementById('robot-screen');
+const quizContainer = document.getElementById('quiz-container');
+const questionText = document.getElementById('questionText');
+const questionType = document.getElementById('questionType');
+const optionsContainer = document.getElementById('optionsContainer');
+const questionCounter = document.getElementById('questionCounter');
+const scoreDisplay = document.getElementById('scoreDisplay');
+const progressFill = document.getElementById('progressFill');
+const timerCircle = document.getElementById('timerCircle');
+const timerText = document.getElementById('timerText');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const feedback = document.getElementById('feedback');
+const resultScreen = document.getElementById('result-screen');
+const resultIcon = document.getElementById('resultIcon');
+const resultTitle = document.getElementById('resultTitle');
+const resultScore = document.getElementById('resultScore');
+const resultDetail = document.getElementById('resultDetail');
+const restartBtn = document.getElementById('restartBtn');
+const showAnswerKeyBtn = document.getElementById('showAnswerKeyBtn');
+const answerKeyScreen = document.getElementById('answer-key-screen');
+const answerKeyList = document.getElementById('answerKeyList');
+const backToResultBtn = document.getElementById('backToResultBtn');
+
+// ===== Robot Intro =====
+setTimeout(() => {
+  robotScreen.classList.add('hide');
+  quizContainer.classList.add('show');
+  startQuiz();
+}, 3800);
+
+// ===== Quiz Functions =====
+function startQuiz() {
+  currentQuestion = 0;
+  score = 0;
+  userAnswers = new Array(questionBank.length).fill(null);
+  answered = false;
+  resultScreen.style.display = 'none';
+  resultScreen.classList.remove('show');
+  answerKeyScreen.classList.remove('show');
+  quizContainer.style.display = 'block';
+  quizContainer.classList.add('show');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  clearInterval(timerInterval);
+  answered = false;
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+
+  const q = questionBank[currentQuestion];
+  questionText.textContent = q.q;
+  questionType.textContent = q.type;
+
+  questionCounter.textContent = `${toArabic(currentQuestion + 1)} / ${toArabic(questionBank.length)}`;
+  scoreDisplay.textContent = `النقاط: ${toArabic(score)}`;
+  progressFill.style.width = `${((currentQuestion) / questionBank.length) * 100}%`;
+
+  optionsContainer.innerHTML = '';
+  const letters = ['أ', 'ب', 'ج', 'د'];
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="letter">${letters[idx]}</span>${opt}`;
+    btn.dataset.index = idx;
+    btn.addEventListener('click', () => selectAnswer(idx));
+    optionsContainer.appendChild(btn);
+  });
+
+  if (userAnswers[currentQuestion] !== null) {
+    const prevAnswer = userAnswers[currentQuestion];
+    const options = document.querySelectorAll('.option');
+    options.forEach((opt, idx) => {
+      if (idx === prevAnswer) {
+        opt.classList.add(prevAnswer === q.correct ? 'correct' : 'wrong');
+      }
+      opt.classList.add('disabled');
+    });
+    if (prevAnswer === q.correct) {
+      feedback.textContent = '✅ صحيح!';
+      feedback.className = 'feedback correct';
+    } else {
+      feedback.textContent = `❌ خطأ! الجواب الصحيح: ${q.options[q.correct]}`;
+      feedback.className = 'feedback wrong';
+    }
+    answered = true;
+  } else {
+    document.querySelectorAll('.option').forEach(opt => opt.classList.remove('disabled', 'correct', 'wrong'));
+    startTimer();
+  }
+
+  prevBtn.disabled = currentQuestion === 0;
+  nextBtn.textContent = currentQuestion === questionBank.length - 1 ? 'إنهاء الاختبار 🏁' : 'التالي ▶';
+  updateNavButtons();
+
+  progressFill.style.width = `${((currentQuestion + 1) / questionBank.length) * 100}%`;
+}
+
+function selectAnswer(index) {
+  if (answered) return;
+  clearInterval(timerInterval);
+  answered = true;
+
+  const q = questionBank[currentQuestion];
+  const isCorrect = index === q.correct;
+  userAnswers[currentQuestion] = index;
+
+  if (isCorrect) {
+    score++;
+    scoreDisplay.textContent = `النقاط: ${toArabic(score)}`;
+    feedback.textContent = '✅ صحيح!';
+    feedback.className = 'feedback correct';
+  } else {
+    feedback.textContent = `❌ خطأ! الجواب الصحيح: ${q.options[q.correct]}`;
+    feedback.className = 'feedback wrong';
+  }
+
+  const options = document.querySelectorAll('.option');
+  options.forEach((opt, idx) => {
+    opt.classList.add('disabled');
+    if (idx === q.correct) opt.classList.add('correct');
+    if (idx === index && !isCorrect) opt.classList.add('wrong');
+  });
+
+  updateNavButtons();
+}
+
+function startTimer() {
+  timeLeft = 15;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (!answered) {
+        answered = true;
+        userAnswers[currentQuestion] = -1;
+        const q = questionBank[currentQuestion];
+        feedback.textContent = `⏰ انتهى الوقت! الجواب الصحيح: ${q.options[q.correct]}`;
+        feedback.className = 'feedback wrong';
+        const options = document.querySelectorAll('.option');
+        options.forEach((opt, idx) => {
+          opt.classList.add('disabled');
+          if (idx === q.correct) opt.classList.add('correct');
+        });
+        updateNavButtons();
+      }
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  timerText.textContent = toArabic(timeLeft);
+  const degrees = (timeLeft / 15) * 360;
+  const color = timeLeft > 10 ? '#2ed573' : timeLeft > 5 ? '#ffa502' : '#ff4757';
+  timerCircle.style.background = `conic-gradient(${color} ${degrees}deg, rgba(255,255,255,0.1) ${degrees}deg)`;
+  timerText.style.color = color;
+}
+
+function updateNavButtons() {
+  prevBtn.disabled = currentQuestion === 0;
+  nextBtn.disabled = false;
+}
+
+function nextQuestion() {
+  clearInterval(timerInterval);
+  if (currentQuestion < questionBank.length - 1) {
+    currentQuestion++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  clearInterval(timerInterval);
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  clearInterval(timerInterval);
+  quizContainer.style.display = 'none';
+  resultScreen.style.display = 'block';
+  resultScreen.classList.add('show');
+
+  const total = questionBank.length;
+  const percentage = Math.round((score / total) * 100);
+
+  resultScore.textContent = `${toArabic(score)} / ${toArabic(total)}`;
+  resultDetail.textContent = `النسبة: ${toArabic(percentage)}٪`;
+
+  if (percentage >= 90) {
+    resultIcon.textContent = '🏆';
+    resultTitle.textContent = 'ممتاز! ما شاء الله';
+  } else if (percentage >= 70) {
+    resultIcon.textContent = '🌟';
+    resultTitle.textContent = 'جيد جدًا! أحسنت';
+  } else if (percentage >= 50) {
+    resultIcon.textContent = '📖';
+    resultTitle.textContent = 'جيد! واصل التعلم';
+  } else {
+    resultIcon.textContent = '💪';
+    resultTitle.textContent = 'لا بأس! حاول مرة أخرى';
+  }
+
+  // Bangun kunci jawaban
+  buildAnswerKey();
+}
+
+function buildAnswerKey() {
+  answerKeyList.innerHTML = '';
+  questionBank.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'answer-item';
+    div.innerHTML = `
+      <span class="answer-num">${toArabic(idx + 1)}</span>
+      <span class="answer-q">${item.q}</span>
+      <span class="answer-correct">${item.options[item.correct]}</span>
+    `;
+    answerKeyList.appendChild(div);
+  });
+}
+
+function showAnswerKey() {
+  resultScreen.style.display = 'none';
+  resultScreen.classList.remove('show');
+  answerKeyScreen.classList.add('show');
+  answerKeyScreen.scrollTop = 0;
+}
+
+function backToResult() {
+  answerKeyScreen.classList.remove('show');
+  resultScreen.style.display = 'block';
+  resultScreen.classList.add('show');
+}
+
+// ===== Helpers =====
+function toArabic(num) {
+  const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  return String(num).split('').map(d => arabicDigits[parseInt(d)] || d).join('');
+}
+
+// ===== Event Listeners =====
+nextBtn.addEventListener('click', nextQuestion);
+prevBtn.addEventListener('click', prevQuestion);
+restartBtn.addEventListener('click', startQuiz);
+showAnswerKeyBtn.addEventListener('click', showAnswerKey);
+backToResultBtn.addEventListener('click', backToResult);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') nextQuestion();
+  if (e.key === 'ArrowRight') prevQuestion();
+});
+</script>
+</body>
+</html>
