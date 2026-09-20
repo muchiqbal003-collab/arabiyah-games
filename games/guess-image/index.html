@@ -1,0 +1,2217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خَمِّنِ الصُّورَة — Tebak Gambar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Tajawal',sans-serif; }
+
+  :root {
+    --primary:#00d2ff;
+    --primary-dark:#3a7bd5;
+    --gold:#FFD700;
+    --gold-dark:#FFA500;
+    --success:#2ed573;
+    --danger:#ff4757;
+    --dark:#0f0c29;
+    --dark-2:#302b63;
+    --dark-3:#24243e;
+    --text:#fff;
+    --text-muted:#a0a0c0;
+  }
+
+  body {
+    min-height:100vh;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+    color:var(--text);
+    overflow-x:hidden;
+  }
+
+  /* ===== Background ===== */
+  .bg-animation {
+    position:fixed; inset:0; z-index:0;
+    overflow:hidden; pointer-events:none;
+  }
+
+  .bg-circle {
+    position:absolute; border-radius:50%;
+    filter:blur(80px); opacity:0.3;
+    animation:floatCircle 20s ease-in-out infinite;
+  }
+
+  .bg-circle.c1 { width:400px; height:400px; background:var(--primary); top:-100px; left:-100px; }
+  .bg-circle.c2 { width:500px; height:500px; background:var(--gold); bottom:-150px; right:-150px; animation-delay:-5s; }
+  .bg-circle.c3 { width:300px; height:300px; background:var(--danger); top:40%; left:50%; animation-delay:-10s; }
+
+  @keyframes floatCircle {
+    0%,100% { transform:translate(0,0) scale(1); }
+    33% { transform:translate(100px,-50px) scale(1.1); }
+    66% { transform:translate(-50px,100px) scale(0.9); }
+  }
+
+  /* ===== Setup Screen ===== */
+  .setup-screen {
+    position:fixed; inset:0;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+    display:flex; justify-content:center; align-items:flex-start;
+    z-index:200; padding:20px; overflow-y:auto;
+  }
+
+  .setup-screen.hide { display:none; }
+
+  .setup-card {
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(20px);
+    border-radius:24px;
+    padding:35px;
+    max-width:850px; width:100%;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 25px 60px rgba(0,0,0,0.5);
+    margin:auto;
+  }
+
+  .setup-title {
+    color:var(--primary);
+    font-size:2rem; font-weight:900;
+    text-align:center;
+    margin-bottom:8px;
+    text-shadow:0 0 20px rgba(0,210,255,0.5);
+  }
+
+  .setup-sub {
+    color:var(--text-muted);
+    text-align:center;
+    margin-bottom:25px;
+  }
+
+  /* ===== Mode Selector ===== */
+  .mode-selector {
+    display:flex; gap:12px; justify-content:center;
+    margin-bottom:25px; flex-wrap:wrap;
+  }
+
+  .mode-btn {
+    padding:14px 28px;
+    border-radius:14px;
+    border:2px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    cursor:pointer;
+    transition:all 0.3s;
+  }
+
+  .mode-btn:hover {
+    background:rgba(0,210,255,0.15);
+    border-color:rgba(0,210,255,0.5);
+    transform:translateY(-2px);
+  }
+
+  .mode-btn.active {
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    border-color:transparent;
+    box-shadow:0 8px 25px rgba(0,210,255,0.4);
+  }
+
+  /* ===== Team Inputs ===== */
+  .team-inputs {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-bottom:20px;
+  }
+
+  .team-inputs.hide { display:none; }
+
+  .team-input-group {
+    background:rgba(255,255,255,0.04);
+    border-radius:14px;
+    padding:15px;
+    border:2px solid;
+  }
+
+  .team-input-group.a { border-color:#4A90D9; }
+  .team-input-group.b { border-color:#E74C3C; }
+
+  .team-input-group label {
+    display:block;
+    color:var(--text);
+    font-weight:700;
+    margin-bottom:8px;
+    font-size:0.95rem;
+  }
+
+  .team-input-group input {
+    width:100%;
+    padding:10px 14px;
+    border-radius:10px;
+    border:2px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.1);
+    color:var(--text);
+    font-size:1rem;
+    font-family:'Tajawal',sans-serif;
+    text-align:center;
+    font-weight:700;
+  }
+
+  .team-input-group input:focus {
+    outline:none;
+    border-color:var(--gold);
+  }
+
+  /* ===== Settings ===== */
+  .settings-row {
+    display:flex; justify-content:center;
+    gap:15px; margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+
+  .setting-item label {
+    display:block;
+    color:var(--text-muted);
+    font-size:0.85rem;
+    margin-bottom:6px;
+    text-align:center;
+  }
+
+  .setting-item select, .setting-item input {
+    padding:10px 18px;
+    border-radius:10px;
+    border:2px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.1);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-size:0.95rem;
+    cursor:pointer;
+    text-align:center;
+    font-weight:700;
+  }
+
+  .setting-item select option {
+    background:var(--dark-2);
+    color:var(--text);
+  }
+
+  /* ===== Editor Toggle ===== */
+  .editor-toggle {
+    display:block;
+    margin:15px auto;
+    padding:12px 28px;
+    background:rgba(255,215,0,0.12);
+    border:2px solid rgba(255,215,0,0.35);
+    border-radius:12px;
+    color:var(--gold);
+    font-weight:700;
+    cursor:pointer;
+    font-family:'Tajawal',sans-serif;
+    font-size:0.95rem;
+    transition:all 0.3s;
+  }
+
+  .editor-toggle:hover {
+    background:rgba(255,215,0,0.25);
+    transform:translateY(-2px);
+  }
+
+  /* ===== Editor Panel ===== */
+  .editor-panel {
+    display:none;
+    background:rgba(0,0,0,0.25);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:20px;
+    text-align:right;
+    max-height:500px;
+    overflow-y:auto;
+  }
+
+  .editor-panel.show { display:block; }
+
+  .editor-panel h3 {
+    color:var(--gold);
+    font-size:1.1rem;
+    margin-bottom:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .editor-actions {
+    display:flex; gap:8px;
+    flex-wrap:wrap; margin-bottom:15px;
+  }
+
+  .editor-btn {
+    padding:8px 16px;
+    border:none;
+    border-radius:8px;
+    font-family:'Tajawal',sans-serif;
+    font-size:0.85rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+
+  .editor-btn.add { background:var(--success); color:#fff; }
+  .editor-btn.random { background:var(--primary); color:#fff; }
+  .editor-btn.clear { background:var(--danger); color:#fff; }
+  .editor-btn.restore { background:var(--gold-dark); color:#fff; }
+  .editor-btn.export { background:#9b59b6; color:#fff; }
+  .editor-btn.import { background:#00b894; color:#fff; }
+  .editor-btn:hover { transform:translateY(-2px); opacity:0.9; }
+
+  /* ===== Add Form ===== */
+  .add-form {
+    background:rgba(46,213,115,0.1);
+    border:1px solid rgba(46,213,115,0.3);
+    border-radius:12px;
+    padding:16px;
+    margin-top:12px;
+    display:none;
+  }
+
+  .add-form.show { display:block; }
+
+  .form-row {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  @media (max-width:600px) {
+    .form-row { grid-template-columns:1fr; }
+  }
+
+  .add-form label {
+    display:block;
+    color:var(--text-muted);
+    font-size:0.8rem;
+    margin-bottom:4px;
+  }
+
+  .add-form input[type="text"],
+  .add-form select {
+    width:100%;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.08);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-size:0.95rem;
+  }
+
+  .add-form input:focus, .add-form select:focus {
+    outline:none;
+    border-color:var(--success);
+  }
+
+  /* ===== Upload Area ===== */
+  .upload-area {
+    border:2px dashed rgba(0,210,255,0.4);
+    border-radius:12px;
+    padding:20px;
+    text-align:center;
+    cursor:pointer;
+    transition:all 0.3s;
+    background:rgba(0,210,255,0.05);
+    margin-bottom:10px;
+  }
+
+  .upload-area:hover {
+    border-color:var(--primary);
+    background:rgba(0,210,255,0.1);
+  }
+
+  .upload-area.dragover {
+    border-color:var(--success);
+    background:rgba(46,213,115,0.15);
+  }
+
+  .upload-preview {
+    max-width:150px;
+    max-height:150px;
+    border-radius:10px;
+    margin:10px auto 0;
+    display:none;
+    border:2px solid rgba(0,210,255,0.5);
+  }
+
+  .upload-preview.show { display:block; }
+
+  /* ===== Question List ===== */
+  .question-list {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+    gap:10px;
+  }
+
+  .question-item {
+    background:rgba(255,255,255,0.05);
+    border-radius:12px;
+    padding:10px;
+    border:1px solid rgba(255,255,255,0.1);
+    position:relative;
+    text-align:center;
+  }
+
+  .question-item .thumb {
+    width:100%;
+    height:90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.3);
+    border-radius:8px;
+    font-size:3rem;
+    margin-bottom:8px;
+    overflow:hidden;
+  }
+
+  .question-item .thumb img {
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+  }
+
+  .question-item .answer {
+    color:var(--gold);
+    font-weight:800;
+    font-size:1rem;
+    margin-bottom:4px;
+  }
+
+  .question-item .category {
+    color:var(--text-muted);
+    font-size:0.75rem;
+  }
+
+  .question-item .del-btn {
+    position:absolute;
+    top:5px; left:5px;
+    background:var(--danger);
+    color:#fff;
+    border:none;
+    width:24px; height:24px;
+    border-radius:50%;
+    cursor:pointer;
+    font-weight:900;
+    font-size:0.75rem;
+    transition:all 0.2s;
+  }
+
+  .question-item .del-btn:hover {
+    transform:scale(1.15);
+  }
+
+  /* ===== Start Button ===== */
+  .start-btn {
+    display:block;
+    margin:20px auto 0;
+    padding:16px 50px;
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000;
+    border:none;
+    border-radius:50px;
+    font-size:1.2rem;
+    font-weight:900;
+    cursor:pointer;
+    transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+    box-shadow:0 10px 30px rgba(255,215,0,0.5);
+  }
+
+  .start-btn:hover {
+    transform:translateY(-3px) scale(1.05);
+    box-shadow:0 15px 40px rgba(255,215,0,0.7);
+  }
+
+  .info-badge {
+    display:inline-block;
+    background:rgba(0,210,255,0.15);
+    border:1px solid rgba(0,210,255,0.3);
+    color:var(--primary);
+    padding:5px 14px;
+    border-radius:20px;
+    font-size:0.8rem;
+    margin-top:15px;
+  }
+
+  .center { text-align:center; }
+
+  /* ===== Game Screen ===== */
+  .game-screen {
+    display:none;
+    min-height:100vh;
+    padding:20px;
+    position:relative;
+    z-index:5;
+  }
+
+  .game-screen.show { display:block; }
+
+  /* Top bar */
+  .top-bar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(0,0,0,0.4);
+    backdrop-filter:blur(20px);
+    padding:12px 20px;
+    border-radius:16px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:10px;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+
+  .team-score {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 16px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.08);
+    border:2px solid transparent;
+  }
+
+  .team-score.a { border-color:#4A90D9; }
+  .team-score.b { border-color:#E74C3C; }
+
+  .team-score .name {
+    color:var(--text);
+    font-weight:700;
+    font-size:0.9rem;
+  }
+
+  .team-score .pts {
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000;
+    font-weight:900;
+    font-size:1.3rem;
+    padding:2px 14px;
+    border-radius:8px;
+    min-width:45px;
+    text-align:center;
+  }
+
+  .progress-info {
+    color:var(--text);
+    text-align:center;
+    font-weight:700;
+  }
+
+  .progress-info .num {
+    color:var(--gold);
+    font-size:1.3rem;
+  }
+
+  .progress-info .sub {
+    display:block;
+    color:var(--text-muted);
+    font-size:0.8rem;
+    font-weight:500;
+  }
+
+  /* Timer */
+  .timer-circle {
+    width:60px; height:60px;
+    border-radius:50%;
+    background:conic-gradient(var(--primary) 0deg, rgba(255,255,255,0.1) 0deg);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    transition:background 0.3s;
+  }
+
+  .timer-circle::before {
+    content:'';
+    width:46px; height:46px;
+    background:#1a1a2e;
+    border-radius:50%;
+    position:absolute;
+  }
+
+  .timer-text {
+    position:relative;
+    z-index:1;
+    color:#fff;
+    font-weight:800;
+    font-size:1.2rem;
+  }
+
+  /* Main layout: gallery + main image */
+  .game-layout {
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    gap:20px;
+    align-items:flex-start;
+  }
+
+  @media (max-width:900px) {
+    .game-layout { grid-template-columns:1fr; }
+    .gallery { order:2; }
+  }
+
+  /* ===== Gallery (kotak kecil di samping) ===== */
+  .gallery {
+    background:rgba(0,0,0,0.35);
+    backdrop-filter:blur(15px);
+    border-radius:16px;
+    padding:15px;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+
+  .gallery-title {
+    color:var(--primary);
+    font-size:0.95rem;
+    font-weight:700;
+    margin-bottom:12px;
+    text-align:center;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+
+  .gallery-grid {
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+  }
+
+  .gallery-item {
+    aspect-ratio:1;
+    border-radius:10px;
+    background:rgba(255,255,255,0.05);
+    border:2px solid rgba(255,255,255,0.1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.8rem;
+    cursor:pointer;
+    overflow:hidden;
+    position:relative;
+    transition:all 0.3s;
+    filter:brightness(0.3) blur(3px);
+  }
+
+  .gallery-item img {
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+
+  .gallery-item .lock {
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.2rem;
+    color:rgba(255,255,255,0.6);
+    background:rgba(0,0,0,0.3);
+    z-index:2;
+  }
+
+  .gallery-item.active {
+    filter:brightness(1) blur(0);
+    border-color:var(--gold);
+    box-shadow:0 0 20px rgba(255,215,0,0.6);
+    transform:scale(1.05);
+    cursor:default;
+  }
+
+  .gallery-item.active .lock { display:none; }
+
+  .gallery-item.solved {
+    filter:brightness(0.5) blur(0);
+    border-color:var(--success);
+  }
+
+  .gallery-item.solved .lock {
+    color:var(--success);
+    font-size:1.5rem;
+  }
+
+  .gallery-item:not(.active):not(.solved):hover {
+    filter:brightness(0.5) blur(1px);
+    transform:scale(1.05);
+  }
+
+  /* ===== Main Image Display ===== */
+  .main-display {
+    background:rgba(0,0,0,0.35);
+    backdrop-filter:blur(15px);
+    border-radius:20px;
+    padding:25px;
+    border:1px solid rgba(255,255,255,0.1);
+    min-height:450px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+
+  .main-image-box {
+    width:100%;
+    max-width:500px;
+    aspect-ratio:1;
+    background:rgba(0,0,0,0.3);
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:10rem;
+    border:3px solid rgba(0,210,255,0.3);
+    overflow:hidden;
+    position:relative;
+    animation:imageAppear 0.6s ease;
+    margin-bottom:20px;
+  }
+
+  @keyframes imageAppear {
+    from { transform:scale(0.7); opacity:0; }
+    to { transform:scale(1); opacity:1; }
+  }
+
+  .main-image-box img {
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+  }
+
+  .main-image-box.flip {
+    animation:flipIn 0.6s ease;
+  }
+
+  @keyframes flipIn {
+    0% { transform:rotateY(90deg) scale(0.8); opacity:0; }
+    100% { transform:rotateY(0) scale(1); opacity:1; }
+  }
+
+  /* Answer section */
+  .answer-section {
+    width:100%;
+    max-width:600px;
+  }
+
+  .answer-label {
+    color:var(--text-muted);
+    font-size:0.9rem;
+    margin-bottom:8px;
+    display:block;
+    text-align:center;
+  }
+
+  .answer-input {
+    width:100%;
+    padding:16px 22px;
+    background:rgba(255,255,255,0.08);
+    border:2px solid rgba(255,255,255,0.2);
+    border-radius:14px;
+    color:var(--text);
+    font-size:1.5rem;
+    font-weight:700;
+    font-family:'Tajawal',sans-serif;
+    text-align:center;
+    transition:all 0.3s;
+    direction:rtl;
+    margin-bottom:12px;
+  }
+
+  .answer-input:focus {
+    outline:none;
+    border-color:var(--primary);
+    background:rgba(0,210,255,0.1);
+    box-shadow:0 0 25px rgba(0,210,255,0.3);
+  }
+
+  .answer-input.correct {
+    border-color:var(--success);
+    background:rgba(46,213,115,0.15);
+    color:var(--success);
+    animation:correctPulse 0.5s;
+  }
+
+  .answer-input.wrong {
+    border-color:var(--danger);
+    background:rgba(255,71,87,0.15);
+    color:var(--danger);
+    animation:wrongShake 0.5s;
+  }
+
+  @keyframes correctPulse {
+    0%,100% { transform:scale(1); }
+    50% { transform:scale(1.03); }
+  }
+
+  @keyframes wrongShake {
+    0%,100% { transform:translateX(0); }
+    25% { transform:translateX(-10px); }
+    75% { transform:translateX(10px); }
+  }
+
+  .hint-display {
+    background:rgba(255,215,0,0.15);
+    border:1px solid rgba(255,215,0,0.4);
+    color:var(--gold);
+    padding:12px 20px;
+    border-radius:12px;
+    font-size:1.3rem;
+    font-weight:800;
+    text-align:center;
+    letter-spacing:8px;
+    margin-bottom:12px;
+    display:none;
+  }
+
+  .hint-display.show { display:block; animation:fadeIn 0.4s; }
+
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateY(-10px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .btn-row {
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .btn {
+    padding:12px 24px;
+    border:none;
+    border-radius:12px;
+    font-size:0.95rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+  }
+
+  .btn-check {
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    box-shadow:0 6px 20px rgba(0,210,255,0.3);
+  }
+
+  .btn-hint {
+    background:rgba(255,215,0,0.15);
+    color:var(--gold);
+    border:1px solid rgba(255,215,0,0.4);
+  }
+
+  .btn-skip {
+    background:rgba(255,255,255,0.08);
+    color:var(--text-muted);
+    border:1px solid rgba(255,255,255,0.15);
+  }
+
+  .btn:hover:not(:disabled) {
+    transform:translateY(-2px);
+  }
+
+  .btn:disabled {
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+
+  .feedback {
+    text-align:center;
+    font-size:1.05rem;
+    font-weight:700;
+    min-height:28px;
+    margin-top:12px;
+    transition:all 0.3s;
+  }
+
+  .feedback.correct { color:var(--success); }
+  .feedback.wrong { color:var(--danger); }
+  .feedback.info { color:var(--primary); }
+
+  /* ===== Team buttons (Versus mode) ===== */
+  .versus-btns {
+    display:flex;
+    gap:15px;
+    justify-content:center;
+    margin-bottom:15px;
+    flex-wrap:wrap;
+  }
+
+  .versus-btns.hide { display:none; }
+
+  .team-select-btn {
+    padding:14px 32px;
+    border:none;
+    border-radius:14px;
+    font-size:1.05rem;
+    font-weight:800;
+    cursor:pointer;
+    transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+    color:#fff;
+    box-shadow:0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  .team-select-btn.a { background:linear-gradient(135deg,#4A90D9,#2E5C8A); }
+  .team-select-btn.b { background:linear-gradient(135deg,#E74C3C,#A93226); }
+
+  .team-select-btn:hover:not(:disabled) {
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  }
+
+  .team-select-btn:disabled {
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+
+  .team-select-btn.active {
+    transform:scale(1.08);
+    border:3px solid var(--gold);
+  }
+
+  /* ===== Result Overlay ===== */
+  .overlay {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.88);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+    backdrop-filter:blur(10px);
+    padding:20px;
+  }
+
+  .overlay.show { display:flex; animation:fadeIn 0.5s; }
+
+  .overlay-content {
+    text-align:center;
+    padding:40px;
+    max-width:500px;
+  }
+
+  .overlay-icon {
+    font-size:6rem;
+    margin-bottom:20px;
+    animation:iconBounce 1s infinite;
+  }
+
+  @keyframes iconBounce {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-20px); }
+  }
+
+  .overlay-title {
+    color:var(--gold);
+    font-size:2.5rem;
+    font-weight:900;
+    margin-bottom:15px;
+    text-shadow:0 0 30px rgba(255,215,0,0.8);
+  }
+
+  .overlay-subtitle {
+    color:var(--text);
+    font-size:1.2rem;
+    margin-bottom:30px;
+  }
+
+  .overlay-btns {
+    display:flex;
+    gap:15px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .overlay-btn {
+    padding:15px 40px;
+    border:none;
+    border-radius:50px;
+    font-size:1.05rem;
+    font-weight:900;
+    cursor:pointer;
+    transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+  }
+
+  .overlay-btn.primary {
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000;
+    box-shadow:0 10px 30px rgba(255,215,0,0.5);
+  }
+
+  .overlay-btn.secondary {
+    background:rgba(255,255,255,0.15);
+    color:var(--text);
+    border:2px solid rgba(255,255,255,0.3);
+  }
+
+  .overlay-btn:hover {
+    transform:translateY(-3px) scale(1.05);
+  }
+
+  /* ===== Confetti ===== */
+  .confetti {
+    position:fixed;
+    width:12px;
+    height:12px;
+    top:-20px;
+    z-index:999;
+    animation:confettiFall 4s linear forwards;
+    pointer-events:none;
+  }
+
+  @keyframes confettiFall {
+    0% { transform:translateY(0) rotate(0deg); opacity:1; }
+    100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+  }
+
+  /* ===== Toast ===== */
+  .toast {
+    position:fixed;
+    bottom:30px;
+    left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:rgba(0,0,0,0.9);
+    color:#fff;
+    padding:14px 28px;
+    border-radius:50px;
+    font-weight:700;
+    border:2px solid var(--primary);
+    z-index:2000;
+    opacity:0;
+    transition:all 0.4s;
+    font-size:0.95rem;
+  }
+
+  .toast.show {
+    transform:translateX(-50%) translateY(0);
+    opacity:1;
+  }
+
+  .toast.success { border-color:var(--success); color:var(--success); }
+  .toast.error { border-color:var(--danger); color:var(--danger); }
+</style>
+</head>
+<body>
+
+<!-- ===== Background ===== -->
+<div class="bg-animation">
+  <div class="bg-circle c1"></div>
+  <div class="bg-circle c2"></div>
+  <div class="bg-circle c3"></div>
+</div>
+
+<!-- ===== Setup Screen ===== -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-card">
+    <div class="setup-title">🖼️ خَمِّنِ الصُّورَة</div>
+    <div class="setup-sub">Tebak Gambar — Belajar Kosakata Bahasa Arab</div>
+
+    <!-- Mode Selector -->
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="solo">👤 فردي</button>
+      <button class="mode-btn" data-mode="team">👥 فرق</button>
+      <button class="mode-btn" data-mode="versus">⚔️ مواجهة</button>
+    </div>
+
+    <!-- Team Inputs (muncul di mode team/versus) -->
+    <div class="team-inputs hide" id="teamInputs">
+      <div class="team-input-group a">
+        <label>🔵 الفريق الأول</label>
+        <input type="text" id="teamAName" value="الفريق الأزرق" maxlength="20">
+      </div>
+      <div class="team-input-group b">
+        <label>🔴 الفريق الثاني</label>
+        <input type="text" id="teamBName" value="الفريق الأحمر" maxlength="20">
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="settings-row">
+      <div class="setting-item">
+        <label>⏱️ وقت السؤال</label>
+        <select id="timerSetting">
+          <option value="0">بدون وقت</option>
+          <option value="10">١٠ ثوان</option>
+          <option value="15">١٥ ثانية</option>
+          <option value="20" selected>٢٠ ثانية</option>
+          <option value="30">٣٠ ثانية</option>
+          <option value="60">٦٠ ثانية</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🎯 عدد الأسئلة</label>
+        <select id="countSetting">
+          <option value="5">٥ أسئلة</option>
+          <option value="10" selected>١٠ أسئلة</option>
+          <option value="15">١٥ سؤالاً</option>
+          <option value="20">٢٠ سؤالاً</option>
+          <option value="50">كل الأسئلة</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🏆 نقاط الفوز (للمواجهة)</label>
+        <select id="maxScoreSetting">
+          <option value="3">٣ نقاط</option>
+          <option value="5" selected>٥ نقاط</option>
+          <option value="7">٧ نقاط</option>
+          <option value="10">١٠ نقاط</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Editor Toggle -->
+    <button class="editor-toggle" id="editorToggle">📝 إدارة الصور والأسئلة</button>
+
+    <!-- Editor Panel -->
+    <div class="editor-panel" id="editorPanel">
+      <h3>
+        <span>📋 قائمة الصور (<span id="questionCount">٠</span>)</span>
+      </h3>
+
+      <div class="editor-actions">
+        <button class="editor-btn add" id="addQuestionBtn">➕ إضافة صورة</button>
+        <button class="editor-btn random" id="shuffleBtn">🔀 خلط عشوائي</button>
+        <button class="editor-btn export" id="exportBtn">📤 تصدير JSON</button>
+        <button class="editor-btn import" id="importBtn">📥 استيراد JSON</button>
+        <button class="editor-btn restore" id="restoreBtn">↩️ استعادة الافتراضي</button>
+        <button class="editor-btn clear" id="clearBtn">🗑️ حذف الكل</button>
+      </div>
+
+      <!-- Add/Edit Form -->
+      <div class="add-form" id="addForm">
+        <div class="form-row">
+          <div>
+            <label>الإجابة (بالعربية)</label>
+            <input type="text" id="newAnswer" placeholder="مثال: قِطَّة" dir="rtl">
+          </div>
+          <div>
+            <label>الفئة (اختياري)</label>
+            <input type="text" id="newCategory" placeholder="مثال: حَيَوَانَات" dir="rtl">
+          </div>
+        </div>
+
+        <label>الصورة (اختياري — إن لم ترفع، سيُستخدم الإيموجي)</label>
+        <div class="upload-area" id="uploadArea">
+          <div>📷 اضغط لرفع صورة أو اسحبها هنا</div>
+          <div style="font-size:0.75rem; opacity:0.7; margin-top:5px;">PNG, JPG, GIF — حتى 2MB</div>
+          <img class="upload-preview" id="uploadPreview">
+          <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>الإيموجي (اختياري — بديل عن الصورة)</label>
+            <input type="text" id="newEmoji" placeholder="مثال: 🐱" maxlength="5">
+          </div>
+          <div>
+            <label>تلميح الحروف الأولى (اختياري)</label>
+            <input type="text" id="newHint" placeholder="مثال: قِـ..." dir="rtl">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button class="editor-btn add" id="saveQuestionBtn" style="flex:1;">💾 حفظ</button>
+          <button class="editor-btn clear" id="cancelAddBtn" style="flex:1;">✖️ إلغاء</button>
+        </div>
+      </div>
+
+      <!-- Question List -->
+      <div class="question-list" id="questionList"></div>
+    </div>
+
+    <div class="center">
+      <span class="info-badge">💾 جميع الصور محفوظة محليًا في المتصفح</span>
+    </div>
+
+    <button class="start-btn" id="startBtn">🚀 ابدأ اللعب</button>
+  </div>
+</div>
+
+<!-- ===== Game Screen ===== -->
+<div class="game-screen" id="gameScreen">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="team-score a" id="teamAScoreBox" style="display:none;">
+      <span class="name" id="teamANameDisplay">🔵 الفريق الأول</span>
+      <span class="pts" id="teamAScore">٠</span>
+    </div>
+    <div class="progress-info">
+      <span class="num"><span id="questionNum">١</span> / <span id="totalQuestions">١٠</span></span>
+      <span class="sub">خَمِّنِ الصُّورَة</span>
+    </div>
+    <div class="timer-circle" id="timerCircle">
+      <span class="timer-text" id="timerText">—</span>
+    </div>
+    <div class="team-score b" id="teamBScoreBox" style="display:none;">
+      <span class="pts" id="teamBScore">٠</span>
+      <span class="name" id="teamBNameDisplay">🔴 الفريق الثاني</span>
+    </div>
+  </div>
+
+  <!-- Versus team buttons -->
+  <div class="versus-btns hide" id="versusBtns">
+    <button class="team-select-btn a" id="teamABtn">🔵 الفريق الأول</button>
+    <button class="team-select-btn b" id="teamBBtn">🔴 الفريق الثاني</button>
+  </div>
+
+  <!-- Game Layout -->
+  <div class="game-layout">
+    <!-- Gallery -->
+    <div class="gallery">
+      <div class="gallery-title">🖼️ الصور (<span id="galleryProgress">٠/٠</span>)</div>
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+
+    <!-- Main Display -->
+    <div class="main-display">
+      <div class="main-image-box" id="mainImageBox">
+        🖼️
+      </div>
+
+      <div class="answer-section">
+        <label class="answer-label">✍️ اكتب الإجابة بالعربية:</label>
+        <div class="hint-display" id="hintDisplay"></div>
+        <input type="text" class="answer-input" id="answerInput" placeholder="..." autocomplete="off" spellcheck="false">
+
+        <div class="btn-row">
+          <button class="btn btn-hint" id="hintBtn">💡 تلميح</button>
+          <button class="btn btn-skip" id="skipBtn">⏭️ تخطي</button>
+          <button class="btn btn-check" id="checkBtn">✓ تحقق</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Result Overlay ===== -->
+<div class="overlay" id="overlay">
+  <div class="overlay-content">
+    <div class="overlay-icon" id="overlayIcon">🏆</div>
+    <div class="overlay-title" id="overlayTitle">أحسنت!</div>
+    <div class="overlay-subtitle" id="overlaySubtitle"></div>
+    <div class="overlay-btns">
+      <button class="overlay-btn primary" id="playAgainBtn">🔄 العب مرة أخرى</button>
+      <button class="overlay-btn secondary" id="backToSetupBtn">⚙️ الإعدادات</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DEFAULT QUESTIONS (Emoji + Kata Arab)
+============================================================ */
+const DEFAULT_QUESTIONS = [
+  // حيوانات
+  { id: 'd1',  answer: 'قِطَّة',    emoji: '🐱', category: 'حَيَوَانَات', image: null, hint: 'قِـ...' },
+  { id: 'd2',  answer: 'كَلْب',     emoji: '🐶', category: 'حَيَوَانَات', image: null, hint: 'كَلْـ...' },
+  { id: 'd3',  answer: 'أَسَد',     emoji: '🦁', category: 'حَيَوَانَات', image: null, hint: 'أَ...' },
+  { id: 'd4',  answer: 'فِيل',      emoji: '🐘', category: 'حَيَوَانَات', image: null, hint: 'فِـ...' },
+  { id: 'd5',  answer: 'حِصَان',    emoji: '🐴', category: 'حَيَوَانَات', image: null, hint: 'حِـ...' },
+  { id: 'd6',  answer: 'دَجَاجَة',  emoji: '🐔', category: 'حَيَوَانَات', image: null, hint: 'دَ...' },
+  { id: 'd7',  answer: 'سَمَكَة',   emoji: '🐟', category: 'حَيَوَانَات', image: null, hint: 'سَـ...' },
+  { id: 'd8',  answer: 'طَائِر',    emoji: '🐦', category: 'حَيَوَانَات', image: null, hint: 'طَـ...' },
+
+  // فواكه
+  { id: 'f1',  answer: 'تُفَّاح',   emoji: '🍎', category: 'فَوَاكِه',   image: null, hint: 'تُـ...' },
+  { id: 'f2',  answer: 'مَوْز',     emoji: '🍌', category: 'فَوَاكِه',   image: null, hint: 'مَـ...' },
+  { id: 'f3',  answer: 'عِنَب',     emoji: '🍇', category: 'فَوَاكِه',   image: null, hint: 'عِـ...' },
+  { id: 'f4',  answer: 'بُرْتُقَال',emoji: '🍊', category: 'فَوَاكِه',   image: null, hint: 'بُـ...' },
+  { id: 'f5',  answer: 'بَطِيخ',    emoji: '🍉', category: 'فَوَاكِه',   image: null, hint: 'بَـ...' },
+  { id: 'f6',  answer: 'فَرَاوِلَة',emoji: '🍓', category: 'فَوَاكِه',   image: null, hint: 'فَـ...' },
+
+  // خضروات
+  { id: 'v1',  answer: 'جَزَر',     emoji: '🥕', category: 'خُضْرَوَات', image: null, hint: 'جَـ...' },
+  { id: 'v2',  answer: 'طَمَاطِم',  emoji: '🍅', category: 'خُضْرَوَات', image: null, hint: 'طَـ...' },
+  { id: 'v3',  answer: 'خِيَار',    emoji: '🥒', category: 'خُضْرَوَات', image: null, hint: 'خِـ...' },
+  { id: 'v4',  answer: 'بَصَل',     emoji: '🧅', category: 'خُضْرَوَات', image: null, hint: 'بَـ...' },
+
+  // طعام
+  { id: 'fo1', answer: 'خُبْز',     emoji: '🍞', category: 'طَعَام',     image: null, hint: 'خُـ...' },
+  { id: 'fo2', answer: 'حَلِيب',    emoji: '🥛', category: 'طَعَام',     image: null, hint: 'حَـ...' },
+  { id: 'fo3', answer: 'بَيْض',     emoji: '🥚', category: 'طَعَام',     image: null, hint: 'بَـ...' },
+  { id: 'fo4', answer: 'أَرُز',     emoji: '🍚', category: 'طَعَام',     image: null, hint: 'أَ...' },
+  { id: 'fo5', answer: 'جُبْن',     emoji: '🧀', category: 'طَعَام',     image: null, hint: 'جُـ...' },
+
+  // مشروبات
+  { id: 'dr1', answer: 'مَاء',      emoji: '💧', category: 'مَشْرُوبَات', image: null, hint: 'مَـ...' },
+  { id: 'dr2', answer: 'شَاي',      emoji: '🍵', category: 'مَشْرُوبَات', image: null, hint: 'شَـ...' },
+  { id: 'dr3', answer: 'قَهْوَة',   emoji: '☕', category: 'مَشْرُوبَات', image: null, hint: 'قَـ...' },
+  { id: 'dr4', answer: 'عَصِير',    emoji: '🧃', category: 'مَشْرُوبَات', image: null, hint: 'عَـ...' },
+
+  // أدوات مدرسية
+  { id: 's1',  answer: 'كِتَاب',    emoji: '📚', category: 'أَدَوَات',   image: null, hint: 'كِـ...' },
+  { id: 's2',  answer: 'قَلَم',     emoji: '✏️', category: 'أَدَوَات',   image: null, hint: 'قَـ...' },
+  { id: 's3',  answer: 'حَاسُوب',   emoji: '💻', category: 'أَدَوَات',   image: null, hint: 'حَـ...' },
+  { id: 's4',  answer: 'هَاتِف',    emoji: '📱', category: 'أَدَوَات',   image: null, hint: 'هَـ...' },
+  { id: 's5',  answer: 'مِفْتَاح',  emoji: '🔑', category: 'أَدَوَات',   image: null, hint: 'مِـ...' },
+  { id: 's6',  answer: 'سَاعَة',    emoji: '⌚', category: 'أَدَوَات',   image: null, hint: 'سَـ...' },
+
+  // أماكن
+  { id: 'p1',  answer: 'مَسْجِد',   emoji: '🕌', category: 'أَمَاكِن',   image: null, hint: 'مَـ...' },
+  { id: 'p2',  answer: 'مَدْرَسَة', emoji: '🏫', category: 'أَمَاكِن',   image: null, hint: 'مَـ...' },
+  { id: 'p3',  answer: 'مُسْتَشْفَى', emoji: '🏥', category: 'أَمَاكِن', image: null, hint: 'مُـ...' },
+  { id: 'p4',  answer: 'بَيْت',     emoji: '🏠', category: 'أَمَاكِن',   image: null, hint: 'بَـ...' },
+  { id: 'p5',  answer: 'مَطَار',    emoji: '✈️', category: 'أَمَاكِن',   image: null, hint: 'مَـ...' },
+  { id: 'p6',  answer: 'حَدِيقَة',  emoji: '🌳', category: 'أَمَاكِن',   image: null, hint: 'حَـ...' },
+
+  // طبيعة
+  { id: 'n1',  answer: 'شَمْس',     emoji: '☀️', category: 'طَبِيعَة',  image: null, hint: 'شَـ...' },
+  { id: 'n2',  answer: 'قَمَر',     emoji: '🌙', category: 'طَبِيعَة',  image: null, hint: 'قَـ...' },
+  { id: 'n3',  answer: 'نَجْمَة',   emoji: '⭐', category: 'طَبِيعَة',  image: null, hint: 'نَـ...' },
+  { id: 'n4',  answer: 'شَجَرَة',   emoji: '🌲', category: 'طَبِيعَة',  image: null, hint: 'شَـ...' },
+  { id: 'n5',  answer: 'زَهْرَة',   emoji: '🌸', category: 'طَبِيعَة',  image: null, hint: 'زَ...' },
+  { id: 'n6',  answer: 'مَطَر',     emoji: '🌧️', category: 'طَبِيعَة', image: null, hint: 'مَـ...' },
+
+  // مواصلات
+  { id: 't1',  answer: 'سَيَّارَة', emoji: '🚗', category: 'مُوَاصَلَات', image: null, hint: 'سَـ...' },
+  { id: 't2',  answer: 'طَائِرَة',  emoji: '✈️', category: 'مُوَاصَلَات', image: null, hint: 'طَـ...' },
+  { id: 't3',  answer: 'قِطَار',    emoji: '🚂', category: 'مُوَاصَلَات', image: null, hint: 'قِـ...' },
+  { id: 't4',  answer: 'سَفِينَة',  emoji: '🚢', category: 'مُوَاصَلَات', image: null, hint: 'سَـ...' },
+  { id: 't5',  answer: 'دَرَّاجَة', emoji: '🚲', category: 'مُوَاصَلَات', image: null, hint: 'دَ...' },
+
+  // مهن
+  { id: 'j1',  answer: 'طَبِيب',    emoji: '👨‍⚕️', category: 'مِهَن',   image: null, hint: 'طَـ...' },
+  { id: 'j2',  answer: 'مُعَلِّم',  emoji: '👨‍🏫', category: 'مِهَن',   image: null, hint: 'مُـ...' },
+  { id: 'j3',  answer: 'مُهَنْدِس', emoji: '👷', category: 'مِهَن',   image: null, hint: 'مُـ...' },
+  { id: 'j4',  answer: 'شُرْطِيّ',  emoji: '👮', category: 'مِهَن',   image: null, hint: 'شُـ...' },
+  { id: 'j5',  answer: 'طَبَّاخ',   emoji: '👨‍🍳', category: 'مِهَن',  image: null, hint: 'طَـ...' },
+  { id: 'j6',  answer: 'مُزَارِع',  emoji: '👨‍🌾', category: 'مِهَن',  image: null, hint: 'مُـ...' },
+
+  // رياضة
+  { id: 'sp1', answer: 'كُرَة قَدَم', emoji: '⚽', category: 'رِيَاضَة', image: null, hint: 'كُـ...' },
+  { id: 'sp2', answer: 'سِبَاحَة',  emoji: '🏊', category: 'رِيَاضَة', image: null, hint: 'سِـ...' },
+  { id: 'sp3', answer: 'جَرْي',     emoji: '🏃', category: 'رِيَاضَة', image: null, hint: 'جَـ...' },
+  { id: 'sp4', answer: 'كُرَة سَلَّة', emoji: '🏀', category: 'رِيَاضَة', image: null, hint: 'كُـ...' },
+];
+
+/* ============================================================
+   STORAGE
+============================================================ */
+const STORAGE_KEY = 'arab_guess_image_data';
+const SETTINGS_KEY = 'arab_guess_image_settings';
+
+function loadQuestions() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) { console.error(e); }
+  return JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+}
+
+function saveQuestions(qs) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(qs));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      toast('⚠️ الذاكرة ممتلئة! احذف بعض الصور الكبيرة.', 'error');
+    } else {
+      console.error(e);
+    }
+  }
+}
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return null;
+}
+
+function saveSettings(s) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch (e) {}
+}
+
+/* ============================================================
+   STATE
+============================================================ */
+const state = {
+  mode: 'solo',
+  teamA: { name: 'الفريق الأزرق', score: 0 },
+  teamB: { name: 'الفريق الأحمر', score: 0 },
+  questions: [],
+  allQuestions: [],
+  currentIndex: 0,
+  totalQuestions: 10,
+  maxScore: 5,
+  timerDuration: 20,
+  timeLeft: 20,
+  timerInterval: null,
+  answered: false,
+  hintUsed: false,
+  activeTeam: null,
+  results: [], // { idx, status: 'correct'|'wrong'|'skipped'|'timeout' }
+  currentUploadImage: null,
+};
+
+/* ============================================================
+   DOM
+============================================================ */
+const setupScreen = document.getElementById('setupScreen');
+const gameScreen = document.getElementById('gameScreen');
+const questionList = document.getElementById('questionList');
+const questionCount = document.getElementById('questionCount');
+const editorPanel = document.getElementById('editorPanel');
+const addForm = document.getElementById('addForm');
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const uploadPreview = document.getElementById('uploadPreview');
+const galleryGrid = document.getElementById('galleryGrid');
+const galleryProgress = document.getElementById('galleryProgress');
+const mainImageBox = document.getElementById('mainImageBox');
+const answerInput = document.getElementById('answerInput');
+const hintDisplay = document.getElementById('hintDisplay');
+const feedback = document.getElementById('feedback');
+const questionNum = document.getElementById('questionNum');
+const totalQuestionsEl = document.getElementById('totalQuestions');
+const timerCircle = document.getElementById('timerCircle');
+const timerText = document.getElementById('timerText');
+const checkBtn = document.getElementById('checkBtn');
+const hintBtn = document.getElementById('hintBtn');
+const skipBtn = document.getElementById('skipBtn');
+const overlay = document.getElementById('overlay');
+const toastEl = document.getElementById('toast');
+
+/* ============================================================
+   HELPERS
+============================================================ */
+function toArabic(num) {
+  const d = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  return String(num).split('').map(x => d[parseInt(x)] || x).join('');
+}
+
+function normalize(str) {
+  return str.trim()
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي')
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toast(msg, type = '') {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show ' + type;
+  setTimeout(() => toastEl.classList.remove('show'), 2500);
+}
+
+/* ============================================================
+   EDITOR — Render Question List
+============================================================ */
+function renderQuestionList() {
+  questionList.innerHTML = '';
+  questionCount.textContent = toArabic(state.allQuestions.length);
+
+  state.allQuestions.forEach((q, idx) => {
+    const item = document.createElement('div');
+    item.className = 'question-item';
+
+    let thumbHTML = '';
+    if (q.image) {
+      thumbHTML = `<img src="${q.image}" alt="">`;
+    } else if (q.emoji) {
+      thumbHTML = `<span style="font-size:3rem;">${q.emoji}</span>`;
+    } else {
+      thumbHTML = `<span style="font-size:1.5rem; opacity:0.5;">🖼️</span>`;
+    }
+
+    item.innerHTML = `
+      <button class="del-btn" data-idx="${idx}" title="حذف">✖</button>
+      <div class="thumb">${thumbHTML}</div>
+      <div class="answer">${q.answer}</div>
+      <div class="category">${q.category || '—'}</div>
+    `;
+
+    item.querySelector('.del-btn').addEventListener('click', () => {
+      if (confirm(`حذف "${q.answer}"؟`)) {
+        state.allQuestions.splice(idx, 1);
+        saveQuestions(state.allQuestions);
+        renderQuestionList();
+        toast('🗑️ تم الحذف', 'success');
+      }
+    });
+
+    questionList.appendChild(item);
+  });
+}
+
+/* ============================================================
+   UPLOAD IMAGE
+============================================================ */
+uploadArea.addEventListener('click', () => fileInput.click());
+
+uploadArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+  uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadArea.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) handleFile(file);
+});
+
+function handleFile(file) {
+  if (!file.type.startsWith('image/')) {
+    toast('⚠️ الملف ليس صورة', 'error');
+    return;
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    toast('⚠️ الصورة أكبر من 2MB', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    // Kompres gambar
+    compressImage(e.target.result, (compressed) => {
+      state.currentUploadImage = compressed;
+      uploadPreview.src = compressed;
+      uploadPreview.classList.add('show');
+      toast('✅ تم رفع الصورة', 'success');
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function compressImage(dataUrl, callback) {
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const MAX = 500;
+    let w = img.width, h = img.height;
+    if (w > h && w > MAX) { h = (h * MAX) / w; w = MAX; }
+    else if (h > MAX) { w = (w * MAX) / h; h = MAX; }
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    callback(canvas.toDataURL('image/jpeg', 0.75));
+  };
+  img.src = dataUrl;
+}
+
+/* ============================================================
+   SAVE NEW QUESTION
+============================================================ */
+document.getElementById('saveQuestionBtn').addEventListener('click', () => {
+  const answer = document.getElementById('newAnswer').value.trim();
+  const category = document.getElementById('newCategory').value.trim();
+  const emoji = document.getElementById('newEmoji').value.trim();
+  const hint = document.getElementById('newHint').value.trim();
+
+  if (!answer) {
+    toast('⚠️ اكتب الإجابة', 'error');
+    return;
+  }
+
+  if (!state.currentUploadImage && !emoji) {
+    toast('⚠️ ارفع صورة أو اكتب إيموجي', 'error');
+    return;
+  }
+
+  const newQ = {
+    id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    answer,
+    category,
+    emoji: emoji || null,
+    image: state.currentUploadImage || null,
+    hint: hint || null,
+  };
+
+  state.allQuestions.push(newQ);
+  saveQuestions(state.allQuestions);
+  renderQuestionList();
+  resetAddForm();
+  toast('✅ تم الحفظ', 'success');
+});
+
+document.getElementById('cancelAddBtn').addEventListener('click', resetAddForm);
+
+function resetAddForm() {
+  document.getElementById('newAnswer').value = '';
+  document.getElementById('newCategory').value = '';
+  document.getElementById('newEmoji').value = '';
+  document.getElementById('newHint').value = '';
+  state.currentUploadImage = null;
+  uploadPreview.src = '';
+  uploadPreview.classList.remove('show');
+  fileInput.value = '';
+  addForm.classList.remove('show');
+}
+
+document.getElementById('addQuestionBtn').addEventListener('click', () => {
+  addForm.classList.toggle('show');
+});
+
+document.getElementById('editorToggle').addEventListener('click', () => {
+  editorPanel.classList.toggle('show');
+});
+
+/* ============================================================
+   EDITOR ACTIONS
+============================================================ */
+document.getElementById('shuffleBtn').addEventListener('click', () => {
+  state.allQuestions = shuffle(state.allQuestions);
+  saveQuestions(state.allQuestions);
+  renderQuestionList();
+  toast('🔀 تم الخلط', 'success');
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (confirm('🗑️ حذف جميع الصور؟ لا يمكن التراجع.')) {
+    state.allQuestions = [];
+    saveQuestions(state.allQuestions);
+    renderQuestionList();
+    toast('🗑️ تم الحذف الكامل', 'success');
+  }
+});
+
+document.getElementById('restoreBtn').addEventListener('click', () => {
+  if (confirm('↩️ استعادة الافتراضي؟ سيتم حذف أسئلتك المخصصة.')) {
+    state.allQuestions = JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+    saveQuestions(state.allQuestions);
+    renderQuestionList();
+    toast('↩️ تم الاستعادة', 'success');
+  }
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = JSON.stringify(state.allQuestions, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'guess-image-questions.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📤 تم التصدير', 'success');
+});
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error('صيغة غير صحيحة');
+        state.allQuestions = data;
+        saveQuestions(state.allQuestions);
+        renderQuestionList();
+        toast('📥 تم الاستيراد', 'success');
+      } catch (err) {
+        toast('⚠️ فشل الاستيراد', 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+});
+
+/* ============================================================
+   MODE SELECTOR
+============================================================ */
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.mode = btn.dataset.mode;
+
+    const teamInputs = document.getElementById('teamInputs');
+    if (state.mode === 'solo') {
+      teamInputs.classList.add('hide');
+    } else {
+      teamInputs.classList.remove('hide');
+    }
+  });
+});
+
+/* ============================================================
+   START GAME
+============================================================ */
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (state.allQuestions.length === 0) {
+    toast('⚠️ لا توجد صور! أضف صورًا أولاً.', 'error');
+    return;
+  }
+
+  // Settings
+  state.teamA.name = document.getElementById('teamAName').value || 'الفريق الأزرق';
+  state.teamB.name = document.getElementById('teamBName').value || 'الفريق الأحمر';
+  state.timerDuration = parseInt(document.getElementById('timerSetting').value);
+  state.maxScore = parseInt(document.getElementById('maxScoreSetting').value);
+  const requested = parseInt(document.getElementById('countSetting').value);
+  state.totalQuestions = Math.min(requested, state.allQuestions.length);
+
+  // Random questions
+  const shuffled = shuffle(state.allQuestions);
+  state.questions = shuffled.slice(0, state.totalQuestions);
+
+  // Reset scores
+  state.teamA.score = 0;
+  state.teamB.score = 0;
+  state.currentIndex = 0;
+  state.results = [];
+
+  // Save settings
+  saveSettings({
+    mode: state.mode,
+    teamAName: state.teamA.name,
+    teamBName: state.teamB.name,
+    timer: state.timerDuration,
+    maxScore: state.maxScore,
+    count: requested,
+  });
+
+  // Show game screen
+  setupScreen.classList.add('hide');
+  gameScreen.classList.add('show');
+
+  // Setup UI based on mode
+  setupGameUI();
+  renderGallery();
+  loadQuestion();
+});
+
+function setupGameUI() {
+  const teamAScoreBox = document.getElementById('teamAScoreBox');
+  const teamBScoreBox = document.getElementById('teamBScoreBox');
+  const versusBtns = document.getElementById('versusBtns');
+
+  document.getElementById('teamANameDisplay').textContent = '🔵 ' + state.teamA.name;
+  document.getElementById('teamBNameDisplay').textContent = '🔴 ' + state.teamB.name;
+
+  if (state.mode === 'solo') {
+    teamAScoreBox.style.display = 'none';
+    teamBScoreBox.style.display = 'none';
+    versusBtns.classList.add('hide');
+  } else if (state.mode === 'team') {
+    teamAScoreBox.style.display = 'flex';
+    teamBScoreBox.style.display = 'flex';
+    versusBtns.classList.remove('hide');
+  } else if (state.mode === 'versus') {
+    teamAScoreBox.style.display = 'flex';
+    teamBScoreBox.style.display = 'flex';
+    versusBtns.classList.remove('hide');
+  }
+
+  updateScores();
+  totalQuestionsEl.textContent = toArabic(state.totalQuestions);
+}
+
+/* ============================================================
+   GALLERY
+============================================================ */
+function renderGallery() {
+  galleryGrid.innerHTML = '';
+  state.questions.forEach((q, idx) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.dataset.idx = idx;
+
+    let innerHTML = '';
+    if (q.image) {
+      innerHTML = `<img src="${q.image}" alt="">`;
+    } else if (q.emoji) {
+      innerHTML = `<span>${q.emoji}</span>`;
+    } else {
+      innerHTML = `<span>🖼️</span>`;
+    }
+
+    item.innerHTML = `
+      ${innerHTML}
+      <div class="lock">🔒</div>
+    `;
+
+    galleryGrid.appendChild(item);
+  });
+
+  updateGalleryProgress();
+}
+
+function updateGalleryProgress() {
+  const solved = state.results.filter(r => r.status === 'correct').length;
+  galleryProgress.textContent = `${toArabic(solved)}/${toArabic(state.questions.length)}`;
+}
+
+function highlightGalleryItem(idx, status = 'active') {
+  document.querySelectorAll('.gallery-item').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  const current = galleryGrid.querySelector(`.gallery-item[data-idx="${idx}"]`);
+  if (!current) return;
+
+  if (status === 'active') {
+    current.classList.add('active');
+  } else if (status === 'solved') {
+    current.classList.add('solved');
+    current.querySelector('.lock').textContent = '✅';
+  }
+}
+
+function updateGallerySolved() {
+  state.results.forEach((r, idx) => {
+    if (r.status === 'correct') {
+      const item = galleryGrid.querySelector(`.gallery-item[data-idx="${idx}"]`);
+      if (item) {
+        item.classList.add('solved');
+        item.querySelector('.lock').textContent = '✅';
+      }
+    }
+  });
+}
+
+/* ============================================================
+   LOAD QUESTION
+============================================================ */
+function loadQuestion() {
+  clearInterval(state.timerInterval);
+  state.answered = false;
+  state.hintUsed = false;
+  state.activeTeam = null;
+  state.timeLeft = state.timerDuration;
+
+  const q = state.questions[state.currentIndex];
+
+  // Update counter
+  questionNum.textContent = toArabic(state.currentIndex + 1);
+
+  // Update gallery highlight
+  highlightGalleryItem(state.currentIndex, 'active');
+
+  // Update main image
+  mainImageBox.innerHTML = '';
+  mainImageBox.classList.remove('flip');
+  void mainImageBox.offsetWidth;
+  mainImageBox.classList.add('flip');
+
+  if (q.image) {
+    const img = document.createElement('img');
+    img.src = q.image;
+    img.alt = '';
+    mainImageBox.appendChild(img);
+  } else if (q.emoji) {
+    mainImageBox.textContent = q.emoji;
+  } else {
+    mainImageBox.textContent = '🖼️';
+  }
+
+  // Reset answer input
+  answerInput.value = '';
+  answerInput.className = 'answer-input';
+  answerInput.disabled = false;
+  answerInput.focus();
+
+  // Reset hint
+  hintDisplay.textContent = '';
+  hintDisplay.classList.remove('show');
+
+  // Reset feedback
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+
+  // Buttons
+  checkBtn.disabled = false;
+  hintBtn.disabled = false;
+  skipBtn.disabled = false;
+
+  // Versus buttons
+  document.querySelectorAll('.team-select-btn').forEach(b => {
+    b.disabled = false;
+    b.classList.remove('active');
+  });
+
+  // Start timer
+  if (state.timerDuration > 0) {
+    startTimer();
+  } else {
+    timerText.textContent = '—';
+    timerCircle.style.background = 'conic-gradient(#666 0deg, rgba(255,255,255,0.1) 0deg)';
+  }
+}
+
+/* ============================================================
+   TIMER
+============================================================ */
+function startTimer() {
+  updateTimerDisplay();
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      if (!state.answered) timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  timerText.textContent = toArabic(state.timeLeft);
+  const degrees = (state.timeLeft / state.timerDuration) * 360;
+  const color = state.timeLeft > state.timerDuration * 0.6 ? '#2ed573' :
+                state.timeLeft > state.timerDuration * 0.3 ? '#ffa502' : '#ff4757';
+  timerCircle.style.background = `conic-gradient(${color} ${degrees}deg, rgba(255,255,255,0.1) ${degrees}deg)`;
+  timerText.style.color = color;
+}
+
+function timeUp() {
+  state.answered = true;
+  const q = state.questions[state.currentIndex];
+  state.results.push({ idx: state.currentIndex, status: 'timeout', answer: q.answer });
+  feedback.textContent = `⏰ انتهى الوقت! الإجابة: ${q.answer}`;
+  feedback.className = 'feedback wrong';
+  answerInput.classList.add('wrong');
+  answerInput.disabled = true;
+  checkBtn.disabled = true;
+  hintBtn.disabled = true;
+  skipBtn.disabled = true;
+  updateGalleryProgress();
+  setTimeout(nextQuestion, 2200);
+}
+
+/* ============================================================
+   CHECK ANSWER
+============================================================ */
+function checkAnswer() {
+  if (state.answered) return;
+  const userAns = answerInput.value.trim();
+  if (!userAns) {
+    feedback.textContent = '⚠️ اكتب إجابتك أولاً';
+    feedback.className = 'feedback info';
+    return;
+  }
+
+  clearInterval(state.timerInterval);
+  state.answered = true;
+  const q = state.questions[state.currentIndex];
+  const isCorrect = normalize(userAns) === normalize(q.answer);
+
+  if (isCorrect) {
+    state.results.push({ idx: state.currentIndex, status: 'correct', answer: q.answer });
+    answerInput.classList.add('correct');
+    feedback.textContent = `✅ أحسنت!${state.hintUsed ? ' (نصف النقاط)' : ''}`;
+    feedback.className = 'feedback correct';
+
+    // Add points in team modes
+    if (state.mode === 'team' || state.mode === 'versus') {
+      if (state.activeTeam === 'a') {
+        state.teamA.score++;
+      } else if (state.activeTeam === 'b') {
+        state.teamB.score++;
+      } else {
+        // Default: team A gets it
+        state.teamA.score++;
+      }
+      updateScores();
+    }
+
+    highlightGalleryItem(state.currentIndex, 'solved');
+
+    // Check win condition
+    if (state.mode === 'versus') {
+      if (state.teamA.score >= state.maxScore || state.teamB.score >= state.maxScore) {
+        setTimeout(endGame, 1500);
+        return;
+      }
+    }
+  } else {
+    state.results.push({ idx: state.currentIndex, status: 'wrong', answer: q.answer });
+    answerInput.classList.add('wrong');
+    feedback.textContent = `❌ خطأ! الإجابة: ${q.answer}`;
+    feedback.className = 'feedback wrong';
+  }
+
+  answerInput.disabled = true;
+  checkBtn.disabled = true;
+  hintBtn.disabled = true;
+  skipBtn.disabled = true;
+  document.querySelectorAll('.team-select-btn').forEach(b => b.disabled = true);
+
+  updateGalleryProgress();
+  setTimeout(nextQuestion, 2200);
+}
+
+/* ============================================================
+   HINT
+============================================================ */
+function useHint() {
+  if (state.answered || state.hintUsed) return;
+  state.hintUsed = true;
+  const q = state.questions[state.currentIndex];
+
+  let hint = '';
+  if (q.hint) {
+    hint = q.hint;
+  } else {
+    // Generate simple hint: first 2 letters + dots
+    const clean = q.answer;
+    if (clean.length <= 3) {
+      hint = clean[0] + ' — ' + clean.length + ' حُرُوف';
+    } else {
+      hint = clean.slice(0, 2) + '... (' + clean.length + ' حُرُوف)';
+    }
+  }
+
+  hintDisplay.textContent = '💡 ' + hint;
+  hintDisplay.classList.add('show');
+  hintBtn.disabled = true;
+}
+
+/* ============================================================
+   SKIP
+============================================================ */
+function skipQuestion() {
+  if (state.answered) return;
+  clearInterval(state.timerInterval);
+  state.answered = true;
+  const q = state.questions[state.currentIndex];
+  state.results.push({ idx: state.currentIndex, status: 'skipped', answer: q.answer });
+  feedback.textContent = `⏭️ تخطي. الإجابة: ${q.answer}`;
+  feedback.className = 'feedback info';
+  answerInput.disabled = true;
+  checkBtn.disabled = true;
+  hintBtn.disabled = true;
+  skipBtn.disabled = true;
+  updateGalleryProgress();
+  setTimeout(nextQuestion, 2200);
+}
+
+/* ============================================================
+   NEXT QUESTION
+============================================================ */
+function nextQuestion() {
+  if (state.currentIndex < state.questions.length - 1) {
+    state.currentIndex++;
+    loadQuestion();
+  } else {
+    endGame();
+  }
+}
+
+/* ============================================================
+   TEAM SELECT (versus)
+============================================================ */
+document.getElementById('teamABtn').addEventListener('click', () => {
+  if (state.answered) return;
+  state.activeTeam = 'a';
+  document.getElementById('teamABtn').classList.add('active');
+  document.getElementById('teamBBtn').classList.remove('active');
+  document.getElementById('teamBBtn').disabled = true;
+  answerInput.focus();
+});
+
+document.getElementById('teamBBtn').addEventListener('click', () => {
+  if (state.answered) return;
+  state.activeTeam = 'b';
+  document.getElementById('teamBBtn').classList.add('active');
+  document.getElementById('teamABtn').classList.remove('active');
+  document.getElementById('teamABtn').disabled = true;
+  answerInput.focus();
+});
+
+/* ============================================================
+   UPDATE SCORES
+============================================================ */
+function updateScores() {
+  document.getElementById('teamAScore').textContent = toArabic(state.teamA.score);
+  document.getElementById('teamBScore').textContent = toArabic(state.teamB.score);
+}
+
+/* ============================================================
+   END GAME
+============================================================ */
+function endGame() {
+  clearInterval(state.timerInterval);
+  const total = state.questions.length;
+  const correct = state.results.filter(r => r.status === 'correct').length;
+  const wrong = state.results.filter(r => r.status === 'wrong' || r.status === 'timeout').length;
+  const skipped = state.results.filter(r => r.status === 'skipped').length;
+
+  overlay.classList.add('show');
+  const icon = document.getElementById('overlayIcon');
+  const title = document.getElementById('overlayTitle');
+  const subtitle = document.getElementById('overlaySubtitle');
+
+  if (state.mode === 'solo') {
+    const pct = Math.round((correct / total) * 100);
+    if (pct >= 90) { icon.textContent = '🏆'; title.textContent = 'مُمْتَاز!'; }
+    else if (pct >= 70) { icon.textContent = '🌟'; title.textContent = 'جَيِّد جِدًّا!'; }
+    else if (pct >= 50) { icon.textContent = '📖'; title.textContent = 'جَيِّد!'; }
+    else { icon.textContent = '💪'; title.textContent = 'حَاوِل مَرَّة أُخْرَى'; }
+
+    subtitle.innerHTML = `
+      ✅ صحيح: ${toArabic(correct)} &nbsp; | &nbsp;
+      ❌ خطأ: ${toArabic(wrong)} &nbsp; | &nbsp;
+      ⏭️ متخطى: ${toArabic(skipped)}
+      <br><br>
+      <strong style="font-size:1.5rem; color:#FFD700;">${toArabic(correct)} / ${toArabic(total)}</strong>
+    `;
+  } else {
+    if (state.teamA.score > state.teamB.score) {
+      icon.textContent = '🏆';
+      title.textContent = `فاز ${state.teamA.name}!`;
+    } else if (state.teamB.score > state.teamA.score) {
+      icon.textContent = '🏆';
+      title.textContent = `فاز ${state.teamB.name}!`;
+    } else {
+      icon.textContent = '🤝';
+      title.textContent = 'تَعَادُل!';
+    }
+
+    subtitle.innerHTML = `
+      🔵 ${state.teamA.name}: <strong>${toArabic(state.teamA.score)}</strong>
+      &nbsp; — &nbsp;
+      🔴 ${state.teamB.name}: <strong>${toArabic(state.teamB.score)}</strong>
+      <br><br>
+      ✅ صحيح: ${toArabic(correct)} &nbsp; | &nbsp;
+      ❌ خطأ: ${toArabic(wrong)} &nbsp; | &nbsp;
+      ⏭️ متخطى: ${toArabic(skipped)}
+    `;
+  }
+
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#95E1D3', '#F38181', '#AA96DA'];
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      c.style.animationDuration = (3 + Math.random() * 2) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }, i * 30);
+  }
+}
+
+/* ============================================================
+   OVERLAY BUTTONS
+============================================================ */
+document.getElementById('playAgainBtn').addEventListener('click', () => {
+  overlay.classList.remove('show');
+  // Restart with same settings
+  const shuffled = shuffle(state.allQuestions);
+  state.questions = shuffled.slice(0, Math.min(state.totalQuestions, state.allQuestions.length));
+  state.teamA.score = 0;
+  state.teamB.score = 0;
+  state.currentIndex = 0;
+  state.results = [];
+
+  updateScores();
+  renderGallery();
+  loadQuestion();
+});
+
+document.getElementById('backToSetupBtn').addEventListener('click', () => {
+  overlay.classList.remove('show');
+  gameScreen.classList.remove('show');
+  setupScreen.classList.remove('hide');
+});
+
+/* ============================================================
+   EVENT LISTENERS
+============================================================ */
+checkBtn.addEventListener('click', checkAnswer);
+hintBtn.addEventListener('click', useHint);
+skipBtn.addEventListener('click', skipQuestion);
+
+answerInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    if (state.answered) {
+      nextQuestion();
+    } else {
+      checkAnswer();
+    }
+  }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (!gameScreen.classList.contains('show')) return;
+  if (overlay.classList.contains('show')) return;
+  if (e.target === answerInput) return;
+
+  if (e.key === 'h' || e.key === 'H') useHint();
+  if (e.key === 's' || e.key === 'S') skipQuestion();
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+state.allQuestions = loadQuestions();
+renderQuestionList();
+
+// Load saved settings
+const saved = loadSettings();
+if (saved) {
+  if (saved.mode) {
+    state.mode = saved.mode;
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === saved.mode);
+    });
+    if (saved.mode !== 'solo') {
+      document.getElementById('teamInputs').classList.remove('hide');
+    }
+  }
+  if (saved.teamAName) document.getElementById('teamAName').value = saved.teamAName;
+  if (saved.teamBName) document.getElementById('teamBName').value = saved.teamBName;
+  if (saved.timer !== undefined) document.getElementById('timerSetting').value = saved.timer;
+  if (saved.maxScore) document.getElementById('maxScoreSetting').value = saved.maxScore;
+  if (saved.count) document.getElementById('countSetting').value = saved.count;
+}
+</script>
+</body>
+</html>

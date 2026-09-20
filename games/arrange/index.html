@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رَتِّبِ الجُمْلَة المُفِيدَة — Susun Kalimat</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Amiri:wght@400;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Tajawal',sans-serif; }
+
+  :root {
+    --primary:#00d2ff;
+    --primary-dark:#3a7bd5;
+    --gold:#FFD700;
+    --gold-dark:#FFA500;
+    --success:#2ed573;
+    --danger:#ff4757;
+    --dark:#0f0c29;
+    --dark-2:#302b63;
+    --dark-3:#24243e;
+    --text:#fff;
+    --text-muted:#a0a0c0;
+  }
+
+  body {
+    min-height:100vh;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+    color:var(--text);
+    overflow-x:hidden;
+  }
+
+  /* ===== Background ===== */
+  .bg-animation {
+    position:fixed; inset:0; z-index:0;
+    overflow:hidden; pointer-events:none;
+  }
+  .bg-circle {
+    position:absolute; border-radius:50%;
+    filter:blur(80px); opacity:0.3;
+    animation:floatCircle 20s ease-in-out infinite;
+  }
+  .bg-circle.c1 { width:400px; height:400px; background:var(--primary); top:-100px; left:-100px; }
+  .bg-circle.c2 { width:500px; height:500px; background:var(--gold); bottom:-150px; right:-150px; animation-delay:-5s; }
+  .bg-circle.c3 { width:300px; height:300px; background:var(--danger); top:40%; left:50%; animation-delay:-10s; }
+  @keyframes floatCircle {
+    0%,100% { transform:translate(0,0) scale(1); }
+    33% { transform:translate(100px,-50px) scale(1.1); }
+    66% { transform:translate(-50px,100px) scale(0.9); }
+  }
+
+  /* ===== Setup Screen ===== */
+  .setup-screen {
+    position:fixed; inset:0;
+    display:flex; justify-content:center; align-items:flex-start;
+    z-index:200; padding:20px; overflow-y:auto;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+  }
+  .setup-screen.hide { display:none; }
+
+  .setup-card {
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(20px);
+    border-radius:24px;
+    padding:35px;
+    max-width:850px; width:100%;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 25px 60px rgba(0,0,0,0.5);
+    margin:auto;
+  }
+
+  .setup-title {
+    color:var(--primary);
+    font-size:2rem; font-weight:900;
+    text-align:center; margin-bottom:8px;
+    text-shadow:0 0 20px rgba(0,210,255,0.5);
+  }
+  .setup-sub { color:var(--text-muted); text-align:center; margin-bottom:25px; }
+
+  /* Mode Selector */
+  .mode-selector {
+    display:flex; gap:12px; justify-content:center;
+    margin-bottom:25px; flex-wrap:wrap;
+  }
+  .mode-btn {
+    padding:14px 28px; border-radius:14px;
+    border:2px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-weight:700; font-size:1rem;
+    cursor:pointer; transition:all 0.3s;
+  }
+  .mode-btn:hover {
+    background:rgba(0,210,255,0.15);
+    border-color:rgba(0,210,255,0.5);
+    transform:translateY(-2px);
+  }
+  .mode-btn.active {
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    border-color:transparent;
+    box-shadow:0 8px 25px rgba(0,210,255,0.4);
+  }
+
+  /* Team Inputs */
+  .team-inputs {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:15px; margin-bottom:20px;
+  }
+  .team-inputs.hide { display:none; }
+  @media (max-width:600px) { .team-inputs { grid-template-columns:1fr; } }
+
+  .team-input-group {
+    background:rgba(255,255,255,0.04);
+    border-radius:14px; padding:15px;
+    border:2px solid;
+  }
+  .team-input-group.a { border-color:#4A90D9; }
+  .team-input-group.b { border-color:#E74C3C; }
+  .team-input-group label {
+    display:block; color:var(--text);
+    font-weight:700; margin-bottom:8px; font-size:0.95rem;
+  }
+  .team-input-group input {
+    width:100%; padding:10px 14px;
+    border-radius:10px;
+    border:2px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.1);
+    color:var(--text); font-size:1rem;
+    font-family:'Tajawal',sans-serif;
+    text-align:center; font-weight:700;
+  }
+  .team-input-group input:focus { outline:none; border-color:var(--gold); }
+
+  /* Settings */
+  .settings-row {
+    display:flex; justify-content:center;
+    gap:15px; margin-bottom:20px; flex-wrap:wrap;
+  }
+  .setting-item label {
+    display:block; color:var(--text-muted);
+    font-size:0.85rem; margin-bottom:6px; text-align:center;
+  }
+  .setting-item select {
+    padding:10px 18px; border-radius:10px;
+    border:2px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.1);
+    color:var(--text); font-family:'Tajawal',sans-serif;
+    font-size:0.95rem; cursor:pointer; text-align:center;
+    font-weight:700;
+  }
+  .setting-item select option { background:var(--dark-2); color:var(--text); }
+
+  /* Editor Toggle */
+  .editor-toggle {
+    display:block; margin:15px auto;
+    padding:12px 28px;
+    background:rgba(255,215,0,0.12);
+    border:2px solid rgba(255,215,0,0.35);
+    border-radius:12px;
+    color:var(--gold); font-weight:700;
+    cursor:pointer; font-family:'Tajawal',sans-serif;
+    font-size:0.95rem; transition:all 0.3s;
+  }
+  .editor-toggle:hover { background:rgba(255,215,0,0.25); transform:translateY(-2px); }
+
+  /* Editor Panel */
+  .editor-panel {
+    display:none;
+    background:rgba(0,0,0,0.25);
+    border-radius:16px;
+    padding:20px; margin-bottom:20px;
+    text-align:right;
+    max-height:500px; overflow-y:auto;
+  }
+  .editor-panel.show { display:block; }
+
+  .editor-panel h3 {
+    color:var(--gold); font-size:1.1rem;
+    margin-bottom:12px;
+    display:flex; justify-content:space-between;
+    align-items:center; flex-wrap:wrap; gap:10px;
+  }
+
+  .editor-actions {
+    display:flex; gap:8px;
+    flex-wrap:wrap; margin-bottom:15px;
+  }
+  .editor-btn {
+    padding:8px 16px; border:none;
+    border-radius:8px;
+    font-family:'Tajawal',sans-serif;
+    font-size:0.85rem; font-weight:700;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .editor-btn.add { background:var(--success); color:#fff; }
+  .editor-btn.random { background:var(--primary); color:#fff; }
+  .editor-btn.clear { background:var(--danger); color:#fff; }
+  .editor-btn.restore { background:var(--gold-dark); color:#fff; }
+  .editor-btn.export { background:#9b59b6; color:#fff; }
+  .editor-btn.import { background:#00b894; color:#fff; }
+  .editor-btn:hover { transform:translateY(-2px); opacity:0.9; }
+
+  /* Add Form */
+  .add-form {
+    background:rgba(46,213,115,0.1);
+    border:1px solid rgba(46,213,115,0.3);
+    border-radius:12px;
+    padding:16px; margin-top:12px;
+    display:none;
+  }
+  .add-form.show { display:block; }
+
+  .add-form label {
+    display:block; color:var(--text-muted);
+    font-size:0.8rem; margin-bottom:4px;
+  }
+  .add-form input, .add-form textarea {
+    width:100%; padding:10px 14px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.08);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-size:1rem;
+    margin-bottom:10px;
+    resize:vertical;
+  }
+  .add-form input:focus, .add-form textarea:focus {
+    outline:none; border-color:var(--success);
+  }
+  .add-form textarea { min-height:60px; font-family:'Amiri',serif; }
+  .add-form small { color:var(--text-muted); font-size:0.75rem; display:block; margin-bottom:8px; }
+
+  /* Question List */
+  .question-list {
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .question-item {
+    background:rgba(255,255,255,0.05);
+    border-radius:10px;
+    padding:12px 15px;
+    border:1px solid rgba(255,255,255,0.1);
+    display:flex; justify-content:space-between;
+    align-items:center; gap:10px;
+  }
+  .question-item .q-text {
+    color:var(--text); font-size:1rem;
+    flex:1; text-align:right;
+    font-family:'Amiri',serif;
+    font-weight:700; line-height:1.6;
+  }
+  .question-item .q-cat {
+    color:var(--text-muted); font-size:0.75rem;
+    background:rgba(255,255,255,0.05);
+    padding:3px 10px; border-radius:12px;
+  }
+  .question-item .del-btn {
+    background:var(--danger); color:#fff;
+    border:none; border-radius:6px;
+    width:28px; height:28px;
+    cursor:pointer; font-weight:900;
+    transition:all 0.2s;
+  }
+  .question-item .del-btn:hover { transform:scale(1.1); }
+
+  /* Start Button */
+  .start-btn {
+    display:block; margin:20px auto 0;
+    padding:16px 50px;
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000; border:none; border-radius:50px;
+    font-size:1.2rem; font-weight:900;
+    cursor:pointer; transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+    box-shadow:0 10px 30px rgba(255,215,0,0.5);
+  }
+  .start-btn:hover { transform:translateY(-3px) scale(1.05); }
+
+  .info-badge {
+    display:inline-block;
+    background:rgba(0,210,255,0.15);
+    border:1px solid rgba(0,210,255,0.3);
+    color:var(--primary);
+    padding:5px 14px;
+    border-radius:20px;
+    font-size:0.8rem;
+    margin-top:15px;
+  }
+
+  .center { text-align:center; }
+
+  /* ===== Game Screen ===== */
+  .game-screen {
+    display:none;
+    min-height:100vh;
+    padding:20px;
+    position:relative; z-index:5;
+  }
+  .game-screen.show { display:block; }
+
+  /* Top Bar */
+  .top-bar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(0,0,0,0.4);
+    backdrop-filter:blur(20px);
+    padding:12px 20px;
+    border-radius:16px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:10px;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+
+  .team-score {
+    display:flex; align-items:center; gap:10px;
+    padding:8px 16px; border-radius:12px;
+    background:rgba(255,255,255,0.08);
+    border:2px solid transparent;
+  }
+  .team-score.a { border-color:#4A90D9; }
+  .team-score.b { border-color:#E74C3C; }
+  .team-score.active {
+    background:rgba(255,215,0,0.15);
+    box-shadow:0 0 20px rgba(255,215,0,0.4);
+  }
+  .team-score .name {
+    color:var(--text); font-weight:700; font-size:0.9rem;
+  }
+  .team-score .pts {
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000; font-weight:900;
+    font-size:1.3rem; padding:2px 14px;
+    border-radius:8px; min-width:45px;
+    text-align:center;
+  }
+
+  .progress-info {
+    color:var(--text); text-align:center; font-weight:700;
+  }
+  .progress-info .num {
+    color:var(--gold); font-size:1.3rem;
+  }
+  .progress-info .sub {
+    display:block; color:var(--text-muted);
+    font-size:0.8rem; font-weight:500;
+  }
+
+  .timer-circle {
+    width:60px; height:60px;
+    border-radius:50%;
+    background:conic-gradient(var(--primary) 0deg, rgba(255,255,255,0.1) 0deg);
+    display:flex; justify-content:center; align-items:center;
+    position:relative; transition:background 0.3s;
+  }
+  .timer-circle::before {
+    content:'';
+    width:46px; height:46px;
+    background:#1a1a2e;
+    border-radius:50%;
+    position:absolute;
+  }
+  .timer-text {
+    position:relative; z-index:1;
+    color:#fff; font-weight:800; font-size:1.2rem;
+  }
+
+  /* Versus team buttons */
+  .versus-btns {
+    display:flex; gap:15px;
+    justify-content:center;
+    margin-bottom:15px; flex-wrap:wrap;
+  }
+  .versus-btns.hide { display:none; }
+
+  .team-select-btn {
+    padding:14px 32px;
+    border:none; border-radius:14px;
+    font-size:1.05rem; font-weight:800;
+    cursor:pointer; transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+    color:#fff;
+    box-shadow:0 6px 20px rgba(0,0,0,0.3);
+  }
+  .team-select-btn.a { background:linear-gradient(135deg,#4A90D9,#2E5C8A); }
+  .team-select-btn.b { background:linear-gradient(135deg,#E74C3C,#A93226); }
+  .team-select-btn:hover:not(:disabled) {
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  }
+  .team-select-btn:disabled {
+    opacity:0.4; cursor:not-allowed;
+  }
+  .team-select-btn.active {
+    transform:scale(1.08);
+    border:3px solid var(--gold);
+  }
+
+  /* Game Area */
+  .game-area {
+    max-width:1100px;
+    margin:0 auto;
+    background:rgba(0,0,0,0.35);
+    backdrop-filter:blur(15px);
+    border-radius:20px;
+    padding:30px;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+
+  .instruction {
+    color:var(--text-muted);
+    font-size:0.95rem;
+    text-align:center;
+    margin-bottom:20px;
+  }
+  .instruction strong { color:var(--primary); }
+
+  /* Answer Area (kotak jawaban) */
+  .answer-area {
+    background:rgba(0,210,255,0.06);
+    border:2px dashed rgba(0,210,255,0.4);
+    border-radius:16px;
+    padding:20px;
+    min-height:110px;
+    margin-bottom:25px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    justify-content:center;
+    transition:all 0.3s;
+    direction:rtl;
+  }
+  .answer-area.dragover {
+    border-color:var(--gold);
+    background:rgba(255,215,0,0.1);
+    box-shadow:0 0 30px rgba(255,215,0,0.3);
+  }
+  .answer-area.correct {
+    border-color:var(--success);
+    background:rgba(46,213,115,0.15);
+    animation:correctPulse 0.6s;
+  }
+  .answer-area.wrong {
+    border-color:var(--danger);
+    background:rgba(255,71,87,0.15);
+    animation:wrongShake 0.6s;
+  }
+  @keyframes correctPulse {
+    0%,100% { transform:scale(1); }
+    50% { transform:scale(1.02); }
+  }
+  @keyframes wrongShake {
+    0%,100% { transform:translateX(0); }
+    25% { transform:translateX(-10px); }
+    75% { transform:translateX(10px); }
+  }
+
+  .answer-placeholder {
+    color:rgba(255,255,255,0.3);
+    font-size:1rem;
+    font-style:italic;
+    pointer-events:none;
+  }
+
+  /* Word Bank (kata acak) */
+  .bank-title {
+    color:var(--text-muted);
+    font-size:0.9rem;
+    text-align:center;
+    margin-bottom:12px;
+  }
+
+  .bank-area {
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    padding:20px;
+    min-height:110px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:25px;
+    direction:rtl;
+  }
+
+  /* Word Card */
+  .word-card {
+    padding:14px 22px;
+    background:linear-gradient(135deg, rgba(0,210,255,0.15), rgba(58,123,213,0.15));
+    border:2px solid rgba(0,210,255,0.4);
+    border-radius:14px;
+    color:#fff;
+    font-size:1.4rem;
+    font-weight:700;
+    font-family:'Amiri',serif;
+    cursor:grab;
+    transition:all 0.25s;
+    user-select:none;
+    box-shadow:0 4px 15px rgba(0,0,0,0.2);
+    position:relative;
+  }
+  .word-card:hover {
+    transform:translateY(-3px) scale(1.05);
+    border-color:var(--gold);
+    background:linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.2));
+    box-shadow:0 8px 25px rgba(255,215,0,0.3);
+  }
+  .word-card:active {
+    cursor:grabbing;
+    transform:scale(0.98);
+  }
+  .word-card.placed {
+    background:linear-gradient(135deg, rgba(46,213,115,0.2), rgba(30,132,73,0.2));
+    border-color:rgba(46,213,115,0.5);
+  }
+  .word-card.placed:hover {
+    border-color:var(--danger);
+    background:linear-gradient(135deg, rgba(255,71,87,0.2), rgba(192,57,43,0.2));
+  }
+  .word-card.correct {
+    background:linear-gradient(135deg, rgba(46,213,115,0.4), rgba(30,132,73,0.4));
+    border-color:var(--success);
+    cursor:default;
+  }
+  .word-card.wrong {
+    background:linear-gradient(135deg, rgba(255,71,87,0.3), rgba(192,57,43,0.3));
+    border-color:var(--danger);
+  }
+  .word-card.dragging {
+    opacity:0.5;
+    transform:scale(0.95);
+  }
+
+  /* Buttons */
+  .btn-row {
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .btn {
+    padding:14px 28px;
+    border:none; border-radius:12px;
+    font-size:1rem; font-weight:700;
+    cursor:pointer; transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+  }
+  .btn-check {
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    box-shadow:0 6px 20px rgba(0,210,255,0.3);
+  }
+  .btn-reset {
+    background:rgba(255,215,0,0.15);
+    color:var(--gold);
+    border:1px solid rgba(255,215,0,0.4);
+  }
+  .btn-skip {
+    background:rgba(255,255,255,0.08);
+    color:var(--text-muted);
+    border:1px solid rgba(255,255,255,0.15);
+  }
+  .btn:hover:not(:disabled) { transform:translateY(-2px); }
+  .btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .feedback {
+    text-align:center;
+    font-size:1.05rem; font-weight:700;
+    min-height:28px; margin-top:15px;
+    transition:all 0.3s;
+  }
+  .feedback.correct { color:var(--success); }
+  .feedback.wrong { color:var(--danger); }
+  .feedback.info { color:var(--primary); }
+
+  /* Progress Bar */
+  .progress-bar {
+    height:6px;
+    background:rgba(255,255,255,0.1);
+    border-radius:3px;
+    margin-top:20px;
+    overflow:hidden;
+  }
+  .progress-fill {
+    height:100%;
+    background:linear-gradient(90deg,var(--primary),var(--gold));
+    border-radius:3px;
+    transition:width 0.4s;
+    width:0%;
+  }
+
+  /* ===== Overlay ===== */
+  .overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.9);
+    display:none;
+    justify-content:center; align-items:center;
+    z-index:1000;
+    backdrop-filter:blur(10px);
+    padding:20px;
+  }
+  .overlay.show { display:flex; animation:fadeIn 0.5s; }
+  @keyframes fadeIn {
+    from { opacity:0; }
+    to { opacity:1; }
+  }
+
+  .overlay-content {
+    text-align:center;
+    padding:40px;
+    max-width:550px;
+  }
+
+  .overlay-icon {
+    font-size:6rem; margin-bottom:20px;
+    animation:iconBounce 1s infinite;
+  }
+  @keyframes iconBounce {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-20px); }
+  }
+
+  .overlay-title {
+    color:var(--gold);
+    font-size:2.5rem; font-weight:900;
+    margin-bottom:15px;
+    text-shadow:0 0 30px rgba(255,215,0,0.8);
+  }
+
+  .overlay-subtitle {
+    color:var(--text);
+    font-size:1.2rem;
+    margin-bottom:30px;
+    line-height:1.7;
+  }
+
+  .overlay-btns {
+    display:flex; gap:15px;
+    justify-content:center; flex-wrap:wrap;
+  }
+
+  .overlay-btn {
+    padding:15px 40px;
+    border:none; border-radius:50px;
+    font-size:1.05rem; font-weight:900;
+    cursor:pointer; transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+  }
+  .overlay-btn.primary {
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000;
+    box-shadow:0 10px 30px rgba(255,215,0,0.5);
+  }
+  .overlay-btn.secondary {
+    background:rgba(255,255,255,0.15);
+    color:var(--text);
+    border:2px solid rgba(255,255,255,0.3);
+  }
+  .overlay-btn:hover { transform:translateY(-3px) scale(1.05); }
+
+  /* Toast */
+  .toast {
+    position:fixed; bottom:30px; left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:rgba(0,0,0,0.9);
+    color:#fff;
+    padding:14px 28px;
+    border-radius:50px;
+    font-weight:700;
+    border:2px solid var(--primary);
+    z-index:2000;
+    opacity:0;
+    transition:all 0.4s;
+    font-size:0.95rem;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+  .toast.success { border-color:var(--success); color:var(--success); }
+  .toast.error { border-color:var(--danger); color:var(--danger); }
+
+  /* Confetti */
+  .confetti {
+    position:fixed;
+    width:12px; height:12px;
+    top:-20px;
+    z-index:999;
+    animation:confettiFall 4s linear forwards;
+    pointer-events:none;
+  }
+  @keyframes confettiFall {
+    0% { transform:translateY(0) rotate(0deg); opacity:1; }
+    100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+  }
+
+  @media (max-width:600px) {
+    .word-card { font-size:1.1rem; padding:10px 16px; }
+    .game-area { padding:20px 15px; }
+    .setup-card { padding:25px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Background ===== -->
+<div class="bg-animation">
+  <div class="bg-circle c1"></div>
+  <div class="bg-circle c2"></div>
+  <div class="bg-circle c3"></div>
+</div>
+
+<!-- ===== Setup Screen ===== -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-card">
+    <div class="setup-title">🧱 رَتِّبِ الجُمْلَة المُفِيدَة</div>
+    <div class="setup-sub">Susun Kata jadi Kalimat Sempurna — Belajar Nahwu & Tarkib</div>
+
+    <!-- Mode Selector -->
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="solo">👤 فردي</button>
+      <button class="mode-btn" data-mode="team">👥 فرق</button>
+      <button class="mode-btn" data-mode="versus">⚔️ مواجهة</button>
+    </div>
+
+    <!-- Team Inputs -->
+    <div class="team-inputs hide" id="teamInputs">
+      <div class="team-input-group a">
+        <label>🔵 الفريق الأول</label>
+        <input type="text" id="teamAName" value="الفريق الأزرق" maxlength="20">
+      </div>
+      <div class="team-input-group b">
+        <label>🔴 الفريق الثاني</label>
+        <input type="text" id="teamBName" value="الفريق الأحمر" maxlength="20">
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="settings-row">
+      <div class="setting-item">
+        <label>⏱️ وقت السؤال</label>
+        <select id="timerSetting">
+          <option value="0">بدون وقت</option>
+          <option value="20">٢٠ ثانية</option>
+          <option value="30" selected>٣٠ ثانية</option>
+          <option value="45">٤٥ ثانية</option>
+          <option value="60">٦٠ ثانية</option>
+          <option value="90">٩٠ ثانية</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🎯 عدد الأسئلة</label>
+        <select id="countSetting">
+          <option value="5">٥ أسئلة</option>
+          <option value="10" selected>١٠ أسئلة</option>
+          <option value="15">١٥ سؤالاً</option>
+          <option value="20">٢٠ سؤالاً</option>
+          <option value="0">كل الأسئلة</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🏆 نقاط الفوز</label>
+        <select id="maxScoreSetting">
+          <option value="3">٣ نقاط</option>
+          <option value="5" selected>٥ نقاط</option>
+          <option value="7">٧ نقاط</option>
+          <option value="10">١٠ نقاط</option>
+          <option value="999">بدون حد</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Editor Toggle -->
+    <button class="editor-toggle" id="editorToggle">📝 إدارة الجمل (Tambah/Hapus Soal)</button>
+
+    <!-- Editor Panel -->
+    <div class="editor-panel" id="editorPanel">
+      <h3>
+        <span>📋 قائمة الجمل (<span id="questionCount">٠</span>)</span>
+      </h3>
+
+      <div class="editor-actions">
+        <button class="editor-btn add" id="addQuestionBtn">➕ إضافة جملة</button>
+        <button class="editor-btn random" id="shuffleBtn">🔀 خلط عشوائي</button>
+        <button class="editor-btn export" id="exportBtn">📤 تصدير JSON</button>
+        <button class="editor-btn import" id="importBtn">📥 استيراد JSON</button>
+        <button class="editor-btn restore" id="restoreBtn">↩️ استعادة الافتراضي</button>
+        <button class="editor-btn clear" id="clearBtn">🗑️ حذف الكل</button>
+      </div>
+
+      <div class="add-form" id="addForm">
+        <label>الجملة المفيدة (بالعربية) *</label>
+        <textarea id="newSentence" placeholder="مثال: أَذْهَبُ إِلَى المَسْجِدِ لِصَلَاةِ الجُمُعَة" dir="rtl"></textarea>
+        <small>💡 اكتب الجملة كاملة. Kata akan dipisahkan otomatis oleh spasi.</small>
+
+        <label>الفئة (اختياري)</label>
+        <input type="text" id="newCategory" placeholder="مثال: العِبَادَة، الطَّعَام، السَّفَر" dir="rtl">
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button class="editor-btn add" id="saveQuestionBtn" style="flex:1;">💾 حفظ</button>
+          <button class="editor-btn clear" id="cancelAddBtn" style="flex:1;">✖️ إلغاء</button>
+        </div>
+      </div>
+
+      <div class="question-list" id="questionList"></div>
+    </div>
+
+    <div class="center">
+      <span class="info-badge">💾 جميع الجمل محفوظة محليًا — لا تختفي عند التحديث</span>
+    </div>
+
+    <button class="start-btn" id="startBtn">🚀 ابدأ اللعب</button>
+  </div>
+</div>
+
+<!-- ===== Game Screen ===== -->
+<div class="game-screen" id="gameScreen">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="team-score a" id="teamAScoreBox" style="display:none;">
+      <span class="name" id="teamANameDisplay">🔵 الفريق الأول</span>
+      <span class="pts" id="teamAScore">٠</span>
+    </div>
+    <div class="progress-info">
+      <span class="num"><span id="questionNum">١</span> / <span id="totalQuestions">١٠</span></span>
+      <span class="sub">رَتِّبِ الجُمْلَة</span>
+    </div>
+    <div class="timer-circle" id="timerCircle">
+      <span class="timer-text" id="timerText">—</span>
+    </div>
+    <div class="team-score b" id="teamBScoreBox" style="display:none;">
+      <span class="pts" id="teamBScore">٠</span>
+      <span class="name" id="teamBNameDisplay">🔴 الفريق الثاني</span>
+    </div>
+  </div>
+
+  <!-- Versus buttons -->
+  <div class="versus-btns hide" id="versusBtns">
+    <button class="team-select-btn a" id="teamABtn">🔵 الفريق الأول</button>
+    <button class="team-select-btn b" id="teamBBtn">🔴 الفريق الثاني</button>
+  </div>
+
+  <!-- Game Area -->
+  <div class="game-area">
+    <div class="instruction">
+      🎯 <strong>اضغط على الكلمة</strong> لنقلها إلى مكان الإجابة — أو اسحبها بالماوس
+    </div>
+
+    <!-- Answer Area -->
+    <div class="answer-area" id="answerArea">
+      <span class="answer-placeholder" id="answerPlaceholder">اسحب الكلمات هنا أو اضغط عليها لترتيب الجملة...</span>
+    </div>
+
+    <!-- Bank Title -->
+    <div class="bank-title">📚 الكلمات المتاحة — اضغط عليها لترتيبها:</div>
+
+    <!-- Word Bank -->
+    <div class="bank-area" id="bankArea"></div>
+
+    <!-- Buttons -->
+    <div class="btn-row">
+      <button class="btn btn-reset" id="resetBtn">🔄 إعادة ترتيب</button>
+      <button class="btn btn-skip" id="skipBtn">⏭️ تخطي</button>
+      <button class="btn btn-check" id="checkBtn">✓ تحقق</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Result Overlay ===== -->
+<div class="overlay" id="overlay">
+  <div class="overlay-content">
+    <div class="overlay-icon" id="overlayIcon">🏆</div>
+    <div class="overlay-title" id="overlayTitle">أحسنت!</div>
+    <div class="overlay-subtitle" id="overlaySubtitle"></div>
+    <div class="overlay-btns">
+      <button class="overlay-btn primary" id="playAgainBtn">🔄 العب مرة أخرى</button>
+      <button class="overlay-btn secondary" id="backToSetupBtn">⚙️ الإعدادات</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DEFAULT SENTENCES (dari kitab العربية بين يديك)
+============================================================ */
+const DEFAULT_QUESTIONS = [
+  // العبادة
+  { id:'s1',  sentence:'أَذْهَبُ إِلَى المَسْجِدِ لِصَلَاةِ الجُمُعَة', category:'العِبَادَة' },
+  { id:'s2',  sentence:'أَقْرَأُ القُرْآنَ بَعْدَ صَلَاةِ الفَجْر', category:'العِبَادَة' },
+  { id:'s3',  sentence:'أَصُومُ رَمَضَانَ وَأُصَلِّي التَّرَاوِيح', category:'العِبَادَة' },
+  { id:'s4',  sentence:'أَتَوَضَّأُ قَبْلَ الصَّلَاةِ', category:'العِبَادَة' },
+
+  // الطعام
+  { id:'s5',  sentence:'آكُلُ الفَطُورَ مَعَ أُسْرَتِي فِي الصَّبَاح', category:'الطَّعَام' },
+  { id:'s6',  sentence:'أَشْرَبُ القَهْوَةَ فِي المَقْهَى', category:'الطَّعَام' },
+  { id:'s7',  sentence:'تَطْبُخُ الأُمُّ الطَّعَامَ فِي المَطْبَخ', category:'الطَّعَام' },
+  { id:'s8',  sentence:'آكُلُ الأَرُزَّ وَالدَّجَاجَ فِي المَطْعَم', category:'الطَّعَام' },
+
+  // المدرسة
+  { id:'s9',  sentence:'يَذْهَبُ الطَّالِبُ إِلَى المَدْرَسَةِ صَبَاحًا', category:'المَدْرَسَة' },
+  { id:'s10', sentence:'يَقْرَأُ الطَّالِبُ الكِتَابَ فِي المَكْتَبَة', category:'المَدْرَسَة' },
+  { id:'s11', sentence:'يَكْتُبُ الطَّالِبُ الدَّرْسَ بِالقَلَم', category:'المَدْرَسَة' },
+  { id:'s12', sentence:'يَشْرَحُ المُعَلِّمُ الدَّرْسَ لِلطُّلَّاب', category:'المَدْرَسَة' },
+  { id:'s13', sentence:'يَجْلِسُ الطَّالِبُ عَلَى الكُرْسِيّ', category:'المَدْرَسَة' },
+
+  // الأسرة
+  { id:'s14', sentence:'يَجْلِسُ الأَبُ مَعَ أُسْرَتِهِ فِي الغُرْفَة', category:'الأُسْرَة' },
+  { id:'s15', sentence:'تَنَامُ الأُخْتُ فِي غُرْفَةِ النَّوْم', category:'الأُسْرَة' },
+  { id:'s16', sentence:'يَلْعَبُ الأَخُ مَعَ صَدِيقِهِ فِي الحَدِيقَة', category:'الأُسْرَة' },
+  { id:'s17', sentence:'تُحِبُّ الأُمُّ أَوْلَادَهَا كَثِيرًا', category:'الأُسْرَة' },
+
+  // السفر
+  { id:'s18', sentence:'أَذْهَبُ إِلَى المَطَارِ لِلسَّفَر', category:'السَّفَر' },
+  { id:'s19', sentence:'أَرْكَبُ الطَّائِرَةَ إِلَى بَلَدِي', category:'السَّفَر' },
+  { id:'s20', sentence:'أَنْزِلُ فِي الفُنْدُقِ لَيْلَةً وَاحِدَة', category:'السَّفَر' },
+  { id:'s21', sentence:'أَحْمِلُ حَقِيبَتِي إِلَى المَطَار', category:'السَّفَر' },
+
+  // التسوق
+  { id:'s22', sentence:'أَشْتَرِي الفَاكِهَةَ مِنَ السُّوق', category:'التَّسَوُّق' },
+  { id:'s23', sentence:'أَدْفَعُ النُّقُودَ لِلْبَائِع', category:'التَّسَوُّق' },
+  { id:'s24', sentence:'أَذْهَبُ إِلَى السُّوقِ مَعَ أُمِّي', category:'التَّسَوُّق' },
+
+  // العمل
+  { id:'s25', sentence:'يَعْمَلُ الأَبُ فِي الشَّرِكَة', category:'العَمَل' },
+  { id:'s26', sentence:'يُعَالِجُ الطَّبِيبُ المَرِيضَ فِي المُسْتَشْفَى', category:'العَمَل' },
+  { id:'s27', sentence:'يُعَلِّمُ المُدَرِّسُ الطُّلَّابَ فِي الفَصْل', category:'العَمَل' },
+  { id:'s28', sentence:'يَبْنِي المُهَنْدِسُ البُيُوتَ الكَبِيرَة', category:'العَمَل' },
+
+  // الطبيعة
+  { id:'s29', sentence:'تَشْرُقُ الشَّمْسُ مِنَ الشَّرْق', category:'الطَّبِيعَة' },
+  { id:'s30', sentence:'تَنْزِلُ الأَمْطَارُ فِي فَصْلِ الشِّتَاء', category:'الطَّبِيعَة' },
+  { id:'s31', sentence:'تَنْبُتُ الأَزْهَارُ فِي فَصْلِ الرَّبِيع', category:'الطَّبِيعَة' },
+  { id:'s32', sentence:'يَطِيرُ الطَّائِرُ فِي السَّمَاء', category:'الطَّبِيعَة' },
+
+  // الرياضة
+  { id:'s33', sentence:'يَلْعَبُ الأَوْلَادُ كُرَةَ القَدَمِ فِي المَلْعَب', category:'الرِّيَاضَة' },
+  { id:'s34', sentence:'أَسْبَحُ فِي المَسْبَحِ مَعَ أَصْدِقَائِي', category:'الرِّيَاضَة' },
+  { id:'s35', sentence:'يَجْرِي اللَّاعِبُ فِي المَلْعَبِ بِسُرْعَة', category:'الرِّيَاضَة' },
+
+  // الحج
+  { id:'s36', sentence:'يَذْهَبُ الحَاجُّ إِلَى مَكَّةَ لِلْحَج', category:'الحَجّ' },
+  { id:'s37', sentence:'يَطُوفُ الحَاجُّ حَوْلَ الكَعْبَةِ سَبْعَ مَرَّات', category:'الحَجّ' },
+  { id:'s38', sentence:'يَسْعَى الحَاجُّ بَيْنَ الصَّفَا وَالمَرْوَة', category:'الحَجّ' },
+  { id:'s39', sentence:'يَقِفُ الحَاجُّ بِعَرَفَةَ يَوْمَ التَّاسِع', category:'الحَجّ' },
+  { id:'s40', sentence:'يَرْمِي الحَاجُّ الجِمَارَ فِي مِنًى', category:'الحَجّ' },
+];
+
+/* ============================================================
+   STORAGE
+============================================================ */
+const STORAGE_KEY = 'arab_arrange_data';
+const SETTINGS_KEY = 'arab_arrange_settings';
+
+function loadQuestions() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) { console.error(e); }
+  return JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+}
+
+function saveQuestions(qs) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(qs)); }
+  catch (e) {
+    if (e.name === 'QuotaExceededError') toast('⚠️ الذاكرة ممتلئة', 'error');
+    else console.error(e);
+  }
+}
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return null;
+}
+
+function saveSettings(s) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch (e) {}
+}
+
+/* ============================================================
+   STATE
+============================================================ */
+const state = {
+  mode: 'solo',
+  teamA: { name: 'الفريق الأزرق', score: 0 },
+  teamB: { name: 'الفريق الأحمر', score: 0 },
+  questions: [],
+  allQuestions: [],
+  currentIndex: 0,
+  totalQuestions: 10,
+  maxScore: 5,
+  timerDuration: 30,
+  timeLeft: 30,
+  timerInterval: null,
+  answered: false,
+  activeTeam: null,
+  results: [],
+  currentWords: [],      // kata-kata yang saat ini di bank
+  currentAnswer: [],     // kata-kata yang sudah di area jawaban
+  correctWords: [],      // susunan kata yang benar
+};
+
+/* ============================================================
+   DOM
+============================================================ */
+const setupScreen = document.getElementById('setupScreen');
+const gameScreen = document.getElementById('gameScreen');
+const questionListEl = document.getElementById('questionList');
+const questionCount = document.getElementById('questionCount');
+const editorPanel = document.getElementById('editorPanel');
+const addForm = document.getElementById('addForm');
+const bankArea = document.getElementById('bankArea');
+const answerArea = document.getElementById('answerArea');
+const answerPlaceholder = document.getElementById('answerPlaceholder');
+const feedback = document.getElementById('feedback');
+const questionNumEl = document.getElementById('questionNum');
+const totalQuestionsEl = document.getElementById('totalQuestions');
+const timerCircle = document.getElementById('timerCircle');
+const timerText = document.getElementById('timerText');
+const checkBtn = document.getElementById('checkBtn');
+const resetBtn = document.getElementById('resetBtn');
+const skipBtn = document.getElementById('skipBtn');
+const overlay = document.getElementById('overlay');
+const toastEl = document.getElementById('toast');
+const progressFill = document.getElementById('progressFill');
+
+/* ============================================================
+   HELPERS
+============================================================ */
+function toArabic(num) {
+  const d = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  return String(num).split('').map(x => d[parseInt(x)] || x).join('');
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toast(msg, type = '') {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show ' + type;
+  setTimeout(() => toastEl.classList.remove('show'), 2500);
+}
+
+/* ============================================================
+   EDITOR
+============================================================ */
+function renderQuestionList() {
+  questionListEl.innerHTML = '';
+  questionCount.textContent = toArabic(state.allQuestions.length);
+
+  state.allQuestions.forEach((q, idx) => {
+    const item = document.createElement('div');
+    item.className = 'question-item';
+    item.innerHTML = `
+      <span style="color:var(--gold); font-weight:900; min-width:30px; text-align:center;">${toArabic(idx + 1)}</span>
+      <span class="q-text">${q.sentence}</span>
+      ${q.category ? `<span class="q-cat">${q.category}</span>` : ''}
+      <button class="del-btn" data-idx="${idx}" title="حذف">✖</button>
+    `;
+    item.querySelector('.del-btn').addEventListener('click', () => {
+      if (confirm(`حذف "${q.sentence}"؟`)) {
+        state.allQuestions.splice(idx, 1);
+        saveQuestions(state.allQuestions);
+        renderQuestionList();
+        toast('🗑️ تم الحذف', 'success');
+      }
+    });
+    questionListEl.appendChild(item);
+  });
+}
+
+document.getElementById('editorToggle').addEventListener('click', () => {
+  editorPanel.classList.toggle('show');
+});
+
+document.getElementById('addQuestionBtn').addEventListener('click', () => {
+  addForm.classList.toggle('show');
+  if (addForm.classList.contains('show')) {
+    document.getElementById('newSentence').focus();
+  }
+});
+
+document.getElementById('saveQuestionBtn').addEventListener('click', () => {
+  const sentence = document.getElementById('newSentence').value.trim();
+  const category = document.getElementById('newCategory').value.trim();
+
+  if (!sentence) {
+    toast('⚠️ اكتب الجملة', 'error');
+    return;
+  }
+
+  // Minimal 2 kata
+  const words = sentence.split(/\s+/).filter(w => w.length > 0);
+  if (words.length < 2) {
+    toast('⚠️ الجملة يجب أن تحتوي على كلمتين على الأقل', 'error');
+    return;
+  }
+
+  const newQ = {
+    id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    sentence,
+    category: category || '',
+  };
+
+  state.allQuestions.push(newQ);
+  saveQuestions(state.allQuestions);
+  renderQuestionList();
+  resetAddForm();
+  toast('✅ تم الحفظ', 'success');
+});
+
+document.getElementById('cancelAddBtn').addEventListener('click', resetAddForm);
+
+function resetAddForm() {
+  document.getElementById('newSentence').value = '';
+  document.getElementById('newCategory').value = '';
+  addForm.classList.remove('show');
+}
+
+document.getElementById('shuffleBtn').addEventListener('click', () => {
+  state.allQuestions = shuffle(state.allQuestions);
+  saveQuestions(state.allQuestions);
+  renderQuestionList();
+  toast('🔀 تم الخلط', 'success');
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (confirm('🗑️ حذف جميع الجمل؟ لا يمكن التراجع.')) {
+    state.allQuestions = [];
+    saveQuestions(state.allQuestions);
+    renderQuestionList();
+    toast('🗑️ تم الحذف الكامل', 'success');
+  }
+});
+
+document.getElementById('restoreBtn').addEventListener('click', () => {
+  if (confirm('↩️ استعادة الافتراضي؟ سيتم حذف جملك المخصصة.')) {
+    state.allQuestions = JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+    saveQuestions(state.allQuestions);
+    renderQuestionList();
+    toast('↩️ تم الاستعادة', 'success');
+  }
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = JSON.stringify(state.allQuestions, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'arrange-questions.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📤 تم التصدير', 'success');
+});
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error('bad');
+        state.allQuestions = data;
+        saveQuestions(state.allQuestions);
+        renderQuestionList();
+        toast('📥 تم الاستيراد', 'success');
+      } catch (err) {
+        toast('⚠️ فشل الاستيراد', 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+});
+
+/* ============================================================
+   MODE SELECTOR
+============================================================ */
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.mode = btn.dataset.mode;
+
+    const teamInputs = document.getElementById('teamInputs');
+    if (state.mode === 'solo') {
+      teamInputs.classList.add('hide');
+    } else {
+      teamInputs.classList.remove('hide');
+    }
+  });
+});
+
+/* ============================================================
+   START GAME
+============================================================ */
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (state.allQuestions.length === 0) {
+    toast('⚠️ لا توجد جمل! أضف جملًا أولاً.', 'error');
+    return;
+  }
+
+  state.teamA.name = document.getElementById('teamAName').value || 'الفريق الأزرق';
+  state.teamB.name = document.getElementById('teamBName').value || 'الفريق الأحمر';
+  state.timerDuration = parseInt(document.getElementById('timerSetting').value);
+  state.maxScore = parseInt(document.getElementById('maxScoreSetting').value);
+  const requested = parseInt(document.getElementById('countSetting').value);
+  state.totalQuestions = requested === 0 ? state.allQuestions.length : Math.min(requested, state.allQuestions.length);
+
+  const shuffled = shuffle(state.allQuestions);
+  state.questions = shuffled.slice(0, state.totalQuestions);
+
+  state.teamA.score = 0;
+  state.teamB.score = 0;
+  state.currentIndex = 0;
+  state.results = [];
+
+  saveSettings({
+    mode: state.mode,
+    teamAName: state.teamA.name,
+    teamBName: state.teamB.name,
+    timer: state.timerDuration,
+    maxScore: state.maxScore,
+    count: requested,
+  });
+
+  setupScreen.classList.add('hide');
+  gameScreen.classList.add('show');
+
+  setupGameUI();
+  loadQuestion();
+});
+
+function setupGameUI() {
+  const teamAScoreBox = document.getElementById('teamAScoreBox');
+  const teamBScoreBox = document.getElementById('teamBScoreBox');
+  const versusBtns = document.getElementById('versusBtns');
+
+  document.getElementById('teamANameDisplay').textContent = '🔵 ' + state.teamA.name;
+  document.getElementById('teamBNameDisplay').textContent = '🔴 ' + state.teamB.name;
+
+  if (state.mode === 'solo') {
+    teamAScoreBox.style.display = 'none';
+    teamBScoreBox.style.display = 'none';
+    versusBtns.classList.add('hide');
+  } else {
+    teamAScoreBox.style.display = 'flex';
+    teamBScoreBox.style.display = 'flex';
+    versusBtns.classList.remove('hide');
+  }
+
+  updateScores();
+  totalQuestionsEl.textContent = toArabic(state.totalQuestions);
+}
+
+/* ============================================================
+   LOAD QUESTION
+============================================================ */
+function loadQuestion() {
+  clearInterval(state.timerInterval);
+  state.answered = false;
+  state.activeTeam = null;
+  state.timeLeft = state.timerDuration;
+
+  const q = state.questions[state.currentIndex];
+
+  // Pecah kalimat jadi kata
+  state.correctWords = q.sentence.split(/\s+/).filter(w => w.length > 0);
+
+  // Acak kata
+  state.currentWords = shuffle([...state.correctWords]);
+  state.currentAnswer = [];
+
+  // Update UI
+  questionNumEl.textContent = toArabic(state.currentIndex + 1);
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+  progressFill.style.width = `${((state.currentIndex) / state.totalQuestions) * 100}%`;
+
+  // Reset buttons
+  checkBtn.disabled = false;
+  resetBtn.disabled = false;
+  skipBtn.disabled = false;
+  document.querySelectorAll('.team-select-btn').forEach(b => {
+    b.disabled = false;
+    b.classList.remove('active');
+  });
+
+  // Render
+  renderBank();
+  renderAnswer();
+
+  // Timer
+  if (state.timerDuration > 0) {
+    startTimer();
+  } else {
+    timerText.textContent = '—';
+    timerCircle.style.background = 'conic-gradient(#666 0deg, rgba(255,255,255,0.1) 0deg)';
+  }
+}
+
+/* ============================================================
+   RENDER BANK (kata acak di bawah)
+============================================================ */
+function renderBank() {
+  bankArea.innerHTML = '';
+
+  if (state.currentWords.length === 0) {
+    bankArea.innerHTML = '<div style="color:var(--text-muted); opacity:0.5;">✨ تم استخدام كل الكلمات</div>';
+    return;
+  }
+
+  state.currentWords.forEach((word, idx) => {
+    const card = document.createElement('div');
+    card.className = 'word-card';
+    card.textContent = word;
+    card.draggable = !state.answered;
+    card.dataset.bankIdx = idx;
+    card.dataset.word = word;
+
+    // Klik untuk pindah
+    card.addEventListener('click', () => {
+      if (state.answered) return;
+      moveToAnswer(idx);
+    });
+
+    // Drag
+    card.addEventListener('dragstart', (e) => {
+      if (state.answered) { e.preventDefault(); return; }
+      e.dataTransfer.setData('text/plain', JSON.stringify({ from: 'bank', idx }));
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
+    bankArea.appendChild(card);
+  });
+}
+
+/* ============================================================
+   RENDER ANSWER (area jawaban)
+============================================================ */
+function renderAnswer() {
+  // Hapus semua kecuali placeholder
+  answerArea.innerHTML = '';
+
+  if (state.currentAnswer.length === 0) {
+    answerPlaceholder.style.display = 'block';
+    answerArea.appendChild(answerPlaceholder);
+    return;
+  }
+
+  answerPlaceholder.style.display = 'none';
+
+  state.currentAnswer.forEach((word, idx) => {
+    const card = document.createElement('div');
+    card.className = 'word-card placed';
+    card.textContent = word;
+    card.draggable = !state.answered;
+    card.dataset.answerIdx = idx;
+
+    // Klik untuk balik ke bank
+    card.addEventListener('click', () => {
+      if (state.answered) return;
+      moveToBank(idx);
+    });
+
+    // Drag dari answer
+    card.addEventListener('dragstart', (e) => {
+      if (state.answered) { e.preventDefault(); return; }
+      e.dataTransfer.setData('text/plain', JSON.stringify({ from: 'answer', idx }));
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
+    answerArea.appendChild(card);
+  });
+}
+
+/* ============================================================
+   MOVE WORDS
+============================================================ */
+function moveToAnswer(bankIdx) {
+  const word = state.currentWords[bankIdx];
+  state.currentWords.splice(bankIdx, 1);
+  state.currentAnswer.push(word);
+  renderBank();
+  renderAnswer();
+}
+
+function moveToBank(answerIdx) {
+  const word = state.currentAnswer[answerIdx];
+  state.currentAnswer.splice(answerIdx, 1);
+  state.currentWords.push(word);
+  renderBank();
+  renderAnswer();
+}
+
+/* ============================================================
+   DRAG & DROP
+============================================================ */
+answerArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  answerArea.classList.add('dragover');
+});
+answerArea.addEventListener('dragleave', () => {
+  answerArea.classList.remove('dragover');
+});
+answerArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  answerArea.classList.remove('dragover');
+  if (state.answered) return;
+  try {
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (data.from === 'bank') {
+      moveToAnswer(data.idx);
+    }
+  } catch (err) {}
+});
+
+bankArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+});
+bankArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  if (state.answered) return;
+  try {
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (data.from === 'answer') {
+      moveToBank(data.idx);
+    }
+  } catch (err) {}
+});
+
+/* ============================================================
+   TIMER
+============================================================ */
+function startTimer() {
+  updateTimerDisplay();
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      if (!state.answered) timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  timerText.textContent = toArabic(state.timeLeft);
+  const degrees = (state.timeLeft / state.timerDuration) * 360;
+  const color = state.timeLeft > state.timerDuration * 0.6 ? '#2ed573' :
+                state.timeLeft > state.timerDuration * 0.3 ? '#ffa502' : '#ff4757';
+  timerCircle.style.background = `conic-gradient(${color} ${degrees}deg, rgba(255,255,255,0.1) ${degrees}deg)`;
+  timerText.style.color = color;
+}
+
+function timeUp() {
+  state.answered = true;
+  const q = state.questions[state.currentIndex];
+  state.results.push({ idx: state.currentIndex, status: 'timeout' });
+  feedback.textContent = `⏰ انتهى الوقت! الجملة: ${q.sentence}`;
+  feedback.className = 'feedback wrong';
+  checkBtn.disabled = true;
+  resetBtn.disabled = true;
+  skipBtn.disabled = true;
+  document.querySelectorAll('.team-select-btn').forEach(b => b.disabled = true);
+  setTimeout(nextQuestion, 2500);
+}
+
+/* ============================================================
+   CHECK ANSWER
+============================================================ */
+function checkAnswer() {
+  if (state.answered) return;
+
+  if (state.currentAnswer.length === 0) {
+    feedback.textContent = '⚠️ رَتِّبِ الكَلِمَاتِ أَوَّلًا';
+    feedback.className = 'feedback info';
+    return;
+  }
+
+  clearInterval(state.timerInterval);
+  state.answered = true;
+
+  const q = state.questions[state.currentIndex];
+  const userSentence = state.currentAnswer.join(' ');
+  const correctSentence = state.correctWords.join(' ');
+
+  const isCorrect = userSentence === correctSentence;
+
+  if (isCorrect) {
+    state.results.push({ idx: state.currentIndex, status: 'correct' });
+    answerArea.classList.add('correct');
+    feedback.textContent = '🎉 أَحْسَنْت! الجملة صحيحة';
+    feedback.className = 'feedback correct';
+
+    // Poin untuk team mode
+    if (state.mode === 'team' || state.mode === 'versus') {
+      if (state.activeTeam === 'a') state.teamA.score++;
+      else if (state.activeTeam === 'b') state.teamB.score++;
+      else state.teamA.score++;
+      updateScores();
+    }
+
+    document.querySelectorAll('.word-card').forEach(c => {
+      c.classList.add('correct');
+      c.draggable = false;
+    });
+
+    // Cek menang
+    if (state.mode === 'versus') {
+      if (state.teamA.score >= state.maxScore || state.teamB.score >= state.maxScore) {
+        setTimeout(endGame, 1500);
+        return;
+      }
+    }
+  } else {
+    state.results.push({ idx: state.currentIndex, status: 'wrong' });
+    answerArea.classList.add('wrong');
+    feedback.textContent = `❌ خَطَأ! الجملة الصَّحِيحَة: ${correctSentence}`;
+    feedback.className = 'feedback wrong';
+
+    // Tandai kata yang salah
+    document.querySelectorAll('.word-card').forEach((c, i) => {
+      c.classList.add('wrong');
+      c.draggable = false;
+    });
+  }
+
+  checkBtn.disabled = true;
+  resetBtn.disabled = true;
+  skipBtn.disabled = true;
+  document.querySelectorAll('.team-select-btn').forEach(b => b.disabled = true);
+
+  setTimeout(nextQuestion, isCorrect ? 2000 : 3000);
+}
+
+/* ============================================================
+   RESET
+============================================================ */
+function resetArrange() {
+  if (state.answered) return;
+  // Kembalikan semua kata ke bank
+  state.currentWords = shuffle([...state.currentWords, ...state.currentAnswer]);
+  state.currentAnswer = [];
+  renderBank();
+  renderAnswer();
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+}
+
+/* ============================================================
+   SKIP
+============================================================ */
+function skipQuestion() {
+  if (state.answered) return;
+  clearInterval(state.timerInterval);
+  state.answered = true;
+  const q = state.questions[state.currentIndex];
+  state.results.push({ idx: state.currentIndex, status: 'skipped' });
+  feedback.textContent = `⏭️ تخطي. الجملة الصَّحِيحَة: ${q.sentence}`;
+  feedback.className = 'feedback info';
+  checkBtn.disabled = true;
+  resetBtn.disabled = true;
+  skipBtn.disabled = true;
+  document.querySelectorAll('.team-select-btn').forEach(b => b.disabled = true);
+  setTimeout(nextQuestion, 2500);
+}
+
+/* ============================================================
+   NEXT QUESTION
+============================================================ */
+function nextQuestion() {
+  answerArea.classList.remove('correct', 'wrong', 'dragover');
+  if (state.currentIndex < state.questions.length - 1) {
+    state.currentIndex++;
+    loadQuestion();
+  } else {
+    endGame();
+  }
+}
+
+/* ============================================================
+   TEAM SELECT
+============================================================ */
+document.getElementById('teamABtn').addEventListener('click', () => {
+  if (state.answered) return;
+  state.activeTeam = 'a';
+  document.getElementById('teamABtn').classList.add('active');
+  document.getElementById('teamBBtn').classList.remove('active');
+  document.getElementById('teamBBtn').disabled = true;
+});
+
+document.getElementById('teamBBtn').addEventListener('click', () => {
+  if (state.answered) return;
+  state.activeTeam = 'b';
+  document.getElementById('teamBBtn').classList.add('active');
+  document.getElementById('teamABtn').classList.remove('active');
+  document.getElementById('teamABtn').disabled = true;
+});
+
+/* ============================================================
+   SCORES
+============================================================ */
+function updateScores() {
+  document.getElementById('teamAScore').textContent = toArabic(state.teamA.score);
+  document.getElementById('teamBScore').textContent = toArabic(state.teamB.score);
+}
+
+/* ============================================================
+   END GAME
+============================================================ */
+function endGame() {
+  clearInterval(state.timerInterval);
+  const total = state.questions.length;
+  const correct = state.results.filter(r => r.status === 'correct').length;
+  const wrong = state.results.filter(r => r.status === 'wrong' || r.status === 'timeout').length;
+  const skipped = state.results.filter(r => r.status === 'skipped').length;
+
+  overlay.classList.add('show');
+  const icon = document.getElementById('overlayIcon');
+  const title = document.getElementById('overlayTitle');
+  const subtitle = document.getElementById('overlaySubtitle');
+
+  if (state.mode === 'solo') {
+    const pct = Math.round((correct / total) * 100);
+    if (pct >= 90) { icon.textContent = '🏆'; title.textContent = 'مُمْتَاز!'; }
+    else if (pct >= 70) { icon.textContent = '🌟'; title.textContent = 'جَيِّد جِدًّا!'; }
+    else if (pct >= 50) { icon.textContent = '📖'; title.textContent = 'جَيِّد!'; }
+    else { icon.textContent = '💪'; title.textContent = 'حَاوِل مَرَّة أُخْرَى'; }
+
+    subtitle.innerHTML = `
+      ✅ صحيح: ${toArabic(correct)} &nbsp; | &nbsp;
+      ❌ خطأ: ${toArabic(wrong)} &nbsp; | &nbsp;
+      ⏭️ متخطى: ${toArabic(skipped)}
+      <br><br>
+      <strong style="font-size:1.5rem; color:#FFD700;">${toArabic(correct)} / ${toArabic(total)}</strong>
+    `;
+  } else {
+    if (state.teamA.score > state.teamB.score) {
+      icon.textContent = '🏆';
+      title.textContent = `فاز ${state.teamA.name}!`;
+    } else if (state.teamB.score > state.teamA.score) {
+      icon.textContent = '🏆';
+      title.textContent = `فاز ${state.teamB.name}!`;
+    } else {
+      icon.textContent = '🤝';
+      title.textContent = 'تَعَادُل!';
+    }
+
+    subtitle.innerHTML = `
+      🔵 ${state.teamA.name}: <strong>${toArabic(state.teamA.score)}</strong>
+      &nbsp; — &nbsp;
+      🔴 ${state.teamB.name}: <strong>${toArabic(state.teamB.score)}</strong>
+      <br><br>
+      ✅ صحيح: ${toArabic(correct)} &nbsp; | &nbsp;
+      ❌ خطأ: ${toArabic(wrong)} &nbsp; | &nbsp;
+      ⏭️ متخطى: ${toArabic(skipped)}
+    `;
+  }
+
+  progressFill.style.width = '100%';
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#95E1D3', '#F38181', '#AA96DA'];
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      c.style.animationDuration = (3 + Math.random() * 2) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }, i * 30);
+  }
+}
+
+/* ============================================================
+   EVENT LISTENERS
+============================================================ */
+checkBtn.addEventListener('click', checkAnswer);
+resetBtn.addEventListener('click', resetArrange);
+skipBtn.addEventListener('click', skipQuestion);
+
+document.getElementById('playAgainBtn').addEventListener('click', () => {
+  overlay.classList.remove('show');
+  const shuffled = shuffle(state.allQuestions);
+  state.questions = shuffled.slice(0, Math.min(state.totalQuestions, state.allQuestions.length));
+  state.teamA.score = 0;
+  state.teamB.score = 0;
+  state.currentIndex = 0;
+  state.results = [];
+  updateScores();
+  progressFill.style.width = '0%';
+  loadQuestion();
+});
+
+document.getElementById('backToSetupBtn').addEventListener('click', () => {
+  overlay.classList.remove('show');
+  gameScreen.classList.remove('show');
+  setupScreen.classList.remove('hide');
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+state.allQuestions = loadQuestions();
+renderQuestionList();
+
+const savedSettings = loadSettings();
+if (savedSettings) {
+  if (savedSettings.mode) {
+    state.mode = savedSettings.mode;
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === savedSettings.mode);
+    });
+    if (savedSettings.mode !== 'solo') {
+      document.getElementById('teamInputs').classList.remove('hide');
+    }
+  }
+  if (savedSettings.teamAName) document.getElementById('teamAName').value = savedSettings.teamAName;
+  if (savedSettings.teamBName) document.getElementById('teamBName').value = savedSettings.teamBName;
+  if (savedSettings.timer !== undefined) document.getElementById('timerSetting').value = savedSettings.timer;
+  if (savedSettings.maxScore) document.getElementById('maxScoreSetting').value = savedSettings.maxScore;
+  if (savedSettings.count !== undefined) document.getElementById('countSetting').value = savedSettings.count;
+}
+</script>
+</body>
+</html>

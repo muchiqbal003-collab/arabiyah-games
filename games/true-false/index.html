@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>صَحّ أَمْ خَطَأ — Benar atau Salah</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Amiri:wght@400;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Tajawal',sans-serif; }
+
+  :root {
+    --primary:#00d2ff;
+    --primary-dark:#3a7bd5;
+    --gold:#FFD700;
+    --gold-dark:#FFA500;
+    --success:#2ed573;
+    --success-dark:#1e8449;
+    --danger:#ff4757;
+    --danger-dark:#c0392b;
+    --dark:#0f0c29;
+    --dark-2:#302b63;
+    --dark-3:#24243e;
+    --text:#fff;
+    --text-muted:#a0a0c0;
+  }
+
+  body {
+    min-height:100vh;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+    color:var(--text);
+    overflow-x:hidden;
+  }
+
+  /* ===== Background ===== */
+  .bg-animation {
+    position:fixed; inset:0; z-index:0;
+    overflow:hidden; pointer-events:none;
+  }
+  .bg-circle {
+    position:absolute; border-radius:50%;
+    filter:blur(80px); opacity:0.3;
+    animation:floatCircle 20s ease-in-out infinite;
+  }
+  .bg-circle.c1 { width:400px; height:400px; background:var(--success); top:-100px; left:-100px; }
+  .bg-circle.c2 { width:500px; height:500px; background:var(--danger); bottom:-150px; right:-150px; animation-delay:-5s; }
+  .bg-circle.c3 { width:300px; height:300px; background:var(--gold); top:40%; left:50%; animation-delay:-10s; }
+  @keyframes floatCircle {
+    0%,100% { transform:translate(0,0) scale(1); }
+    33% { transform:translate(100px,-50px) scale(1.1); }
+    66% { transform:translate(-50px,100px) scale(0.9); }
+  }
+
+  /* ===== Setup Screen ===== */
+  .setup-screen {
+    position:fixed; inset:0;
+    display:flex; justify-content:center; align-items:flex-start;
+    z-index:200; padding:20px; overflow-y:auto;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+  }
+  .setup-screen.hide { display:none; }
+
+  .setup-card {
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(20px);
+    border-radius:24px;
+    padding:35px;
+    max-width:850px; width:100%;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 25px 60px rgba(0,0,0,0.5);
+    margin:auto;
+  }
+
+  .setup-title {
+    color:var(--primary);
+    font-size:2rem; font-weight:900;
+    text-align:center; margin-bottom:8px;
+    text-shadow:0 0 20px rgba(0,210,255,0.5);
+  }
+  .setup-sub { color:var(--text-muted); text-align:center; margin-bottom:25px; }
+
+  /* Mode Selector */
+  .mode-selector {
+    display:flex; gap:12px; justify-content:center;
+    margin-bottom:25px; flex-wrap:wrap;
+  }
+  .mode-btn {
+    padding:14px 28px; border-radius:14px;
+    border:2px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-weight:700; font-size:1rem;
+    cursor:pointer; transition:all 0.3s;
+  }
+  .mode-btn:hover {
+    background:rgba(0,210,255,0.15);
+    border-color:rgba(0,210,255,0.5);
+    transform:translateY(-2px);
+  }
+  .mode-btn.active {
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    border-color:transparent;
+    box-shadow:0 8px 25px rgba(0,210,255,0.4);
+  }
+
+  /* Team Inputs */
+  .team-inputs {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:15px; margin-bottom:20px;
+  }
+  .team-inputs.hide { display:none; }
+  @media (max-width:600px) { .team-inputs { grid-template-columns:1fr; } }
+
+  .team-input-group {
+    background:rgba(255,255,255,0.04);
+    border-radius:14px; padding:15px;
+    border:2px solid;
+  }
+  .team-input-group.a { border-color:#4A90D9; }
+  .team-input-group.b { border-color:#E74C3C; }
+  .team-input-group label {
+    display:block; color:var(--text);
+    font-weight:700; margin-bottom:8px; font-size:0.95rem;
+  }
+  .team-input-group input {
+    width:100%; padding:10px 14px;
+    border-radius:10px;
+    border:2px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.1);
+    color:var(--text); font-size:1rem;
+    font-family:'Tajawal',sans-serif;
+    text-align:center; font-weight:700;
+  }
+  .team-input-group input:focus { outline:none; border-color:var(--gold); }
+
+  /* Settings */
+  .settings-row {
+    display:flex; justify-content:center;
+    gap:15px; margin-bottom:20px; flex-wrap:wrap;
+  }
+  .setting-item label {
+    display:block; color:var(--text-muted);
+    font-size:0.85rem; margin-bottom:6px; text-align:center;
+  }
+  .setting-item select {
+    padding:10px 18px; border-radius:10px;
+    border:2px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.1);
+    color:var(--text); font-family:'Tajawal',sans-serif;
+    font-size:0.95rem; cursor:pointer; text-align:center;
+    font-weight:700;
+  }
+  .setting-item select option { background:var(--dark-2); color:var(--text); }
+
+  /* Editor Toggle */
+  .editor-toggle {
+    display:block; margin:15px auto;
+    padding:12px 28px;
+    background:rgba(255,215,0,0.12);
+    border:2px solid rgba(255,215,0,0.35);
+    border-radius:12px;
+    color:var(--gold); font-weight:700;
+    cursor:pointer; font-family:'Tajawal',sans-serif;
+    font-size:0.95rem; transition:all 0.3s;
+  }
+  .editor-toggle:hover { background:rgba(255,215,0,0.25); transform:translateY(-2px); }
+
+  /* Editor Panel */
+  .editor-panel {
+    display:none;
+    background:rgba(0,0,0,0.25);
+    border-radius:16px;
+    padding:20px; margin-bottom:20px;
+    text-align:right;
+    max-height:500px; overflow-y:auto;
+  }
+  .editor-panel.show { display:block; }
+
+  .editor-panel h3 {
+    color:var(--gold); font-size:1.1rem;
+    margin-bottom:12px;
+    display:flex; justify-content:space-between;
+    align-items:center; flex-wrap:wrap; gap:10px;
+  }
+
+  .editor-actions {
+    display:flex; gap:8px;
+    flex-wrap:wrap; margin-bottom:15px;
+  }
+  .editor-btn {
+    padding:8px 16px; border:none;
+    border-radius:8px;
+    font-family:'Tajawal',sans-serif;
+    font-size:0.85rem; font-weight:700;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .editor-btn.add { background:var(--success); color:#fff; }
+  .editor-btn.random { background:var(--primary); color:#fff; }
+  .editor-btn.clear { background:var(--danger); color:#fff; }
+  .editor-btn.restore { background:var(--gold-dark); color:#fff; }
+  .editor-btn.export { background:#9b59b6; color:#fff; }
+  .editor-btn.import { background:#00b894; color:#fff; }
+  .editor-btn:hover { transform:translateY(-2px); opacity:0.9; }
+
+  /* Add Form */
+  .add-form {
+    background:rgba(46,213,115,0.1);
+    border:1px solid rgba(46,213,115,0.3);
+    border-radius:12px;
+    padding:16px; margin-top:12px;
+    display:none;
+  }
+  .add-form.show { display:block; }
+
+  .add-form label {
+    display:block; color:var(--text-muted);
+    font-size:0.85rem; margin-bottom:6px;
+    font-weight:600;
+  }
+  .add-form input[type="text"],
+  .add-form textarea {
+    width:100%; padding:10px 14px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.08);
+    color:var(--text);
+    font-family:'Amiri',serif;
+    font-size:1rem;
+    margin-bottom:12px;
+    resize:vertical;
+  }
+  .add-form input:focus, .add-form textarea:focus {
+    outline:none; border-color:var(--success);
+  }
+  .add-form textarea { min-height:60px; line-height:1.6; }
+
+  /* Answer Type Toggle */
+  .answer-type-toggle {
+    display:flex; gap:10px; margin-bottom:14px;
+  }
+  .type-btn {
+    flex:1;
+    padding:12px 16px;
+    border-radius:10px;
+    border:2px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.3s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .type-btn.correct-btn.active {
+    background:linear-gradient(135deg,var(--success),var(--success-dark));
+    border-color:transparent;
+    box-shadow:0 6px 20px rgba(46,213,115,0.4);
+  }
+  .type-btn.wrong-btn.active {
+    background:linear-gradient(135deg,var(--danger),var(--danger-dark));
+    border-color:transparent;
+    box-shadow:0 6px 20px rgba(255,71,87,0.4);
+  }
+  .type-btn:hover:not(.active) {
+    background:rgba(255,255,255,0.1);
+    transform:translateY(-2px);
+  }
+
+  /* Question List */
+  .question-list {
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .question-item {
+    background:rgba(255,255,255,0.05);
+    border-radius:10px;
+    padding:12px 15px;
+    border:1px solid rgba(255,255,255,0.1);
+    display:flex; justify-content:space-between;
+    align-items:center; gap:10px;
+  }
+  .question-item .q-text {
+    color:var(--text); font-size:1rem;
+    flex:1; text-align:right;
+    font-family:'Amiri',serif;
+    font-weight:700; line-height:1.6;
+  }
+  .question-item .q-answer {
+    padding:4px 12px;
+    border-radius:16px;
+    font-weight:800;
+    font-size:0.85rem;
+    min-width:60px;
+    text-align:center;
+  }
+  .question-item .q-answer.correct {
+    background:rgba(46,213,115,0.2);
+    color:var(--success);
+    border:1px solid var(--success);
+  }
+  .question-item .q-answer.wrong {
+    background:rgba(255,71,87,0.2);
+    color:var(--danger);
+    border:1px solid var(--danger);
+  }
+  .question-item .del-btn {
+    background:var(--danger); color:#fff;
+    border:none; border-radius:6px;
+    width:28px; height:28px;
+    cursor:pointer; font-weight:900;
+    transition:all 0.2s;
+  }
+  .question-item .del-btn:hover { transform:scale(1.1); }
+
+  /* Start Button */
+  .start-btn {
+    display:block; margin:20px auto 0;
+    padding:16px 50px;
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000; border:none; border-radius:50px;
+    font-size:1.2rem; font-weight:900;
+    cursor:pointer; transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+    box-shadow:0 10px 30px rgba(255,215,0,0.5);
+  }
+  .start-btn:hover { transform:translateY(-3px) scale(1.05); }
+
+  .info-badge {
+    display:inline-block;
+    background:rgba(0,210,255,0.15);
+    border:1px solid rgba(0,210,255,0.3);
+    color:var(--primary);
+    padding:5px 14px;
+    border-radius:20px;
+    font-size:0.8rem;
+    margin-top:15px;
+  }
+
+  .center { text-align:center; }
+
+  /* ===== Game Screen ===== */
+  .game-screen {
+    display:none;
+    min-height:100vh;
+    padding:20px;
+    position:relative; z-index:5;
+  }
+  .game-screen.show { display:block; }
+
+  /* Top Bar */
+  .top-bar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(0,0,0,0.4);
+    backdrop-filter:blur(20px);
+    padding:12px 20px;
+    border-radius:16px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:10px;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+
+  .team-score {
+    display:flex; align-items:center; gap:10px;
+    padding:8px 16px; border-radius:12px;
+    background:rgba(255,255,255,0.08);
+    border:2px solid transparent;
+  }
+  .team-score.a { border-color:#4A90D9; }
+  .team-score.b { border-color:#E74C3C; }
+  .team-score.active {
+    background:rgba(255,215,0,0.15);
+    box-shadow:0 0 20px rgba(255,215,0,0.4);
+    animation:pulseGlow 1.5s infinite;
+  }
+  @keyframes pulseGlow {
+    0%,100% { box-shadow:0 0 20px rgba(255,215,0,0.4); }
+    50% { box-shadow:0 0 35px rgba(255,215,0,0.7); }
+  }
+  .team-score .name {
+    color:var(--text); font-weight:700; font-size:0.9rem;
+  }
+  .team-score .pts {
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000; font-weight:900;
+    font-size:1.3rem; padding:2px 14px;
+    border-radius:8px; min-width:45px;
+    text-align:center;
+  }
+
+  .progress-info {
+    color:var(--text); text-align:center; font-weight:700;
+  }
+  .progress-info .num {
+    color:var(--gold); font-size:1.3rem;
+  }
+  .progress-info .sub {
+    display:block; color:var(--text-muted);
+    font-size:0.8rem; font-weight:500;
+  }
+
+  .timer-circle {
+    width:70px; height:70px;
+    border-radius:50%;
+    background:conic-gradient(var(--success) 0deg, rgba(255,255,255,0.1) 0deg);
+    display:flex; justify-content:center; align-items:center;
+    position:relative; transition:background 0.3s;
+  }
+  .timer-circle::before {
+    content:'';
+    width:54px; height:54px;
+    background:#1a1a2e;
+    border-radius:50%;
+    position:absolute;
+  }
+  .timer-text {
+    position:relative; z-index:1;
+    color:#fff; font-weight:800; font-size:1.4rem;
+  }
+
+  /* Versus team buttons */
+  .versus-btns {
+    display:flex; gap:15px;
+    justify-content:center;
+    margin-bottom:20px; flex-wrap:wrap;
+  }
+  .versus-btns.hide { display:none; }
+
+  .team-select-btn {
+    padding:16px 36px;
+    border:none; border-radius:16px;
+    font-size:1.1rem; font-weight:800;
+    cursor:pointer; transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+    color:#fff;
+    box-shadow:0 6px 20px rgba(0,0,0,0.3);
+  }
+  .team-select-btn.a { background:linear-gradient(135deg,#4A90D9,#2E5C8A); }
+  .team-select-btn.b { background:linear-gradient(135deg,#E74C3C,#A93226); }
+  .team-select-btn:hover:not(:disabled) {
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  }
+  .team-select-btn:disabled {
+    opacity:0.4; cursor:not-allowed;
+  }
+  .team-select-btn.active {
+    transform:scale(1.08);
+    border:3px solid var(--gold);
+    box-shadow:0 0 30px rgba(255,215,0,0.6);
+  }
+
+  /* ===== Statement Card ===== */
+  .statement-container {
+    max-width:900px;
+    margin:0 auto;
+    background:linear-gradient(135deg, rgba(0,210,255,0.08), rgba(58,123,213,0.08));
+    border:2px solid rgba(0,210,255,0.35);
+    border-radius:24px;
+    padding:50px 40px;
+    text-align:center;
+    min-height:280px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:30px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.4);
+  }
+
+  .statement-container::before {
+    content:'';
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 0%, rgba(0,210,255,0.15), transparent 70%);
+    pointer-events:none;
+  }
+
+  .statement-label {
+    color:var(--gold);
+    font-size:0.9rem;
+    font-weight:700;
+    margin-bottom:20px;
+    letter-spacing:3px;
+    position:relative;
+    z-index:1;
+    text-transform:uppercase;
+  }
+
+  .statement-text {
+    font-family:'Amiri',serif;
+    font-size:2.8rem;
+    font-weight:700;
+    color:#fff;
+    line-height:1.6;
+    text-shadow:0 0 40px rgba(0,210,255,0.5);
+    position:relative;
+    z-index:1;
+    padding:0 20px;
+  }
+
+  @media (max-width:768px) {
+    .statement-text { font-size:1.8rem; }
+    .statement-container { padding:35px 25px; min-height:200px; }
+  }
+
+  .statement-text.enter {
+    animation:statementIn 0.5s ease;
+  }
+
+  @keyframes statementIn {
+    from { opacity:0; transform:scale(0.9) translateY(20px); }
+    to { opacity:1; transform:scale(1) translateY(0); }
+  }
+
+  /* Answer buttons */
+  .answer-buttons {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    max-width:900px;
+    margin:0 auto 30px;
+  }
+
+  @media (max-width:600px) {
+    .answer-buttons { grid-template-columns:1fr; gap:15px; }
+  }
+
+  .answer-btn {
+    padding:35px 30px;
+    border:none;
+    border-radius:24px;
+    font-family:'Tajawal',sans-serif;
+    font-size:2rem;
+    font-weight:900;
+    cursor:pointer;
+    transition:all 0.3s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .answer-btn .icon {
+    font-size:3rem;
+    transition:transform 0.3s;
+  }
+
+  .answer-btn.correct-btn {
+    background:linear-gradient(135deg,var(--success),var(--success-dark));
+    color:#fff;
+  }
+  .answer-btn.wrong-btn {
+    background:linear-gradient(135deg,var(--danger),var(--danger-dark));
+    color:#fff;
+  }
+
+  .answer-btn:hover:not(:disabled) {
+    transform:translateY(-5px) scale(1.02);
+    box-shadow:0 20px 50px rgba(0,0,0,0.4);
+  }
+
+  .answer-btn:hover:not(:disabled) .icon {
+    transform:scale(1.2) rotate(10deg);
+  }
+
+  .answer-btn:active:not(:disabled) {
+    transform:scale(0.98);
+  }
+
+  .answer-btn:disabled {
+    opacity:0.35;
+    cursor:not-allowed;
+  }
+
+  .answer-btn.pressed {
+    animation:pressed 0.3s;
+  }
+
+  @keyframes pressed {
+    0% { transform:scale(1); }
+    50% { transform:scale(0.95); }
+    100% { transform:scale(1); }
+  }
+
+  .answer-btn.correct-highlight {
+    animation:correctHighlight 0.6s;
+  }
+  @keyframes correctHighlight {
+    0%,100% { transform:scale(1); }
+    50% { transform:scale(1.05); box-shadow:0 0 60px rgba(46,213,115,1); }
+  }
+
+  .answer-btn.wrong-highlight {
+    animation:wrongHighlight 0.6s;
+  }
+  @keyframes wrongHighlight {
+    0%,100% { transform:scale(1); }
+    50% { transform:scale(1.05); box-shadow:0 0 60px rgba(255,71,87,1); }
+  }
+
+  /* Feedback */
+  .feedback-bar {
+    max-width:900px;
+    margin:0 auto;
+    text-align:center;
+    font-size:1.3rem;
+    font-weight:800;
+    min-height:40px;
+    padding:12px 20px;
+    border-radius:12px;
+    transition:all 0.3s;
+  }
+  .feedback-bar.correct {
+    color:var(--success);
+    background:rgba(46,213,115,0.1);
+    border:1px solid rgba(46,213,115,0.3);
+  }
+  .feedback-bar.wrong {
+    color:var(--danger);
+    background:rgba(255,71,87,0.1);
+    border:1px solid rgba(255,71,87,0.3);
+  }
+  .feedback-bar.info {
+    color:var(--primary);
+    background:rgba(0,210,255,0.1);
+    border:1px solid rgba(0,210,255,0.3);
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    max-width:900px;
+    margin:20px auto 0;
+    height:6px;
+    background:rgba(255,255,255,0.1);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill {
+    height:100%;
+    background:linear-gradient(90deg,var(--primary),var(--gold));
+    border-radius:3px;
+    transition:width 0.4s;
+    width:0%;
+  }
+
+  /* Streak indicator */
+  .streak-indicator {
+    text-align:center;
+    color:var(--gold);
+    font-weight:800;
+    font-size:1.1rem;
+    margin-top:15px;
+    min-height:25px;
+    animation:pulseGlow 1s infinite;
+  }
+
+  /* ===== Overlay ===== */
+  .overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.9);
+    display:none;
+    justify-content:center; align-items:center;
+    z-index:1000;
+    backdrop-filter:blur(10px);
+    padding:20px;
+  }
+  .overlay.show { display:flex; animation:fadeIn 0.5s; }
+  @keyframes fadeIn {
+    from { opacity:0; }
+    to { opacity:1; }
+  }
+
+  .overlay-content {
+    text-align:center;
+    padding:40px;
+    max-width:550px;
+  }
+
+  .overlay-icon {
+    font-size:6rem; margin-bottom:20px;
+    animation:iconBounce 1s infinite;
+  }
+  @keyframes iconBounce {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-20px); }
+  }
+
+  .overlay-title {
+    color:var(--gold);
+    font-size:2.5rem; font-weight:900;
+    margin-bottom:15px;
+    text-shadow:0 0 30px rgba(255,215,0,0.8);
+  }
+
+  .overlay-subtitle {
+    color:var(--text);
+    font-size:1.2rem;
+    margin-bottom:30px;
+    line-height:1.7;
+  }
+
+  .overlay-btns {
+    display:flex; gap:15px;
+    justify-content:center; flex-wrap:wrap;
+  }
+
+  .overlay-btn {
+    padding:15px 40px;
+    border:none; border-radius:50px;
+    font-size:1.05rem; font-weight:900;
+    cursor:pointer; transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+  }
+  .overlay-btn.primary {
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000;
+    box-shadow:0 10px 30px rgba(255,215,0,0.5);
+  }
+  .overlay-btn.secondary {
+    background:rgba(255,255,255,0.15);
+    color:var(--text);
+    border:2px solid rgba(255,255,255,0.3);
+  }
+  .overlay-btn:hover { transform:translateY(-3px) scale(1.05); }
+
+  /* Toast */
+  .toast {
+    position:fixed; bottom:30px; left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:rgba(0,0,0,0.9);
+    color:#fff;
+    padding:14px 28px;
+    border-radius:50px;
+    font-weight:700;
+    border:2px solid var(--primary);
+    z-index:2000;
+    opacity:0;
+    transition:all 0.4s;
+    font-size:0.95rem;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+  .toast.success { border-color:var(--success); color:var(--success); }
+  .toast.error { border-color:var(--danger); color:var(--danger); }
+
+  /* Confetti */
+  .confetti {
+    position:fixed;
+    width:12px; height:12px;
+    top:-20px;
+    z-index:999;
+    animation:confettiFall 4s linear forwards;
+    pointer-events:none;
+  }
+  @keyframes confettiFall {
+    0% { transform:translateY(0) rotate(0deg); opacity:1; }
+    100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+  }
+
+  /* Floating score popup */
+  .score-popup {
+    position:fixed;
+    color:var(--gold);
+    font-size:3rem;
+    font-weight:900;
+    z-index:3000;
+    pointer-events:none;
+    animation:scorePopup 1.2s ease-out forwards;
+    text-shadow:0 0 30px rgba(255,215,0,0.8);
+  }
+  @keyframes scorePopup {
+    0% { transform:translate(-50%, 0) scale(0.5); opacity:0; }
+    30% { transform:translate(-50%, -30px) scale(1.3); opacity:1; }
+    100% { transform:translate(-50%, -120px) scale(1); opacity:0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Background ===== -->
+<div class="bg-animation">
+  <div class="bg-circle c1"></div>
+  <div class="bg-circle c2"></div>
+  <div class="bg-circle c3"></div>
+</div>
+
+<!-- ===== Setup Screen ===== -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-card">
+    <div class="setup-title">⚡ صَحّ أَمْ خَطَأ</div>
+    <div class="setup-sub">Benar atau Salah? — Cepat, Tepat, Rebutan!</div>
+
+    <!-- Mode Selector -->
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="solo">👤 فردي</button>
+      <button class="mode-btn" data-mode="team">👥 فرق</button>
+      <button class="mode-btn" data-mode="versus">⚔️ مواجهة</button>
+    </div>
+
+    <!-- Team Inputs -->
+    <div class="team-inputs hide" id="teamInputs">
+      <div class="team-input-group a">
+        <label>🔵 الفريق الأول</label>
+        <input type="text" id="teamAName" value="الفريق الأزرق" maxlength="20">
+      </div>
+      <div class="team-input-group b">
+        <label>🔴 الفريق الثاني</label>
+        <input type="text" id="teamBName" value="الفريق الأحمر" maxlength="20">
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="settings-row">
+      <div class="setting-item">
+        <label>⏱️ وقت السؤال</label>
+        <select id="timerSetting">
+          <option value="5">٥ ثوان (سريع!)</option>
+          <option value="8">٨ ثوان</option>
+          <option value="10" selected>١٠ ثوان</option>
+          <option value="15">١٥ ثانية</option>
+          <option value="20">٢٠ ثانية</option>
+          <option value="0">بدون وقت</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🎯 عدد الأسئلة</label>
+        <select id="countSetting">
+          <option value="10" selected>١٠ أسئلة</option>
+          <option value="15">١٥ سؤالاً</option>
+          <option value="20">٢٠ سؤالاً</option>
+          <option value="30">٣٠ سؤالاً</option>
+          <option value="0">كل الأسئلة</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🏆 نقاط الفوز</label>
+        <select id="maxScoreSetting">
+          <option value="5" selected>٥ نقاط</option>
+          <option value="7">٧ نقاط</option>
+          <option value="10">١٠ نقاط</option>
+          <option value="15">١٥ نقطة</option>
+          <option value="999">بدون حد</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Editor Toggle -->
+    <button class="editor-toggle" id="editorToggle">📝 إدارة العبارات (Tambah/Hapus Soal)</button>
+
+    <!-- Editor Panel -->
+    <div class="editor-panel" id="editorPanel">
+      <h3>
+        <span>📋 قائمة العبارات (<span id="questionCount">٠</span>)</span>
+      </h3>
+
+      <div class="editor-actions">
+        <button class="editor-btn add" id="addQuestionBtn">➕ إضافة عبارة</button>
+        <button class="editor-btn random" id="shuffleBtn">🔀 خلط عشوائي</button>
+        <button class="editor-btn export" id="exportBtn">📤 تصدير JSON</button>
+        <button class="editor-btn import" id="importBtn">📥 استيراد JSON</button>
+        <button class="editor-btn restore" id="restoreBtn">↩️ استعادة الافتراضي</button>
+        <button class="editor-btn clear" id="clearBtn">🗑️ حذف الكل</button>
+      </div>
+
+      <div class="add-form" id="addForm">
+        <label>العبارة (الجملة بالعربية) *</label>
+        <textarea id="newStatement" placeholder="مثال: الكِتَابُ جَمْعُهُ كُتُب" dir="rtl"></textarea>
+
+        <label>الإجابة الصحيحة *</label>
+        <div class="answer-type-toggle">
+          <button class="type-btn correct-btn active" data-answer="true">
+            <span style="font-size:1.5rem;">✅</span> صَحّ (Benar)
+          </button>
+          <button class="type-btn wrong-btn" data-answer="false">
+            <span style="font-size:1.5rem;">❌</span> خَطَأ (Salah)
+          </button>
+        </div>
+
+        <label>الفئة (اختياري)</label>
+        <input type="text" id="newCategory" placeholder="مثال: النَّحْو، المُفْرَدَات، الطَّعَام" dir="rtl">
+
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <button class="editor-btn add" id="saveQuestionBtn" style="flex:1;">💾 حفظ</button>
+          <button class="editor-btn clear" id="cancelAddBtn" style="flex:1;">✖️ إلغاء</button>
+        </div>
+      </div>
+
+      <div class="question-list" id="questionList"></div>
+    </div>
+
+    <div class="center">
+      <span class="info-badge">💾 جميع العبارات محفوظة محليًا — لا تختفي عند التحديث</span>
+    </div>
+
+    <button class="start-btn" id="startBtn">🚀 ابدأ اللعب</button>
+  </div>
+</div>
+
+<!-- ===== Game Screen ===== -->
+<div class="game-screen" id="gameScreen">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="team-score a" id="teamAScoreBox" style="display:none;">
+      <span class="name" id="teamANameDisplay">🔵 الفريق الأول</span>
+      <span class="pts" id="teamAScore">٠</span>
+    </div>
+    <div class="progress-info">
+      <span class="num"><span id="questionNum">١</span> / <span id="totalQuestions">١٠</span></span>
+      <span class="sub">صَحّ أَمْ خَطَأ</span>
+    </div>
+    <div class="timer-circle" id="timerCircle">
+      <span class="timer-text" id="timerText">—</span>
+    </div>
+    <div class="team-score b" id="teamBScoreBox" style="display:none;">
+      <span class="pts" id="teamBScore">٠</span>
+      <span class="name" id="teamBNameDisplay">🔴 الفريق الثاني</span>
+    </div>
+  </div>
+
+  <!-- Versus team buttons -->
+  <div class="versus-btns hide" id="versusBtns">
+    <button class="team-select-btn a" id="teamABtn">🔵 الفريق الأول</button>
+    <button class="team-select-btn b" id="teamBBtn">🔴 الفريق الثاني</button>
+  </div>
+
+  <!-- Statement Card -->
+  <div class="statement-container">
+    <div class="statement-label">📝 هل العبارة صحيحة أم خاطئة؟</div>
+    <div class="statement-text" id="statementText">جار التحميل...</div>
+  </div>
+
+  <!-- Answer Buttons -->
+  <div class="answer-buttons">
+    <button class="answer-btn correct-btn" id="correctBtn">
+      <span class="icon">✅</span>
+      <span>صَحّ</span>
+    </button>
+    <button class="answer-btn wrong-btn" id="wrongBtn">
+      <span class="icon">❌</span>
+      <span>خَطَأ</span>
+    </button>
+  </div>
+
+  <!-- Feedback -->
+  <div class="feedback-bar" id="feedback"></div>
+
+  <!-- Streak -->
+  <div class="streak-indicator" id="streakIndicator"></div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<!-- ===== Result Overlay ===== -->
+<div class="overlay" id="overlay">
+  <div class="overlay-content">
+    <div class="overlay-icon" id="overlayIcon">🏆</div>
+    <div class="overlay-title" id="overlayTitle">أحسنت!</div>
+    <div class="overlay-subtitle" id="overlaySubtitle"></div>
+    <div class="overlay-btns">
+      <button class="overlay-btn primary" id="playAgainBtn">🔄 العب مرة أخرى</button>
+      <button class="overlay-btn secondary" id="backToSetupBtn">⚙️ الإعدادات</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DEFAULT QUESTIONS
+   answer: true (صح) | false (خطأ)
+============================================================ */
+const DEFAULT_QUESTIONS = [
+  // صحيح
+  { id:'d1',  statement:'الكِتَابُ جَمْعُهُ كُتُب',                          answer:true,  category:'النَّحْو' },
+  { id:'d2',  statement:'الطَّالِبُ يَتَعَلَّمُ فِي المَدْرَسَة',              answer:true,  category:'المَدْرَسَة' },
+  { id:'d3',  statement:'الأُمُّ تَطْبُخُ الطَّعَامَ فِي المَطْبَخ',           answer:true,  category:'الطَّعَام' },
+  { id:'d4',  statement:'الشَّمْسُ تُشْرِقُ فِي الصَّبَاح',                    answer:true,  category:'الطَّبِيعَة' },
+  { id:'d5',  statement:'المُعَلِّمُ يُعَلِّمُ الطُّلَّابَ فِي الفَصْل',         answer:true,  category:'المَدْرَسَة' },
+  { id:'d6',  statement:'نَشْرَبُ المَاءَ عِنْدَ العَطَش',                     answer:true,  category:'الطَّعَام' },
+  { id:'d7',  statement:'المَسْجِدُ مَكَانُ الصَّلَاة',                        answer:true,  category:'العِبَادَة' },
+  { id:'d8',  statement:'الأَبُ يَعْمَلُ فِي الشَّرِكَة',                       answer:true,  category:'العَمَل' },
+  { id:'d9',  statement:'نَنَامُ فِي اللَّيْلِ وَنَسْتَيْقِظُ فِي الصَّبَاح',   answer:true,  category:'الحَيَاة' },
+  { id:'d10', statement:'الحَاجُّ يَطُوفُ حَوْلَ الكَعْبَة',                    answer:true,  category:'الحَجّ' },
+
+  // خطأ
+  { id:'d11', statement:'السَّمَاءُ لَوْنُهَا أَخْضَر',                        answer:false, category:'الطَّبِيعَة' },
+  { id:'d12', statement:'السَّمَكُ يَعِيشُ فِي الصَّحْرَاء',                    answer:false, category:'الحَيَوَانَات' },
+  { id:'d13', statement:'النَّارُ بَارِدَةٌ جِدًّا',                            answer:false, category:'الطَّبِيعَة' },
+  { id:'d14', statement:'الطَّائِرَةُ تَسِيرُ عَلَى الطَّرِيق',                  answer:false, category:'المُوَاصَلَات' },
+  { id:'d15', statement:'القِطَّةُ تَأْكُلُ العُشْبَ فَقَط',                    answer:false, category:'الحَيَوَانَات' },
+  { id:'d16', statement:'نَشْرَبُ المَاءَ السَّاخِنَ فِي الصَّيْفِ دَائِمًا',     answer:false, category:'الطَّعَام' },
+  { id:'d17', statement:'المُسْتَشْفَى مَكَانُ الطَّبْخ',                       answer:false, category:'الأَمَاكِن' },
+  { id:'d18', statement:'الشِّتَاءُ فَصْلٌ حَارٌّ جِدًّا',                       answer:false, category:'الطَّبِيعَة' },
+  { id:'d19', statement:'الثَّلْجُ يَنْزِلُ فِي الصَّحْرَاءِ كَثِيرًا',          answer:false, category:'الطَّبِيعَة' },
+  { id:'d20', statement:'نُصَلِّي فِي الحَمَّام',                               answer:false, category:'العِبَادَة' },
+
+  // مفردات
+  { id:'v1',  statement:'كَلِمَةُ «مُدَرِّس» مُرَادِفُهَا «مُعَلِّم»',          answer:true,  category:'المُفْرَدَات' },
+  { id:'v2',  statement:'كَلِمَةُ «أَخ» ضِدُّهَا «أُخْت»',                     answer:true,  category:'المُفْرَدَات' },
+  { id:'v3',  statement:'جَمْعُ «بَاب» هُوَ «أَبْوَاب»',                        answer:true,  category:'المُفْرَدَات' },
+  { id:'v4',  statement:'جَمْعُ «قَلَم» هُوَ «أَقْلَام»',                       answer:true,  category:'المُفْرَدَات' },
+  { id:'v5',  statement:'كَلِمَةُ «كَبِير» ضِدُّهَا «صَغِير»',                  answer:true,  category:'المُفْرَدَات' },
+  { id:'v6',  statement:'«الأَرُز» هُوَ الطَّعَامُ الرَّئِيسِيُّ فِي إِنْدُونِيسِيَا', answer:true, category:'المُفْرَدَات' },
+  { id:'v7',  statement:'كَلِمَةُ «صَدِيق» مُرَادِفُهَا «عَدُوّ»',              answer:false, category:'المُفْرَدَات' },
+  { id:'v8',  statement:'جَمْعُ «رَجُل» هُوَ «رَجُلَات»',                       answer:false, category:'المُفْرَدَات' },
+  { id:'v9',  statement:'«الوَالِدَة» مَعْنَاهَا «الأَب»',                       answer:false, category:'المُفْرَدَات' },
+  { id:'v10', statement:'كَلِمَةُ «جَمِيل» ضِدُّهَا «حَسَن»',                   answer:false, category:'المُفْرَدَات' },
+  { id:'v11', statement:'«الهَنْدَسَة» عِلْمٌ يَخْتَصُّ بِالبِنَاءِ وَالتَّصْمِيم', answer:true, category:'المُفْرَدَات' },
+  { id:'v12', statement:'«الصَّيْدَلَة» عِلْمُ الأَدْوِيَة',                       answer:true,  category:'المُفْرَدَات' },
+  { id:'v13', statement:'«الجَوَاز» هُوَ الطَّعَام',                             answer:false, category:'المُفْرَدَات' },
+  { id:'v14', statement:'«المُسْتَشْفَى» مَكَانُ بَيْعِ الأَدْوِيَة',              answer:false, category:'المُفْرَدَات' },
+
+  // الحج
+  { id:'h1',  statement:'الحَجُّ يَكُونُ فِي وَقْتٍ مُعَيَّن',                  answer:true,  category:'الحَجّ' },
+  { id:'h2',  statement:'العُمْرَةُ لَيْسَ لَهَا وَقْتٌ مُعَيَّن',               answer:true,  category:'الحَجّ' },
+  { id:'h3',  statement:'يَسْعَى الحَاجُّ بَيْنَ الصَّفَا وَالمَرْوَة',          answer:true,  category:'الحَجّ' },
+  { id:'h4',  statement:'يَقِفُ الحَاجُّ بِعَرَفَةَ يَوْمَ التَّاسِع',           answer:true,  category:'الحَجّ' },
+  { id:'h5',  statement:'الحَجُّ يَكُونُ فِي مَدِينَةِ الرِّيَاض',               answer:false, category:'الحَجّ' },
+  { id:'h6',  statement:'الطَّوَافُ حَوْلَ المَسْجِدِ النَّبَوِيّ',               answer:false, category:'الحَجّ' },
+];
+
+/* ============================================================
+   STORAGE
+============================================================ */
+const STORAGE_KEY = 'arab_truefalse_data';
+const SETTINGS_KEY = 'arab_truefalse_settings';
+
+function loadQuestions() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) { console.error(e); }
+  return JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+}
+
+function saveQuestions(qs) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(qs)); }
+  catch (e) {
+    if (e.name === 'QuotaExceededError') toast('⚠️ الذاكرة ممتلئة', 'error');
+    else console.error(e);
+  }
+}
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return null;
+}
+
+function saveSettings(s) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch (e) {}
+}
+
+/* ============================================================
+   STATE
+============================================================ */
+const state = {
+  mode: 'solo',
+  teamA: { name: 'الفريق الأزرق', score: 0, streak: 0 },
+  teamB: { name: 'الفريق الأحمر', score: 0, streak: 0 },
+  questions: [],
+  allQuestions: [],
+  currentIndex: 0,
+  totalQuestions: 10,
+  maxScore: 5,
+  timerDuration: 10,
+  timeLeft: 10,
+  timerInterval: null,
+  answered: false,
+  activeTeam: null,
+  results: [],
+  currentStreak: 0,
+  bestStreak: 0,
+  editingAnswer: true,
+};
+
+/* ============================================================
+   DOM
+============================================================ */
+const setupScreen = document.getElementById('setupScreen');
+const gameScreen = document.getElementById('gameScreen');
+const questionListEl = document.getElementById('questionList');
+const questionCount = document.getElementById('questionCount');
+const editorPanel = document.getElementById('editorPanel');
+const addForm = document.getElementById('addForm');
+const statementText = document.getElementById('statementText');
+const feedback = document.getElementById('feedback');
+const streakIndicator = document.getElementById('streakIndicator');
+const questionNumEl = document.getElementById('questionNum');
+const totalQuestionsEl = document.getElementById('totalQuestions');
+const timerCircle = document.getElementById('timerCircle');
+const timerText = document.getElementById('timerText');
+const correctBtn = document.getElementById('correctBtn');
+const wrongBtn = document.getElementById('wrongBtn');
+const overlay = document.getElementById('overlay');
+const toastEl = document.getElementById('toast');
+const progressFill = document.getElementById('progressFill');
+
+/* ============================================================
+   HELPERS
+============================================================ */
+function toArabic(num) {
+  const d = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  return String(num).split('').map(x => d[parseInt(x)] || x).join('');
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toast(msg, type = '') {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show ' + type;
+  setTimeout(() => toastEl.classList.remove('show'), 2500);
+}
+
+function showScorePopup(text, x, y) {
+  const popup = document.createElement('div');
+  popup.className = 'score-popup';
+  popup.textContent = text;
+  popup.style.left = x + 'px';
+  popup.style.top = y + 'px';
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1200);
+}
+
+/* ============================================================
+   EDITOR
+============================================================ */
+function renderQuestionList() {
+  questionListEl.innerHTML = '';
+  questionCount.textContent = toArabic(state.allQuestions.length);
+
+  state.allQuestions.forEach((q, idx) => {
+    const item = document.createElement('div');
+    item.className = 'question-item';
+    const answerClass = q.answer ? 'correct' : 'wrong';
+    const answerText = q.answer ? '✅ صَحّ' : '❌ خَطَأ';
+    item.innerHTML = `
+      <span style="color:var(--gold); font-weight:900; min-width:30px; text-align:center;">${toArabic(idx + 1)}</span>
+      <span class="q-text">${q.statement}</span>
+      <span class="q-answer ${answerClass}">${answerText}</span>
+      <button class="del-btn" data-idx="${idx}" title="حذف">✖</button>
+    `;
+    item.querySelector('.del-btn').addEventListener('click', () => {
+      if (confirm(`حذف "${q.statement}"؟`)) {
+        state.allQuestions.splice(idx, 1);
+        saveQuestions(state.allQuestions);
+        renderQuestionList();
+        toast('🗑️ تم الحذف', 'success');
+      }
+    });
+    questionListEl.appendChild(item);
+  });
+}
+
+document.getElementById('editorToggle').addEventListener('click', () => {
+  editorPanel.classList.toggle('show');
+});
+
+document.getElementById('addQuestionBtn').addEventListener('click', () => {
+  addForm.classList.toggle('show');
+  if (addForm.classList.contains('show')) {
+    document.getElementById('newStatement').focus();
+  }
+});
+
+/* Answer type toggle di form */
+document.querySelectorAll('.type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.editingAnswer = btn.dataset.answer === 'true';
+  });
+});
+
+document.getElementById('saveQuestionBtn').addEventListener('click', () => {
+  const statement = document.getElementById('newStatement').value.trim();
+  const category = document.getElementById('newCategory').value.trim();
+
+  if (!statement) {
+    toast('⚠️ اكتب العبارة', 'error');
+    return;
+  }
+
+  const newQ = {
+    id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    statement,
+    answer: state.editingAnswer,
+    category: category || '',
+  };
+
+  state.allQuestions.push(newQ);
+  saveQuestions(state.allQuestions);
+  renderQuestionList();
+  resetAddForm();
+  toast('✅ تم الحفظ', 'success');
+});
+
+document.getElementById('cancelAddBtn').addEventListener('click', resetAddForm);
+
+function resetAddForm() {
+  document.getElementById('newStatement').value = '';
+  document.getElementById('newCategory').value = '';
+  state.editingAnswer = true;
+  document.querySelectorAll('.type-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.answer === 'true');
+  });
+  addForm.classList.remove('show');
+}
+
+document.getElementById('shuffleBtn').addEventListener('click', () => {
+  state.allQuestions = shuffle(state.allQuestions);
+  saveQuestions(state.allQuestions);
+  renderQuestionList();
+  toast('🔀 تم الخلط', 'success');
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (confirm('🗑️ حذف جميع العبارات؟ لا يمكن التراجع.')) {
+    state.allQuestions = [];
+    saveQuestions(state.allQuestions);
+    renderQuestionList();
+    toast('🗑️ تم الحذف الكامل', 'success');
+  }
+});
+
+document.getElementById('restoreBtn').addEventListener('click', () => {
+  if (confirm('↩️ استعادة الافتراضي؟ سيتم حذف عباراتك المخصصة.')) {
+    state.allQuestions = JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+    saveQuestions(state.allQuestions);
+    renderQuestionList();
+    toast('↩️ تم الاستعادة', 'success');
+  }
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = JSON.stringify(state.allQuestions, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'truefalse-questions.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📤 تم التصدير', 'success');
+});
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error('bad');
+        state.allQuestions = data;
+        saveQuestions(state.allQuestions);
+        renderQuestionList();
+        toast('📥 تم الاستيراد', 'success');
+      } catch (err) {
+        toast('⚠️ فشل الاستيراد', 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+});
+
+/* ============================================================
+   MODE SELECTOR
+============================================================ */
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.mode = btn.dataset.mode;
+
+    const teamInputs = document.getElementById('teamInputs');
+    if (state.mode === 'solo') {
+      teamInputs.classList.add('hide');
+    } else {
+      teamInputs.classList.remove('hide');
+    }
+  });
+});
+
+/* ============================================================
+   START GAME
+============================================================ */
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (state.allQuestions.length === 0) {
+    toast('⚠️ لا توجد عبارات! أضف عبارات أولاً.', 'error');
+    return;
+  }
+
+  state.teamA.name = document.getElementById('teamAName').value || 'الفريق الأزرق';
+  state.teamB.name = document.getElementById('teamBName').value || 'الفريق الأحمر';
+  state.timerDuration = parseInt(document.getElementById('timerSetting').value);
+  state.maxScore = parseInt(document.getElementById('maxScoreSetting').value);
+  const requested = parseInt(document.getElementById('countSetting').value);
+  state.totalQuestions = requested === 0 ? state.allQuestions.length : Math.min(requested, state.allQuestions.length);
+
+  const shuffled = shuffle(state.allQuestions);
+  state.questions = shuffled.slice(0, state.totalQuestions);
+
+  state.teamA.score = 0;
+  state.teamA.streak = 0;
+  state.teamB.score = 0;
+  state.teamB.streak = 0;
+  state.currentIndex = 0;
+  state.results = [];
+  state.currentStreak = 0;
+  state.bestStreak = 0;
+
+  saveSettings({
+    mode: state.mode,
+    teamAName: state.teamA.name,
+    teamBName: state.teamB.name,
+    timer: state.timerDuration,
+    maxScore: state.maxScore,
+    count: requested,
+  });
+
+  setupScreen.classList.add('hide');
+  gameScreen.classList.add('show');
+
+  setupGameUI();
+  loadQuestion();
+});
+
+function setupGameUI() {
+  const teamAScoreBox = document.getElementById('teamAScoreBox');
+  const teamBScoreBox = document.getElementById('teamBScoreBox');
+  const versusBtns = document.getElementById('versusBtns');
+
+  document.getElementById('teamANameDisplay').textContent = '🔵 ' + state.teamA.name;
+  document.getElementById('teamBNameDisplay').textContent = '🔴 ' + state.teamB.name;
+
+  if (state.mode === 'solo') {
+    teamAScoreBox.style.display = 'none';
+    teamBScoreBox.style.display = 'none';
+    versusBtns.classList.add('hide');
+  } else {
+    teamAScoreBox.style.display = 'flex';
+    teamBScoreBox.style.display = 'flex';
+    versusBtns.classList.remove('hide');
+  }
+
+  updateScores();
+  totalQuestionsEl.textContent = toArabic(state.totalQuestions);
+}
+
+/* ============================================================
+   LOAD QUESTION
+============================================================ */
+function loadQuestion() {
+  clearInterval(state.timerInterval);
+  state.answered = false;
+  state.activeTeam = null;
+  state.timeLeft = state.timerDuration;
+
+  const q = state.questions[state.currentIndex];
+
+  // Update statement dengan animasi
+  statementText.textContent = q.statement;
+  statementText.classList.remove('enter');
+  void statementText.offsetWidth;
+  statementText.classList.add('enter');
+
+  // Reset feedback
+  feedback.textContent = '';
+  feedback.className = 'feedback-bar';
+
+  // Update counter
+  questionNumEl.textContent = toArabic(state.currentIndex + 1);
+  progressFill.style.width = `${(state.currentIndex / state.totalQuestions) * 100}%`;
+
+  // Streak display
+  updateStreakDisplay();
+
+  // Reset buttons
+  correctBtn.disabled = false;
+  wrongBtn.disabled = false;
+  correctBtn.classList.remove('correct-highlight', 'wrong-highlight', 'pressed');
+  wrongBtn.classList.remove('correct-highlight', 'wrong-highlight', 'pressed');
+
+  // Team buttons
+  document.querySelectorAll('.team-select-btn').forEach(b => {
+    b.disabled = false;
+    b.classList.remove('active');
+  });
+
+  // Timer
+  if (state.timerDuration > 0) {
+    startTimer();
+  } else {
+    timerText.textContent = '—';
+    timerCircle.style.background = 'conic-gradient(#666 0deg, rgba(255,255,255,0.1) 0deg)';
+  }
+}
+
+function updateStreakDisplay() {
+  if (state.mode === 'solo') {
+    if (state.currentStreak >= 2) {
+      streakIndicator.textContent = `🔥 سلسلة صحيحة: ${toArabic(state.currentStreak)}`;
+    } else {
+      streakIndicator.textContent = '';
+    }
+  } else {
+    let text = '';
+    if (state.teamA.streak >= 2) text += `🔥 ${state.teamA.name}: ${toArabic(state.teamA.streak)} `;
+    if (state.teamB.streak >= 2) text += `🔥 ${state.teamB.name}: ${toArabic(state.teamB.streak)}`;
+    streakIndicator.textContent = text;
+  }
+}
+
+/* ============================================================
+   TIMER
+============================================================ */
+function startTimer() {
+  updateTimerDisplay();
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      if (!state.answered) timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  timerText.textContent = toArabic(Math.max(0, state.timeLeft));
+  const degrees = (state.timeLeft / state.timerDuration) * 360;
+  const color = state.timeLeft > state.timerDuration * 0.6 ? '#2ed573' :
+                state.timeLeft > state.timerDuration * 0.3 ? '#ffa502' : '#ff4757';
+  timerCircle.style.background = `conic-gradient(${color} ${degrees}deg, rgba(255,255,255,0.1) ${degrees}deg)`;
+  timerText.style.color = color;
+}
+
+function timeUp() {
+  state.answered = true;
+  const q = state.questions[state.currentIndex];
+  state.results.push({ idx: state.currentIndex, status: 'timeout', answer: q.answer });
+
+  // Highlight jawaban benar
+  if (q.answer) {
+    correctBtn.classList.add('correct-highlight');
+  } else {
+    wrongBtn.classList.add('correct-highlight');
+  }
+
+  feedback.textContent = `⏰ انتهى الوقت! الإجابة: ${q.answer ? '✅ صَحّ' : '❌ خَطَأ'}`;
+  feedback.className = 'feedback-bar info';
+
+  // Reset streak
+  state.currentStreak = 0;
+  if (state.activeTeam === 'a') state.teamA.streak = 0;
+  if (state.activeTeam === 'b') state.teamB.streak = 0;
+  updateStreakDisplay();
+
+  correctBtn.disabled = true;
+  wrongBtn.disabled = true;
+  document.querySelectorAll('.team-select-btn').forEach(b => b.disabled = true);
+
+  setTimeout(nextQuestion, 1800);
+}
+
+/* ============================================================
+   HANDLE ANSWER
+============================================================ */
+function handleAnswer(userAnswer) {
+  if (state.answered) return;
+
+  clearInterval(state.timerInterval);
+  state.answered = true;
+
+  const q = state.questions[state.currentIndex];
+  const isCorrect = userAnswer === q.answer;
+
+  // Press animation
+  const btn = userAnswer ? correctBtn : wrongBtn;
+  btn.classList.add('pressed');
+  setTimeout(() => btn.classList.remove('pressed'), 300);
+
+  if (isCorrect) {
+    state.results.push({ idx: state.currentIndex, status: 'correct', answer: q.answer });
+    state.currentStreak++;
+    if (state.currentStreak > state.bestStreak) state.bestStreak = state.currentStreak;
+
+    // Poin
+    if (state.mode === 'solo') {
+      // Solo: hitung benar
+    } else {
+      if (state.activeTeam === 'a') {
+        state.teamA.score++;
+        state.teamA.streak++;
+        state.teamB.streak = 0;
+      } else if (state.activeTeam === 'b') {
+        state.teamB.score++;
+        state.teamB.streak++;
+        state.teamA.streak = 0;
+      } else {
+        state.teamA.score++;
+        state.teamA.streak++;
+      }
+      updateScores();
+    }
+
+    btn.classList.add('correct-highlight');
+    feedback.textContent = `✅ أَحْسَنْت!${state.currentStreak >= 3 ? ' 🔥 سلسلة رائعة!' : ''}`;
+    feedback.className = 'feedback-bar correct';
+
+    // Score popup
+    const rect = btn.getBoundingClientRect();
+    showScorePopup('+١', rect.left + rect.width / 2, rect.top);
+
+  } else {
+    state.results.push({ idx: state.currentIndex, status: 'wrong', answer: q.answer });
+    state.currentStreak = 0;
+
+    // Reset team streak
+    if (state.activeTeam === 'a') state.teamA.streak = 0;
+    if (state.activeTeam === 'b') state.teamB.streak = 0;
+
+    // Highlight jawaban benar
+    if (q.answer) correctBtn.classList.add('correct-highlight');
+    else wrongBtn.classList.add('correct-highlight');
+
+    btn.classList.add('wrong-highlight');
+    feedback.textContent = `❌ خَطَأ! الإجابة الصحيحة: ${q.answer ? '✅ صَحّ' : '❌ خَطَأ'}`;
+    feedback.className = 'feedback-bar wrong';
+  }
+
+  updateStreakDisplay();
+  correctBtn.disabled = true;
+  wrongBtn.disabled = true;
+  document.querySelectorAll('.team-select-btn').forEach(b => b.disabled = true);
+
+  // Cek menang
+  if (state.mode === 'versus' && (state.teamA.score >= state.maxScore || state.teamB.score >= state.maxScore)) {
+    setTimeout(endGame, 1200);
+    return;
+  }
+
+  setTimeout(nextQuestion, 1400);
+}
+
+/* ============================================================
+   NEXT
+============================================================ */
+function nextQuestion() {
+  if (state.currentIndex < state.questions.length - 1) {
+    state.currentIndex++;
+    loadQuestion();
+  } else {
+    endGame();
+  }
+}
+
+/* ============================================================
+   TEAM SELECT
+============================================================ */
+document.getElementById('teamABtn').addEventListener('click', () => {
+  if (state.answered) return;
+  state.activeTeam = 'a';
+  document.getElementById('teamABtn').classList.add('active');
+  document.getElementById('teamBBtn').classList.remove('active');
+  document.getElementById('teamBBtn').disabled = true;
+});
+
+document.getElementById('teamBBtn').addEventListener('click', () => {
+  if (state.answered) return;
+  state.activeTeam = 'b';
+  document.getElementById('teamBBtn').classList.add('active');
+  document.getElementById('teamABtn').classList.remove('active');
+  document.getElementById('teamABtn').disabled = true;
+});
+
+/* ============================================================
+   UPDATE SCORES
+============================================================ */
+function updateScores() {
+  document.getElementById('teamAScore').textContent = toArabic(state.teamA.score);
+  document.getElementById('teamBScore').textContent = toArabic(state.teamB.score);
+}
+
+/* ============================================================
+   BUTTON EVENTS
+============================================================ */
+correctBtn.addEventListener('click', () => handleAnswer(true));
+wrongBtn.addEventListener('click', () => handleAnswer(false));
+
+/* Keyboard shortcuts */
+document.addEventListener('keydown', (e) => {
+  if (!gameScreen.classList.contains('show')) return;
+  if (overlay.classList.contains('show')) return;
+  if (state.answered) return;
+
+  if (e.key === 'ArrowRight' || e.key === '1') {
+    handleAnswer(true);
+  } else if (e.key === 'ArrowLeft' || e.key === '2') {
+    handleAnswer(false);
+  }
+});
+
+/* ============================================================
+   END GAME
+============================================================ */
+function endGame() {
+  clearInterval(state.timerInterval);
+  const total = state.questions.length;
+  const correct = state.results.filter(r => r.status === 'correct').length;
+  const wrong = state.results.filter(r => r.status === 'wrong').length;
+  const timeout = state.results.filter(r => r.status === 'timeout').length;
+
+  overlay.classList.add('show');
+  const icon = document.getElementById('overlayIcon');
+  const title = document.getElementById('overlayTitle');
+  const subtitle = document.getElementById('overlaySubtitle');
+
+  if (state.mode === 'solo') {
+    const pct = Math.round((correct / total) * 100);
+    if (pct >= 90) { icon.textContent = '🏆'; title.textContent = 'مُمْتَاز!'; }
+    else if (pct >= 70) { icon.textContent = '🌟'; title.textContent = 'جَيِّد جِدًّا!'; }
+    else if (pct >= 50) { icon.textContent = '📖'; title.textContent = 'جَيِّد!'; }
+    else { icon.textContent = '💪'; title.textContent = 'حَاوِل مَرَّة أُخْرَى'; }
+
+    subtitle.innerHTML = `
+      ✅ صحيح: ${toArabic(correct)} &nbsp; | &nbsp;
+      ❌ خطأ: ${toArabic(wrong)} &nbsp; | &nbsp;
+      ⏰ انتهى الوقت: ${toArabic(timeout)}
+      <br><br>
+      <strong style="font-size:1.5rem; color:#FFD700;">${toArabic(correct)} / ${toArabic(total)}</strong>
+      <br><br>
+      🔥 أفضل سلسلة: <strong>${toArabic(state.bestStreak)}</strong>
+    `;
+  } else {
+    if (state.teamA.score > state.teamB.score) {
+      icon.textContent = '🏆';
+      title.textContent = `فاز ${state.teamA.name}!`;
+    } else if (state.teamB.score > state.teamA.score) {
+      icon.textContent = '🏆';
+      title.textContent = `فاز ${state.teamB.name}!`;
+    } else {
+      icon.textContent = '🤝';
+      title.textContent = 'تَعَادُل!';
+    }
+
+    subtitle.innerHTML = `
+      🔵 ${state.teamA.name}: <strong>${toArabic(state.teamA.score)}</strong>
+      &nbsp; — &nbsp;
+      🔴 ${state.teamB.name}: <strong>${toArabic(state.teamB.score)}</strong>
+      <br><br>
+      ✅ صحيح: ${toArabic(correct)} &nbsp; | &nbsp;
+      ❌ خطأ: ${toArabic(wrong)} &nbsp; | &nbsp;
+      ⏰ انتهى الوقت: ${toArabic(timeout)}
+    `;
+  }
+
+  progressFill.style.width = '100%';
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#95E1D3', '#F38181', '#AA96DA'];
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      c.style.animationDuration = (3 + Math.random() * 2) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }, i * 30);
+  }
+}
+
+/* ============================================================
+   OVERLAY BUTTONS
+============================================================ */
+document.getElementById('playAgainBtn').addEventListener('click', () => {
+  overlay.classList.remove('show');
+  const shuffled = shuffle(state.allQuestions);
+  state.questions = shuffled.slice(0, Math.min(state.totalQuestions, state.allQuestions.length));
+  state.teamA.score = 0;
+  state.teamA.streak = 0;
+  state.teamB.score = 0;
+  state.teamB.streak = 0;
+  state.currentIndex = 0;
+  state.results = [];
+  state.currentStreak = 0;
+  state.bestStreak = 0;
+  updateScores();
+  progressFill.style.width = '0%';
+  loadQuestion();
+});
+
+document.getElementById('backToSetupBtn').addEventListener('click', () => {
+  overlay.classList.remove('show');
+  gameScreen.classList.remove('show');
+  setupScreen.classList.remove('hide');
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+state.allQuestions = loadQuestions();
+renderQuestionList();
+
+const savedSettings = loadSettings();
+if (savedSettings) {
+  if (savedSettings.mode) {
+    state.mode = savedSettings.mode;
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === savedSettings.mode);
+    });
+    if (savedSettings.mode !== 'solo') {
+      document.getElementById('teamInputs').classList.remove('hide');
+    }
+  }
+  if (savedSettings.teamAName) document.getElementById('teamAName').value = savedSettings.teamAName;
+  if (savedSettings.teamBName) document.getElementById('teamBName').value = savedSettings.teamBName;
+  if (savedSettings.timer !== undefined) document.getElementById('timerSetting').value = savedSettings.timer;
+  if (savedSettings.maxScore) document.getElementById('maxScoreSetting').value = savedSettings.maxScore;
+  if (savedSettings.count !== undefined) document.getElementById('countSetting').value = savedSettings.count;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بِطَاقَاتُ العُقُوبَة — Kartu Hukuman</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Amiri:wght@400;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Tajawal',sans-serif; }
+
+  :root {
+    --primary:#00d2ff;
+    --primary-dark:#3a7bd5;
+    --gold:#FFD700;
+    --gold-dark:#FFA500;
+    --success:#2ed573;
+    --danger:#ff4757;
+    --danger-dark:#c0392b;
+    --purple:#9b59b6;
+    --pink:#fd79a8;
+    --orange:#e67e22;
+    --dark:#0f0c29;
+    --dark-2:#302b63;
+    --dark-3:#24243e;
+    --text:#fff;
+    --text-muted:#a0a0c0;
+  }
+
+  body {
+    min-height:100vh;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+    color:var(--text);
+    overflow-x:hidden;
+  }
+
+  /* Background */
+  .bg-animation {
+    position:fixed; inset:0; z-index:0;
+    overflow:hidden; pointer-events:none;
+  }
+  .bg-circle {
+    position:absolute; border-radius:50%;
+    filter:blur(80px); opacity:0.3;
+    animation:floatCircle 20s ease-in-out infinite;
+  }
+  .bg-circle.c1 { width:400px; height:400px; background:var(--danger); top:-100px; left:-100px; }
+  .bg-circle.c2 { width:500px; height:500px; background:var(--purple); bottom:-150px; right:-150px; animation-delay:-5s; }
+  .bg-circle.c3 { width:300px; height:300px; background:var(--orange); top:40%; left:50%; animation-delay:-10s; }
+  @keyframes floatCircle {
+    0%,100% { transform:translate(0,0) scale(1); }
+    33% { transform:translate(100px,-50px) scale(1.1); }
+    66% { transform:translate(-50px,100px) scale(0.9); }
+  }
+
+  /* ===== Main Container ===== */
+  .container {
+    max-width:1200px;
+    margin:0 auto;
+    padding:30px 20px;
+    position:relative;
+    z-index:5;
+  }
+
+  /* Header */
+  .header {
+    text-align:center;
+    margin-bottom:30px;
+  }
+  .header h1 {
+    color:var(--danger);
+    font-size:2.5rem;
+    font-weight:900;
+    margin-bottom:8px;
+    text-shadow:0 0 30px rgba(255,71,87,0.5);
+  }
+  .header p {
+    color:var(--text-muted);
+    font-size:1rem;
+  }
+
+  /* ===== Card Deck Area ===== */
+  .deck-area {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:500px;
+    position:relative;
+    margin-bottom:30px;
+  }
+
+  /* Kartu deck (tumpukan) */
+  .card-deck {
+    position:relative;
+    width:340px;
+    height:480px;
+    cursor:pointer;
+    transition:transform 0.4s;
+  }
+
+  .card-deck:hover {
+    transform:translateY(-10px);
+  }
+
+  .card-deck.disabled {
+    cursor:not-allowed;
+    opacity:0.5;
+  }
+
+  .card-back {
+    position:absolute;
+    inset:0;
+    border-radius:24px;
+    background:
+      linear-gradient(135deg, #4A1A1A 0%, #8B0000 50%, #4A1A1A 100%);
+    border:4px solid var(--gold);
+    box-shadow:
+      0 15px 50px rgba(0,0,0,0.6),
+      0 0 0 2px rgba(255,215,0,0.3),
+      inset 0 0 40px rgba(0,0,0,0.5);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    transition:all 0.4s;
+  }
+
+  .card-back::before {
+    content:'';
+    position:absolute;
+    inset:15px;
+    border:2px dashed rgba(255,215,0,0.4);
+    border-radius:16px;
+  }
+
+  .card-back::after {
+    content:'';
+    position:absolute;
+    inset:0;
+    background:repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255,215,0,0.05) 10px,
+      rgba(255,215,0,0.05) 20px
+    );
+  }
+
+  .card-back-content {
+    text-align:center;
+    position:relative;
+    z-index:2;
+  }
+
+  .card-back-icon {
+    font-size:7rem;
+    margin-bottom:15px;
+    animation:iconPulse 2s ease-in-out infinite;
+    filter:drop-shadow(0 0 20px rgba(255,215,0,0.6));
+  }
+
+  @keyframes iconPulse {
+    0%,100% { transform:scale(1); }
+    50% { transform:scale(1.1); }
+  }
+
+  .card-back-text {
+    color:var(--gold);
+    font-family:'Amiri',serif;
+    font-size:1.8rem;
+    font-weight:800;
+    text-shadow:0 0 20px rgba(255,215,0,0.6);
+    margin-bottom:8px;
+  }
+
+  .card-back-sub {
+    color:rgba(255,215,0,0.7);
+    font-size:0.9rem;
+    font-weight:600;
+  }
+
+  /* Kartu tambahan (tumpukan efek) */
+  .card-back.stack-1,
+  .card-back.stack-2,
+  .card-back.stack-3 {
+    position:absolute;
+  }
+  .card-back.stack-1 { transform:translate(8px, 8px) rotate(2deg); opacity:0.7; }
+  .card-back.stack-2 { transform:translate(16px, 16px) rotate(-2deg); opacity:0.5; }
+  .card-back.stack-3 { transform:translate(24px, 24px) rotate(4deg); opacity:0.3; }
+
+  .card-deck .card-back:not(.stack-1):not(.stack-2):not(.stack-3) {
+    z-index:10;
+  }
+
+  /* Kartu hasil (yang muncul setelah diklik) */
+  .result-card {
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:380px;
+    min-height:520px;
+    transform:translate(-50%, -50%) scale(0.5) rotateY(90deg);
+    opacity:0;
+    pointer-events:none;
+    transition:all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index:50;
+  }
+
+  .result-card.show {
+    opacity:1;
+    transform:translate(-50%, -50%) scale(1) rotateY(0deg);
+    pointer-events:auto;
+  }
+
+  .result-card-inner {
+    background:linear-gradient(145deg, #fff 0%, #f5f5f5 100%);
+    border-radius:24px;
+    padding:0;
+    box-shadow:
+      0 25px 70px rgba(0,0,0,0.7),
+      0 0 0 4px var(--gold),
+      0 0 60px rgba(255,215,0,0.4);
+    overflow:hidden;
+    position:relative;
+    min-height:520px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* Efek glow border */
+  .result-card-inner::before {
+    content:'';
+    position:absolute;
+    inset:-2px;
+    border-radius:24px;
+    background:linear-gradient(45deg, var(--gold), var(--orange), var(--danger), var(--gold));
+    background-size:300% 300%;
+    animation:borderGlow 3s ease infinite;
+    z-index:-1;
+    filter:blur(10px);
+    opacity:0.7;
+  }
+
+  @keyframes borderGlow {
+    0%,100% { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+  }
+
+  /* Header kartu */
+  .result-card-header {
+    background:linear-gradient(135deg, var(--danger), var(--danger-dark));
+    padding:20px;
+    text-align:center;
+    position:relative;
+  }
+
+  .result-card-header::after {
+    content:'';
+    position:absolute;
+    bottom:-10px;
+    left:50%;
+    transform:translateX(-50%) rotate(45deg);
+    width:20px;
+    height:20px;
+    background:var(--danger-dark);
+  }
+
+  .result-card-badge {
+    display:inline-block;
+    background:rgba(255,255,255,0.2);
+    color:#fff;
+    padding:6px 18px;
+    border-radius:20px;
+    font-size:0.85rem;
+    font-weight:800;
+    letter-spacing:2px;
+    margin-bottom:8px;
+  }
+
+  .result-card-title {
+    color:#fff;
+    font-size:1.6rem;
+    font-weight:900;
+    font-family:'Amiri',serif;
+    text-shadow:0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  /* Body kartu */
+  .result-card-body {
+    flex:1;
+    padding:35px 30px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    background:#fff;
+  }
+
+  .result-card-icon {
+    font-size:5rem;
+    margin-bottom:20px;
+    animation:iconBounceIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes iconBounceIn {
+    0% { transform:scale(0) rotate(-180deg); opacity:0; }
+    60% { transform:scale(1.2) rotate(10deg); opacity:1; }
+    100% { transform:scale(1) rotate(0deg); opacity:1; }
+  }
+
+  .result-card-text {
+    color:#1a1a2e;
+    font-family:'Amiri',serif;
+    font-size:1.7rem;
+    font-weight:800;
+    line-height:1.6;
+    margin-bottom:15px;
+    padding:0 10px;
+  }
+
+  .result-card-subtext {
+    color:#666;
+    font-size:1rem;
+    line-height:1.6;
+    font-weight:600;
+    padding:0 10px;
+    border-top:2px dashed #ddd;
+    padding-top:15px;
+    margin-top:10px;
+    width:100%;
+  }
+
+  /* Footer kartu */
+  .result-card-footer {
+    background:linear-gradient(135deg, #2c2c3e, #1a1a2e);
+    padding:15px;
+    text-align:center;
+    color:rgba(255,215,0,0.8);
+    font-size:0.85rem;
+    font-weight:700;
+    letter-spacing:1px;
+  }
+
+  /* ===== Buttons ===== */
+  .actions {
+    display:flex;
+    gap:15px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:20px;
+  }
+
+  .btn {
+    padding:16px 36px;
+    border:none;
+    border-radius:50px;
+    font-family:'Tajawal',sans-serif;
+    font-size:1.05rem;
+    font-weight:800;
+    cursor:pointer;
+    transition:all 0.3s;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    justify-content:center;
+  }
+
+  .btn-draw {
+    background:linear-gradient(135deg,var(--danger),var(--danger-dark));
+    color:#fff;
+    box-shadow:0 10px 30px rgba(255,71,87,0.5);
+    font-size:1.2rem;
+    padding:20px 50px;
+  }
+  .btn-draw:hover:not(:disabled) {
+    transform:translateY(-4px) scale(1.05);
+    box-shadow:0 15px 40px rgba(255,71,87,0.7);
+  }
+  .btn-draw:disabled {
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+
+  .btn-draw.pulsing {
+    animation:pulseBtn 1.5s ease-in-out infinite;
+  }
+  @keyframes pulseBtn {
+    0%,100% { box-shadow:0 10px 30px rgba(255,71,87,0.5); }
+    50% { box-shadow:0 10px 50px rgba(255,71,87,1), 0 0 0 15px rgba(255,71,87,0.2); }
+  }
+
+  .btn-again {
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000;
+    box-shadow:0 8px 25px rgba(255,215,0,0.5);
+  }
+  .btn-again:hover {
+    transform:translateY(-3px) scale(1.05);
+  }
+
+  .btn-editor {
+    background:rgba(255,255,255,0.1);
+    color:var(--text);
+    border:2px solid rgba(255,255,255,0.2);
+  }
+  .btn-editor:hover {
+    background:rgba(0,210,255,0.15);
+    border-color:var(--primary);
+    transform:translateY(-3px);
+  }
+
+  /* ===== Editor Modal ===== */
+  .modal {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    backdrop-filter:blur(10px);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:500;
+    padding:20px;
+    overflow-y:auto;
+  }
+  .modal.show { display:flex; animation:fadeIn 0.3s; }
+  @keyframes fadeIn {
+    from { opacity:0; }
+    to { opacity:1; }
+  }
+
+  .modal-content {
+    background:linear-gradient(135deg,var(--dark-2),var(--dark-3));
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:24px;
+    padding:30px;
+    max-width:900px;
+    width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    position:relative;
+    animation:modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes modalIn {
+    from { transform:scale(0.9); opacity:0; }
+    to { transform:scale(1); opacity:1; }
+  }
+
+  .modal-close {
+    position:absolute;
+    top:15px;
+    left:20px;
+    background:rgba(255,255,255,0.1);
+    border:none;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    color:#fff;
+    font-size:1.5rem;
+    cursor:pointer;
+    transition:all 0.3s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .modal-close:hover {
+    background:var(--danger);
+    transform:rotate(90deg);
+  }
+
+  .modal-title {
+    color:var(--gold);
+    font-size:1.5rem;
+    font-weight:900;
+    margin-bottom:8px;
+    text-align:center;
+  }
+  .modal-sub {
+    color:var(--text-muted);
+    text-align:center;
+    margin-bottom:20px;
+    font-size:0.9rem;
+  }
+
+  .editor-actions {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+    justify-content:center;
+  }
+
+  .editor-btn {
+    padding:10px 20px;
+    border:none;
+    border-radius:10px;
+    font-family:'Tajawal',sans-serif;
+    font-size:0.9rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+  .editor-btn.add { background:var(--success); color:#fff; }
+  .editor-btn.random { background:var(--primary); color:#fff; }
+  .editor-btn.export { background:var(--purple); color:#fff; }
+  .editor-btn.import { background:#00b894; color:#fff; }
+  .editor-btn.restore { background:var(--gold-dark); color:#fff; }
+  .editor-btn.clear { background:var(--danger); color:#fff; }
+  .editor-btn:hover { transform:translateY(-2px); opacity:0.9; }
+
+  .add-form {
+    background:rgba(46,213,115,0.1);
+    border:1px solid rgba(46,213,115,0.3);
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:20px;
+    display:none;
+  }
+  .add-form.show { display:block; }
+
+  .add-form label {
+    display:block;
+    color:var(--text-muted);
+    font-size:0.85rem;
+    margin-bottom:6px;
+    font-weight:600;
+  }
+
+  .add-form input,
+  .add-form textarea {
+    width:100%;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.08);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-size:1rem;
+    margin-bottom:12px;
+    resize:vertical;
+  }
+  .add-form input:focus,
+  .add-form textarea:focus {
+    outline:none;
+    border-color:var(--success);
+  }
+
+  .add-form textarea {
+    min-height:60px;
+    line-height:1.6;
+    font-family:'Amiri',serif;
+    font-size:1.05rem;
+  }
+
+  .form-row {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  @media (max-width:600px) {
+    .form-row { grid-template-columns:1fr; }
+  }
+
+  .card-list {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:12px;
+  }
+
+  .card-item {
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:14px;
+    padding:14px;
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    transition:all 0.3s;
+  }
+  .card-item:hover {
+    background:rgba(255,255,255,0.08);
+    border-color:rgba(255,215,0,0.3);
+    transform:translateY(-2px);
+  }
+
+  .card-item-icon {
+    font-size:2rem;
+    flex-shrink:0;
+  }
+
+  .card-item-body {
+    flex:1;
+    text-align:right;
+    min-width:0;
+  }
+
+  .card-item-text {
+    color:var(--text);
+    font-family:'Amiri',serif;
+    font-size:1.1rem;
+    font-weight:700;
+    line-height:1.5;
+    margin-bottom:4px;
+    word-wrap:break-word;
+  }
+
+  .card-item-sub {
+    color:var(--text-muted);
+    font-size:0.8rem;
+    line-height:1.4;
+  }
+
+  .card-item-del {
+    background:var(--danger);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    width:30px;
+    height:30px;
+    cursor:pointer;
+    font-weight:900;
+    font-size:0.9rem;
+    flex-shrink:0;
+    transition:all 0.2s;
+  }
+  .card-item-del:hover { transform:scale(1.1); }
+
+  .card-item-del:active { transform:scale(0.95); }
+
+  /* Toast */
+  .toast {
+    position:fixed;
+    bottom:30px;
+    left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:rgba(0,0,0,0.9);
+    color:#fff;
+    padding:14px 28px;
+    border-radius:50px;
+    font-weight:700;
+    border:2px solid var(--primary);
+    z-index:2000;
+    opacity:0;
+    transition:all 0.4s;
+    font-size:0.95rem;
+  }
+  .toast.show {
+    transform:translateX(-50%) translateY(0);
+    opacity:1;
+  }
+  .toast.success { border-color:var(--success); color:var(--success); }
+  .toast.error { border-color:var(--danger); color:var(--danger); }
+
+  /* Confetti */
+  .confetti {
+    position:fixed;
+    width:12px;
+    height:12px;
+    top:-20px;
+    z-index:999;
+    animation:confettiFall 4s linear forwards;
+    pointer-events:none;
+  }
+  @keyframes confettiFall {
+    0% { transform:translateY(0) rotate(0deg); opacity:1; }
+    100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+  }
+
+  /* Floating particles */
+  .particle {
+    position:fixed;
+    font-size:1.5rem;
+    pointer-events:none;
+    z-index:1500;
+    animation:particleFloat 3s ease-out forwards;
+  }
+  @keyframes particleFloat {
+    0% { transform:translateY(0) scale(0.5) rotate(0deg); opacity:0; }
+    20% { opacity:1; }
+    100% { transform:translateY(-200px) scale(1.2) rotate(360deg); opacity:0; }
+  }
+
+  /* Responsive */
+  @media (max-width:600px) {
+    .header h1 { font-size:1.8rem; }
+    .card-deck, .result-card {
+      width:280px;
+      height:400px;
+      min-height:400px;
+    }
+    .card-back-icon { font-size:5rem; }
+    .card-back-text { font-size:1.4rem; }
+    .result-card-text { font-size:1.3rem; }
+    .result-card-icon { font-size:4rem; }
+    .btn { padding:14px 24px; font-size:0.95rem; }
+    .btn-draw { padding:16px 32px; font-size:1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-animation">
+  <div class="bg-circle c1"></div>
+  <div class="bg-circle c2"></div>
+  <div class="bg-circle c3"></div>
+</div>
+
+<!-- ===== Main Container ===== -->
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🎴 بِطَاقَاتُ العُقُوبَة</h1>
+    <p>Kartu Hukuman — Klik untuk mengacak & menarik 1 kartu</p>
+  </div>
+
+  <!-- Deck Area -->
+  <div class="deck-area">
+
+    <!-- Card Deck (tumpukan) -->
+    <div class="card-deck" id="cardDeck">
+      <!-- Stacked cards -->
+      <div class="card-back stack-3"></div>
+      <div class="card-back stack-2"></div>
+      <div class="card-back stack-1"></div>
+
+      <!-- Main card -->
+      <div class="card-back">
+        <div class="card-back-content">
+          <div class="card-back-icon">🎴</div>
+          <div class="card-back-text">بِطَاقَة العُقُوبَة</div>
+          <div class="card-back-sub">اضغط لسحب بطاقة</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Card -->
+    <div class="result-card" id="resultCard">
+      <div class="result-card-inner">
+        <div class="result-card-header">
+          <div class="result-card-badge">⚡ العُقُوبَة</div>
+          <div class="result-card-title">Hukuman untukmu</div>
+        </div>
+        <div class="result-card-body">
+          <div class="result-card-icon" id="resultIcon">🎭</div>
+          <div class="result-card-text" id="resultText">...</div>
+          <div class="result-card-subtext" id="resultSubtext"></div>
+        </div>
+        <div class="result-card-footer">
+          🎴 بِطَاقَاتُ العُقُوبَة — Kartu Hukuman
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Actions -->
+  <div class="actions" id="actionsBefore">
+    <button class="btn btn-draw pulsing" id="drawBtn">
+      🎴 اسحب بطاقة
+    </button>
+    <button class="btn btn-editor" id="editorBtn">
+      📝 إدارة البطاقات
+    </button>
+  </div>
+
+  <div class="actions" id="actionsAfter" style="display:none;">
+    <button class="btn btn-again" id="againBtn">
+      🔄 اسحب بطاقة أخرى
+    </button>
+    <button class="btn btn-editor" id="editorBtn2">
+      📝 إدارة البطاقات
+    </button>
+  </div>
+
+</div>
+
+<!-- ===== Editor Modal ===== -->
+<div class="modal" id="editorModal">
+  <div class="modal-content">
+    <button class="modal-close" id="closeModal">&times;</button>
+
+    <div class="modal-title">📝 إدارة البطاقات</div>
+    <div class="modal-sub">
+      أضف بطاقات العقوبات (بالعربية). سيتم حفظها تلقائيًا.
+    </div>
+
+    <div class="editor-actions">
+      <button class="editor-btn add" id="addCardBtn">➕ إضافة بطاقة</button>
+      <button class="editor-btn random" id="shuffleCardsBtn">🔀 خلط</button>
+      <button class="editor-btn export" id="exportBtn">📤 تصدير JSON</button>
+      <button class="editor-btn import" id="importBtn">📥 استيراد JSON</button>
+      <button class="editor-btn restore" id="restoreBtn">↩️ استعادة الافتراضي</button>
+      <button class="editor-btn clear" id="clearBtn">🗑️ حذف الكل</button>
+    </div>
+
+    <!-- Add Form -->
+    <div class="add-form" id="addForm">
+      <div class="form-row">
+        <div>
+          <label>الأيقونة (emoji) *</label>
+          <input type="text" id="newIcon" placeholder="مثال: 🎤" maxlength="5">
+        </div>
+        <div>
+          <label>النوع (اختياري)</label>
+          <input type="text" id="newCategory" placeholder="مثال: غِنَاء، كِتَابَة" dir="rtl">
+        </div>
+      </div>
+
+      <label>نص العقوبة (بالعربية) *</label>
+      <textarea id="newText" placeholder="مثال: غَنِّ أُغْنِيَةً عَرَبِيَّةً وَاحِدَة" dir="rtl"></textarea>
+
+      <label>الترجمة / الشرح (اختياري)</label>
+      <input type="text" id="newTranslation" placeholder="Contoh: Nyanyi 1 lagu Arab" dir="rtl">
+
+      <div style="display:flex; gap:8px; margin-top:6px;">
+        <button class="editor-btn add" id="saveCardBtn" style="flex:1;">💾 حفظ</button>
+        <button class="editor-btn clear" id="cancelAddBtn" style="flex:1;">✖️ إلغاء</button>
+      </div>
+    </div>
+
+    <!-- Card List -->
+    <div class="card-list" id="cardList"></div>
+
+    <div style="text-align:center; margin-top:20px; color:var(--text-muted); font-size:0.85rem;">
+      💾 جميع البطاقات محفوظة محليًا — لا تختفي عند التحديث
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DEFAULT CARDS
+============================================================ */
+const DEFAULT_CARDS = [
+  // الغناء
+  { id:'c1',  icon:'🎤', text:'غَنِّ أُغْنِيَةً عَرَبِيَّةً وَاحِدَة', translation:'Nyanyi 1 lagu Arab', category:'غِنَاء' },
+  { id:'c2',  icon:'🎵', text:'أَنْشِدْ بَيْتًا مِنَ الشِّعْرِ العَرَبِيّ', translation:'Deklamasikan 1 bait syair Arab', category:'غِنَاء' },
+  { id:'c3',  icon:'🎶', text:'غَنِّ أُغْنِيَةَ الحُرُوفِ الأَبْجَدِيَّة', translation:'Nyanyi lagu huruf hijaiyah', category:'غِنَاء' },
+
+  // الكتابة
+  { id:'c4',  icon:'✍️', text:'اكْتُبْ خَمْسَ كَلِمَاتٍ عَرَبِيَّةٍ عَلَى السَّبُّورَة', translation:'Tulis 5 kosakata Arab di papan', category:'كِتَابَة' },
+  { id:'c5',  icon:'📝', text:'اكْتُبْ اسْمَكَ بِالعَرَبِيَّةِ ثَلَاثَ مَرَّات', translation:'Tulis namamu dalam Arab 3x', category:'كِتَابَة' },
+  { id:'c6',  icon:'📚', text:'اكْتُبْ عَشْرَ أَسْمَاءِ حَيَوَانَاتٍ بِالعَرَبِيَّة', translation:'Tulis 10 nama hewan dalam Arab', category:'كِتَابَة' },
+
+  // الكلام
+  { id:'c7',  icon:'🗣️', text:'اذْكُرْ عَشْرَ كَلِمَاتٍ عَرَبِيَّةٍ تَبْدَأُ بِحَرْفِ البَاء', translation:'Sebut 10 kata Arab berawalan ب', category:'كَلَام' },
+  { id:'c8',  icon:'💬', text:'عَرِّفْ نَفْسَكَ بِالعَرَبِيَّةِ فِي خَمْسِ جُمَل', translation:'Perkenalkan diri dalam Arab 5 kalimat', category:'كَلَام' },
+  { id:'c9',  icon:'🔤', text:'اذْكُرْ أَسْمَاءَ خَمْسَةٍ مِنْ أَصْدِقَائِكَ بِالعَرَبِيَّة', translation:'Sebut 5 nama temanmu dalam Arab', category:'كَلَام' },
+
+  // التمثيل
+  { id:'c10', icon:'🎭', text:'مَثِّلْ مِهْنَةً وَاحِدَةً بِدُونِ كَلَامٍ وَدَعْ أَصْدِقَاءَكَ يَخْمِنُون', translation:'Peragakan 1 profesi, teman menebak', category:'تَمْثِيل' },
+  { id:'c11', icon:'🐱', text:'قَلِّدْ صَوْتَ حَيَوَانٍ وَدَعْ أَصْدِقَاءَكَ يَخْمِنُون', translation:'Tirukan suara hewan, teman menebak', category:'تَمْثِيل' },
+  { id:'c12', icon:'💃', text:'أَدِّ حَرَكَةً رِيَاضِيَّةً وَاذْكُرْ اسْمَهَا بِالعَرَبِيَّة', translation:'Peragakan 1 gerakan olahraga + sebut namanya Arab', category:'تَمْثِيل' },
+
+  // الحركة
+  { id:'c13', icon:'🏃', text:'اقْفِزْ عَشْرَ قَفَزَاتٍ وَأَنْتَ تَعُدُّ بِالعَرَبِيَّة', translation:'Lompat 10x sambil hitung Arab', category:'حَرَكَة' },
+  { id:'c14', icon:'🤸', text:'اعْمَلْ خَمْسَ تَمَارِينَ رِيَاضِيَّةٍ وَاذْكُرْهَا بِالعَرَبِيَّة', translation:'Lakukan 5 gerakan olahraga + sebut Arab', category:'حَرَكَة' },
+  { id:'c15', icon:'🚶', text:'امْشِ حَوْلَ الفَصْلِ مَرَّتَيْنِ وَأَنْتَ تُلْقِي التَّحِيَّةَ بِالعَرَبِيَّة', translation:'Jalan keliling kelas 2x sambil ucap salam Arab', category:'حَرَكَة' },
+
+  // التحديات
+  { id:'c16', icon:'⚡', text:'اذْكُرْ عَشْرَ فَوَاكِهَ بِالعَرَبِيَّةِ فِي خَمْسِ ثَوَانٍ', translation:'Sebut 10 buah Arab dalam 5 detik', category:'تَحَدِّي' },
+  { id:'c17', icon:'🔥', text:'عُدَّ مِنْ وَاحِدٍ إِلَى عِشْرِينَ بِالعَرَبِيَّةِ بِسُرْعَة', translation:'Hitung 1-20 Arab dengan cepat', category:'تَحَدِّي' },
+  { id:'c18', icon:'💪', text:'احْفَظْ خَمْسَ كَلِمَاتٍ جَدِيدَةٍ وَاذْكُرْهَا لِلْفَصْل', translation:'Hafal 5 kosakata baru + sebutkan ke kelas', category:'تَحَدِّي' },
+
+  // ممتعة
+  { id:'c19', icon:'🤝', text:'صَافِحْ خَمْسَةً مِنْ أَصْدِقَائِكَ وَقُلْ لِكُلِّ وَاحِدٍ: السَّلَامُ عَلَيْكُمْ', translation:'Salaman 5 teman + ucap "السلام عليكم"', category:'مُمْتِعَة' },
+  { id:'c20', icon:'😂', text:'اضْحَكْ ضِحْكَةً عَرَبِيَّةً وَقُلْ: هَا هَا هَا بِالعَرَبِيَّة', translation:'Tertawa ala Arab 3x', category:'مُمْتِعَة' },
+  { id:'c21', icon:'🎨', text:'ارْسُمْ عَلَى السَّبُّورَةِ شَيْئًا وَاكْتُبْ اسْمَهُ بِالعَرَبِيَّة', translation:'Gambar 1 benda di papan + tulis nama Arab', category:'مُمْتِعَة' },
+
+  // إضافية
+  { id:'c22', icon:'📖', text:'اقْرَأْ جُمْلَةً عَرَبِيَّةً مِنَ الكِتَابِ ثَلَاثَ مَرَّات', translation:'Baca 1 kalimat Arab 3x', category:'قِرَاءَة' },
+  { id:'c23', icon:'🎯', text:'سَمِّ خَمْسَةً مِنْ أَعْضَاءِ الجِسْمِ بِالعَرَبِيَّة', translation:'Sebut 5 anggota tubuh dalam Arab', category:'كَلَام' },
+  { id:'c24', icon:'🌈', text:'اذْكُرْ سَبْعَةَ أَلْوَانٍ بِالعَرَبِيَّة', translation:'Sebut 7 warna dalam Arab', category:'كَلَام' },
+  { id:'c25', icon:'🕐', text:'اذْكُرْ أَيَّامَ الأُسْبُوعِ السَّبْعَةَ بِالعَرَبِيَّة', translation:'Sebut 7 hari dalam Arab', category:'كَلَام' },
+  { id:'c26', icon:'🌙', text:'اذْكُرْ أَسْمَاءَ الشُّهُورِ الهِجْرِيَّة', translation:'Sebut nama bulan Hijriyah', category:'كَلَام' },
+  { id:'c27', icon:'👨‍👩‍👧', text:'اذْكُرْ خَمْسَةً مِنْ أَعْضَاءِ أُسْرَتِكَ بِالعَرَبِيَّة', translation:'Sebut 5 anggota keluarga dalam Arab', category:'كَلَام' },
+  { id:'c28', icon:'🍎', text:'سَمِّ خَمْسَ فَوَاكِهَ وَخَمْسَ خُضْرَوَاتٍ بِالعَرَبِيَّة', translation:'Sebut 5 buah + 5 sayur dalam Arab', category:'كَلَام' },
+  { id:'c29', icon:'🏠', text:'صِفْ بَيْتَكَ فِي خَمْسِ جُمَلٍ بِالعَرَبِيَّة', translation:'Deskripsikan rumahmu 5 kalimat Arab', category:'كَلَام' },
+  { id:'c30', icon:'⭐', text:'اذْكُرْ ثَلَاثَةً مِنْ أَحْلَامِكَ بِالعَرَبِيَّة', translation:'Sebut 3 cita-citamu dalam Arab', category:'كَلَام' },
+];
+
+/* ============================================================
+   STORAGE
+============================================================ */
+const STORAGE_KEY = 'arab_punishment_cards_data';
+
+function loadCards() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_CARDS));
+}
+
+function saveCards(cards) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') toast('⚠️ الذاكرة ممتلئة', 'error');
+  }
+}
+
+/* ============================================================
+   STATE
+============================================================ */
+const state = {
+  cards: [],
+  currentCard: null,
+  isDrawing: false,
+  recentDraws: [], // untuk hindari pengulangan
+};
+
+/* ============================================================
+   HELPERS
+============================================================ */
+function toArabic(num) {
+  const d = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  return String(num).split('').map(x => d[parseInt(x)] || x).join('');
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* ============================================================
+   CARD DECK INTERACTION
+============================================================ */
+const cardDeck = document.getElementById('cardDeck');
+const resultCard = document.getElementById('resultCard');
+const resultIcon = document.getElementById('resultIcon');
+const resultText = document.getElementById('resultText');
+const resultSubtext = document.getElementById('resultSubtext');
+const drawBtn = document.getElementById('drawBtn');
+const againBtn = document.getElementById('againBtn');
+const actionsBefore = document.getElementById('actionsBefore');
+const actionsAfter = document.getElementById('actionsAfter');
+
+function drawCard() {
+  if (state.isDrawing) return;
+  if (state.cards.length === 0) {
+    toast('⚠️ لا توجد بطاقات! أضف بطاقات أولاً.', 'error');
+    return;
+  }
+
+  state.isDrawing = true;
+  drawBtn.disabled = true;
+  againBtn.disabled = true;
+  cardDeck.classList.add('disabled');
+  drawBtn.classList.remove('pulsing');
+
+  // Animasi getar kartu
+  cardDeck.style.animation = 'shake 0.5s ease-in-out 3';
+  setTimeout(() => {
+    cardDeck.style.animation = '';
+  }, 1600);
+
+  // Pilih kartu secara acak (hindari ulangan 5 terakhir)
+  let available = state.cards.filter(c => !state.recentDraws.includes(c.id));
+  if (available.length === 0) {
+    state.recentDraws = [];
+    available = state.cards;
+  }
+  const randomCard = available[Math.floor(Math.random() * available.length)];
+
+  // Simpan ke recent
+  state.recentDraws.push(randomCard.id);
+  if (state.recentDraws.length > 5) state.recentDraws.shift();
+
+  state.currentCard = randomCard;
+
+  // Efek partikel saat mengacak
+  setTimeout(() => {
+    spawnParticles();
+  }, 400);
+
+  // Setelah animasi, tampilkan kartu
+  setTimeout(() => {
+    showResultCard(randomCard);
+  }, 1800);
+}
+
+function spawnParticles() {
+  const icons = ['🎴', '✨', '⭐', '🎯', '🔥', '💫', '🎲', '⚡'];
+  for (let i = 0; i < 15; i++) {
+    setTimeout(() => {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.textContent = icons[Math.floor(Math.random() * icons.length)];
+      particle.style.left = (Math.random() * 100) + 'vw';
+      particle.style.top = (50 + Math.random() * 20) + 'vh';
+      particle.style.animationDelay = (Math.random() * 0.3) + 's';
+      document.body.appendChild(particle);
+      setTimeout(() => particle.remove(), 3000);
+    }, i * 60);
+  }
+}
+
+function showResultCard(card) {
+  resultIcon.textContent = card.icon || '🎴';
+  resultText.textContent = card.text;
+  resultSubtext.textContent = card.translation || '';
+
+  // Reset animation
+  resultIcon.style.animation = 'none';
+  void resultIcon.offsetWidth;
+  resultIcon.style.animation = 'iconBounceIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+  resultCard.classList.add('show');
+
+  // Play sound effect (opsional)
+  playDrawSound();
+
+  state.isDrawing = false;
+  againBtn.disabled = false;
+
+  // Tampilkan tombol "tarik lagi"
+  actionsBefore.style.display = 'none';
+  actionsAfter.style.display = 'flex';
+
+  // Confetti kecil
+  launchConfetti(30);
+}
+
+function resetCard() {
+  resultCard.classList.remove('show');
+  setTimeout(() => {
+    actionsBefore.style.display = 'flex';
+    actionsAfter.style.display = 'none';
+    drawBtn.disabled = false;
+    drawBtn.classList.add('pulsing');
+    cardDeck.classList.remove('disabled');
+    state.isDrawing = false;
+  }, 400);
+}
+
+function playDrawSound() {
+  // Sound effect sederhana pakai Web Audio API
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    notes.forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime + i * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.1 + 0.3);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(audioCtx.currentTime + i * 0.1);
+      osc.stop(audioCtx.currentTime + i * 0.1 + 0.3);
+    });
+  } catch (e) {}
+}
+
+/* CSS Animasi shake */
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes shake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-8px) rotate(-2deg); }
+    50% { transform: translateX(8px) rotate(2deg); }
+    75% { transform: translateX(-5px) rotate(-1deg); }
+  }
+`;
+document.head.appendChild(style);
+
+/* ============================================================
+   EDITOR
+============================================================ */
+const editorModal = document.getElementById('editorModal');
+const cardList = document.getElementById('cardList');
+const addForm = document.getElementById('addForm');
+
+function renderCardList() {
+  cardList.innerHTML = '';
+
+  if (state.cards.length === 0) {
+    cardList.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:40px; grid-column:1/-1;">لا توجد بطاقات. أضف بطاقة جديدة.</div>';
+    return;
+  }
+
+  state.cards.forEach((card, idx) => {
+    const item = document.createElement('div');
+    item.className = 'card-item';
+    item.innerHTML = `
+      <div class="card-item-icon">${card.icon || '🎴'}</div>
+      <div class="card-item-body">
+        <div class="card-item-text">${card.text}</div>
+        ${card.translation ? `<div class="card-item-sub">${card.translation}</div>` : ''}
+        ${card.category ? `<div class="card-item-sub" style="color:var(--gold); margin-top:4px;">🏷️ ${card.category}</div>` : ''}
+      </div>
+      <button class="card-item-del" data-idx="${idx}" title="حذف">✖</button>
+    `;
+    item.querySelector('.card-item-del').addEventListener('click', () => {
+      if (confirm(`حذف هذه البطاقة؟\n\n"${card.text}"`)) {
+        state.cards.splice(idx, 1);
+        saveCards(state.cards);
+        renderCardList();
+        toast('🗑️ تم الحذف', 'success');
+      }
+    });
+    cardList.appendChild(item);
+  });
+}
+
+document.getElementById('editorBtn').addEventListener('click', openEditor);
+document.getElementById('editorBtn2').addEventListener('click', openEditor);
+
+function openEditor() {
+  editorModal.classList.add('show');
+  renderCardList();
+}
+
+document.getElementById('closeModal').addEventListener('click', () => {
+  editorModal.classList.remove('show');
+  addForm.classList.remove('show');
+});
+
+editorModal.addEventListener('click', (e) => {
+  if (e.target === editorModal) {
+    editorModal.classList.remove('show');
+    addForm.classList.remove('show');
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    editorModal.classList.remove('show');
+    addForm.classList.remove('show');
+  }
+});
+
+document.getElementById('addCardBtn').addEventListener('click', () => {
+  addForm.classList.toggle('show');
+  if (addForm.classList.contains('show')) {
+    document.getElementById('newText').focus();
+  }
+});
+
+document.getElementById('saveCardBtn').addEventListener('click', () => {
+  const icon = document.getElementById('newIcon').value.trim() || '🎴';
+  const text = document.getElementById('newText').value.trim();
+  const translation = document.getElementById('newTranslation').value.trim();
+  const category = document.getElementById('newCategory').value.trim();
+
+  if (!text) {
+    toast('⚠️ اكتب نص العقوبة', 'error');
+    return;
+  }
+
+  const newCard = {
+    id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    icon,
+    text,
+    translation: translation || '',
+    category: category || '',
+  };
+
+  state.cards.push(newCard);
+  saveCards(state.cards);
+  renderCardList();
+  resetAddForm();
+  toast('✅ تم الحفظ', 'success');
+});
+
+document.getElementById('cancelAddBtn').addEventListener('click', resetAddForm);
+
+function resetAddForm() {
+  document.getElementById('newIcon').value = '';
+  document.getElementById('newText').value = '';
+  document.getElementById('newTranslation').value = '';
+  document.getElementById('newCategory').value = '';
+  addForm.classList.remove('show');
+}
+
+document.getElementById('shuffleCardsBtn').addEventListener('click', () => {
+  state.cards = shuffle(state.cards);
+  saveCards(state.cards);
+  renderCardList();
+  toast('🔀 تم الخلط', 'success');
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (confirm('🗑️ حذف جميع البطاقات؟ لا يمكن التراجع.')) {
+    state.cards = [];
+    saveCards(state.cards);
+    renderCardList();
+    toast('🗑️ تم الحذف الكامل', 'success');
+  }
+});
+
+document.getElementById('restoreBtn').addEventListener('click', () => {
+  if (confirm('↩️ استعادة البطاقات الافتراضية؟ سيتم حذف بطاقاتك المخصصة.')) {
+    state.cards = JSON.parse(JSON.stringify(DEFAULT_CARDS));
+    saveCards(state.cards);
+    renderCardList();
+    toast('↩️ تم الاستعادة', 'success');
+  }
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state.cards, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'punishment-cards.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📤 تم التصدير', 'success');
+});
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error('bad');
+        state.cards = data;
+        saveCards(state.cards);
+        renderCardList();
+        toast('📥 تم الاستيراد', 'success');
+      } catch (err) {
+        toast('⚠️ فشل الاستيراد', 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+});
+
+/* ============================================================
+   CONFETTI
+============================================================ */
+function launchConfetti(count = 50) {
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#95E1D3', '#F38181', '#AA96DA', '#e67e22'];
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      c.style.animationDuration = (3 + Math.random() * 2) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }, i * 30);
+  }
+}
+
+/* ============================================================
+   EVENT LISTENERS
+============================================================ */
+drawBtn.addEventListener('click', drawCard);
+againBtn.addEventListener('click', () => {
+  resetCard();
+  setTimeout(drawCard, 500);
+});
+
+cardDeck.addEventListener('click', () => {
+  if (!state.isDrawing && !cardDeck.classList.contains('disabled')) {
+    drawCard();
+  }
+});
+
+/* Keyboard shortcut: Space / Enter untuk tarik */
+document.addEventListener('keydown', (e) => {
+  if (editorModal.classList.contains('show')) return;
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    if (actionsBefore.style.display !== 'none') {
+      drawCard();
+    } else {
+      resetCard();
+      setTimeout(drawCard, 500);
+    }
+  }
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+state.cards = loadCards();
+renderCardList();
+</script>
+</body>
+</html>

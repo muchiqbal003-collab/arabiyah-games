@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خَمِّنِ الجُمْلَة — Tebak Kalimat (Jumlah Mufidah)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Amiri:wght@400;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Tajawal',sans-serif; }
+
+  :root {
+    --primary:#00d2ff;
+    --primary-dark:#3a7bd5;
+    --gold:#FFD700;
+    --gold-dark:#FFA500;
+    --success:#2ed573;
+    --danger:#ff4757;
+    --dark:#0f0c29;
+    --dark-2:#302b63;
+    --dark-3:#24243e;
+    --text:#fff;
+    --text-muted:#a0a0c0;
+  }
+
+  body {
+    min-height:100vh;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+    color:var(--text);
+    overflow-x:hidden;
+  }
+
+  /* ===== Background ===== */
+  .bg-animation {
+    position:fixed; inset:0; z-index:0;
+    overflow:hidden; pointer-events:none;
+  }
+  .bg-circle {
+    position:absolute; border-radius:50%;
+    filter:blur(80px); opacity:0.3;
+    animation:floatCircle 20s ease-in-out infinite;
+  }
+  .bg-circle.c1 { width:400px; height:400px; background:var(--primary); top:-100px; left:-100px; }
+  .bg-circle.c2 { width:500px; height:500px; background:var(--gold); bottom:-150px; right:-150px; animation-delay:-5s; }
+  .bg-circle.c3 { width:300px; height:300px; background:var(--danger); top:40%; left:50%; animation-delay:-10s; }
+  @keyframes floatCircle {
+    0%,100% { transform:translate(0,0) scale(1); }
+    33% { transform:translate(100px,-50px) scale(1.1); }
+    66% { transform:translate(-50px,100px) scale(0.9); }
+  }
+
+  /* ===== Menu Utama ===== */
+  .menu-screen {
+    position:fixed; inset:0;
+    display:flex; justify-content:center; align-items:center;
+    z-index:200; padding:20px; overflow-y:auto;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+  }
+  .menu-screen.hide { display:none; }
+
+  .menu-card {
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(20px);
+    border-radius:24px;
+    padding:40px;
+    max-width:700px; width:100%;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 25px 60px rgba(0,0,0,0.5);
+    text-align:center;
+    margin:auto;
+  }
+
+  .menu-title {
+    color:var(--primary);
+    font-size:2rem; font-weight:900;
+    margin-bottom:8px;
+    text-shadow:0 0 20px rgba(0,210,255,0.5);
+  }
+  .menu-sub { color:var(--text-muted); margin-bottom:30px; }
+
+  .menu-options {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-bottom:25px;
+  }
+  @media (max-width:600px) { .menu-options { grid-template-columns:1fr; } }
+
+  .menu-option {
+    background:rgba(255,255,255,0.05);
+    border:2px solid rgba(255,255,255,0.15);
+    border-radius:20px;
+    padding:30px 20px;
+    cursor:pointer;
+    transition:all 0.3s;
+    text-align:center;
+  }
+  .menu-option:hover {
+    transform:translateY(-8px);
+    border-color:var(--primary);
+    box-shadow:0 15px 40px rgba(0,210,255,0.3);
+    background:rgba(0,210,255,0.08);
+  }
+  .menu-option .icon {
+    font-size:3.5rem;
+    margin-bottom:12px;
+    display:block;
+  }
+  .menu-option h3 {
+    color:var(--text);
+    font-size:1.2rem; font-weight:800;
+    margin-bottom:8px;
+  }
+  .menu-option p {
+    color:var(--text-muted);
+    font-size:0.85rem; line-height:1.5;
+  }
+
+  .menu-info {
+    background:rgba(0,210,255,0.08);
+    border:1px solid rgba(0,210,255,0.3);
+    border-radius:12px;
+    padding:15px;
+    color:var(--primary);
+    font-size:0.85rem;
+    line-height:1.7;
+    text-align:right;
+  }
+  .menu-info strong { color:var(--gold); }
+
+  /* ===== Setup Screen ===== */
+  .setup-screen {
+    position:fixed; inset:0;
+    display:flex; justify-content:center; align-items:flex-start;
+    z-index:200; padding:20px; overflow-y:auto;
+    background:linear-gradient(135deg,var(--dark),var(--dark-2),var(--dark-3));
+  }
+  .setup-screen.hide { display:none; }
+
+  .setup-card {
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(20px);
+    border-radius:24px;
+    padding:35px;
+    max-width:800px; width:100%;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 25px 60px rgba(0,0,0,0.5);
+    margin:auto;
+  }
+
+  .setup-title {
+    color:var(--primary);
+    font-size:1.8rem; font-weight:900;
+    text-align:center;
+    margin-bottom:8px;
+  }
+  .setup-sub { color:var(--text-muted); text-align:center; margin-bottom:25px; }
+
+  .team-inputs {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px; margin-bottom:20px;
+  }
+  @media (max-width:600px) { .team-inputs { grid-template-columns:1fr; } }
+
+  .team-input-group {
+    background:rgba(255,255,255,0.04);
+    border-radius:14px; padding:15px;
+    border:2px solid;
+  }
+  .team-input-group.a { border-color:#4A90D9; }
+  .team-input-group.b { border-color:#E74C3C; }
+  .team-input-group label {
+    display:block; color:var(--text);
+    font-weight:700; margin-bottom:8px; font-size:0.95rem;
+  }
+  .team-input-group input {
+    width:100%; padding:10px 14px;
+    border-radius:10px;
+    border:2px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.1);
+    color:var(--text); font-size:1rem;
+    font-family:'Tajawal',sans-serif;
+    text-align:center; font-weight:700;
+  }
+  .team-input-group input:focus { outline:none; border-color:var(--gold); }
+
+  .settings-row {
+    display:flex; justify-content:center;
+    gap:15px; margin-bottom:20px; flex-wrap:wrap;
+  }
+  .setting-item label {
+    display:block; color:var(--text-muted);
+    font-size:0.85rem; margin-bottom:6px; text-align:center;
+  }
+  .setting-item select {
+    padding:10px 18px; border-radius:10px;
+    border:2px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.1);
+    color:var(--text); font-family:'Tajawal',sans-serif;
+    font-size:0.95rem; cursor:pointer; text-align:center;
+    font-weight:700;
+  }
+  .setting-item select option { background:var(--dark-2); color:var(--text); }
+
+  .editor-toggle {
+    display:block; margin:15px auto;
+    padding:12px 28px;
+    background:rgba(255,215,0,0.12);
+    border:2px solid rgba(255,215,0,0.35);
+    border-radius:12px;
+    color:var(--gold); font-weight:700;
+    cursor:pointer; font-family:'Tajawal',sans-serif;
+    font-size:0.95rem; transition:all 0.3s;
+  }
+  .editor-toggle:hover { background:rgba(255,215,0,0.25); transform:translateY(-2px); }
+
+  .editor-panel {
+    display:none;
+    background:rgba(0,0,0,0.25);
+    border-radius:16px;
+    padding:20px; margin-bottom:20px;
+    text-align:right;
+    max-height:500px; overflow-y:auto;
+  }
+  .editor-panel.show { display:block; }
+
+  .editor-panel h3 {
+    color:var(--gold); font-size:1.1rem;
+    margin-bottom:12px;
+    display:flex; justify-content:space-between;
+    align-items:center; flex-wrap:wrap; gap:10px;
+  }
+
+  .editor-actions {
+    display:flex; gap:8px;
+    flex-wrap:wrap; margin-bottom:15px;
+  }
+  .editor-btn {
+    padding:8px 16px; border:none;
+    border-radius:8px;
+    font-family:'Tajawal',sans-serif;
+    font-size:0.85rem; font-weight:700;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .editor-btn.add { background:var(--success); color:#fff; }
+  .editor-btn.random { background:var(--primary); color:#fff; }
+  .editor-btn.clear { background:var(--danger); color:#fff; }
+  .editor-btn.restore { background:var(--gold-dark); color:#fff; }
+  .editor-btn.export { background:#9b59b6; color:#fff; }
+  .editor-btn.import { background:#00b894; color:#fff; }
+  .editor-btn:hover { transform:translateY(-2px); opacity:0.9; }
+
+  .add-form {
+    background:rgba(46,213,115,0.1);
+    border:1px solid rgba(46,213,115,0.3);
+    border-radius:12px;
+    padding:16px; margin-top:12px;
+    display:none;
+  }
+  .add-form.show { display:block; }
+
+  .add-form label {
+    display:block; color:var(--text-muted);
+    font-size:0.8rem; margin-bottom:4px;
+  }
+  .add-form input, .add-form textarea {
+    width:100%; padding:10px 14px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.08);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-size:1rem;
+    margin-bottom:10px;
+    resize:vertical;
+  }
+  .add-form input:focus, .add-form textarea:focus {
+    outline:none; border-color:var(--success);
+  }
+  .add-form textarea { min-height:70px; }
+
+  .question-list {
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .question-item {
+    background:rgba(255,255,255,0.05);
+    border-radius:10px;
+    padding:12px 15px;
+    border:1px solid rgba(255,255,255,0.1);
+    display:flex; justify-content:space-between;
+    align-items:center; gap:10px;
+  }
+  .question-item .q-text {
+    color:var(--text); font-size:1rem;
+    flex:1; text-align:right;
+    font-family:'Amiri',serif;
+    font-weight:700;
+    line-height:1.6;
+  }
+  .question-item .q-num {
+    color:var(--gold); font-weight:900;
+    font-size:0.85rem; min-width:30px;
+    text-align:center;
+  }
+  .question-item .del-btn {
+    background:var(--danger); color:#fff;
+    border:none; border-radius:6px;
+    width:28px; height:28px;
+    cursor:pointer; font-weight:900;
+    transition:all 0.2s;
+  }
+  .question-item .del-btn:hover { transform:scale(1.1); }
+
+  .start-btn {
+    display:block; margin:20px auto 0;
+    padding:16px 50px;
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000; border:none; border-radius:50px;
+    font-size:1.2rem; font-weight:900;
+    cursor:pointer; transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+    box-shadow:0 10px 30px rgba(255,215,0,0.5);
+  }
+  .start-btn:hover { transform:translateY(-3px) scale(1.05); }
+
+  .info-badge {
+    display:inline-block;
+    background:rgba(0,210,255,0.15);
+    border:1px solid rgba(0,210,255,0.3);
+    color:var(--primary);
+    padding:5px 14px;
+    border-radius:20px;
+    font-size:0.8rem;
+    margin-top:15px;
+  }
+
+  .back-btn {
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.2);
+    color:var(--text-muted);
+    padding:10px 20px; border-radius:10px;
+    font-family:'Tajawal',sans-serif;
+    font-weight:700; cursor:pointer;
+    transition:all 0.3s;
+    margin-bottom:15px;
+  }
+  .back-btn:hover { background:rgba(255,255,255,0.2); color:#fff; }
+
+  /* ===== Controller Screen (Laptop) ===== */
+  .controller-screen {
+    display:none;
+    min-height:100vh;
+    padding:20px;
+    position:relative; z-index:5;
+  }
+  .controller-screen.show { display:block; }
+
+  .ctrl-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(0,0,0,0.4);
+    backdrop-filter:blur(20px);
+    padding:12px 20px;
+    border-radius:16px;
+    margin-bottom:20px;
+    border:1px solid rgba(255,255,255,0.1);
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .ctrl-header h2 {
+    color:var(--primary);
+    font-size:1.1rem;
+  }
+
+  .ctrl-header-info {
+    color:var(--text-muted);
+    font-size:0.85rem;
+  }
+
+  .ctrl-grid {
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+    align-items:flex-start;
+  }
+  @media (max-width:900px) { .ctrl-grid { grid-template-columns:1fr; } }
+
+  .sentence-display {
+    background:linear-gradient(135deg, rgba(0,210,255,0.1), rgba(58,123,213,0.1));
+    border:2px solid rgba(0,210,255,0.4);
+    border-radius:20px;
+    padding:40px 30px;
+    text-align:center;
+    min-height:350px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .sentence-display::before {
+    content:'';
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 0%, rgba(0,210,255,0.15), transparent 70%);
+    pointer-events:none;
+  }
+
+  .sentence-label {
+    color:var(--gold);
+    font-size:0.85rem;
+    font-weight:700;
+    margin-bottom:15px;
+    letter-spacing:2px;
+    position:relative;
+    z-index:1;
+  }
+
+  .sentence-text {
+    font-family:'Amiri',serif;
+    font-size:2.5rem;
+    font-weight:700;
+    color:#fff;
+    line-height:1.7;
+    text-shadow:0 0 30px rgba(0,210,255,0.5);
+    position:relative;
+    z-index:1;
+    animation:fadeIn 0.6s ease;
+    padding:0 20px;
+  }
+
+  @media (max-width:768px) {
+    .sentence-text { font-size:1.6rem; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateY(20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .sentence-hidden {
+    filter:blur(20px);
+    user-select:none;
+    pointer-events:none;
+    transition:filter 0.4s;
+  }
+
+  .sentence-hidden.show {
+    filter:blur(0);
+  }
+
+  .ctrl-info-box {
+    background:rgba(0,0,0,0.35);
+    backdrop-filter:blur(15px);
+    border-radius:16px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,0.1);
+    margin-bottom:15px;
+  }
+
+  .ctrl-info-box h3 {
+    color:var(--primary);
+    font-size:1rem;
+    margin-bottom:12px;
+    text-align:center;
+    padding-bottom:10px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+
+  .team-score-display {
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .team-score-row {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 15px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.05);
+    border:2px solid transparent;
+  }
+
+  .team-score-row.a { border-color:#4A90D9; }
+  .team-score-row.b { border-color:#E74C3C; }
+
+  .team-score-row.active {
+    background:rgba(255,215,0,0.15);
+    box-shadow:0 0 20px rgba(255,215,0,0.3);
+    animation:pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow:0 0 20px rgba(255,215,0,0.3); }
+    50% { box-shadow:0 0 30px rgba(255,215,0,0.6); }
+  }
+
+  .team-score-row .name {
+    color:var(--text);
+    font-weight:700;
+    font-size:0.95rem;
+  }
+
+  .team-score-row .pts {
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000;
+    font-weight:900;
+    font-size:1.3rem;
+    padding:4px 16px;
+    border-radius:8px;
+    min-width:50px;
+    text-align:center;
+  }
+
+  .ctrl-timer {
+    text-align:center;
+    padding:20px 10px;
+  }
+
+  .ctrl-timer .big-timer {
+    font-size:3.5rem;
+    font-weight:900;
+    color:var(--gold);
+    text-shadow:0 0 30px rgba(255,215,0,0.6);
+    line-height:1;
+    margin-bottom:8px;
+  }
+
+  .ctrl-timer .label {
+    color:var(--text-muted);
+    font-size:0.85rem;
+  }
+
+  .ctrl-actions {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .ctrl-btn {
+    flex:1;
+    min-width:120px;
+    padding:16px 20px;
+    border:none;
+    border-radius:14px;
+    font-size:1rem;
+    font-weight:800;
+    cursor:pointer;
+    transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+
+  .ctrl-btn.correct {
+    background:linear-gradient(135deg,#2ed573,#1e8449);
+    color:#fff;
+    box-shadow:0 6px 20px rgba(46,213,115,0.4);
+  }
+  .ctrl-btn.wrong {
+    background:linear-gradient(135deg,#ff4757,#c0392b);
+    color:#fff;
+    box-shadow:0 6px 20px rgba(255,71,87,0.4);
+  }
+  .ctrl-btn.reveal {
+    background:rgba(255,215,0,0.15);
+    color:var(--gold);
+    border:2px solid rgba(255,215,0,0.4);
+  }
+  .ctrl-btn.next {
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    box-shadow:0 6px 20px rgba(0,210,255,0.3);
+  }
+  .ctrl-btn.skip {
+    background:rgba(255,255,255,0.1);
+    color:var(--text-muted);
+    border:2px solid rgba(255,255,255,0.2);
+  }
+  .ctrl-btn.start-timer {
+    background:linear-gradient(135deg,#9b59b6,#6c3483);
+    color:#fff;
+  }
+  .ctrl-btn:hover:not(:disabled) { transform:translateY(-2px); }
+  .ctrl-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .ctrl-hint {
+    background:rgba(0,210,255,0.08);
+    border:1px solid rgba(0,210,255,0.25);
+    border-radius:10px;
+    padding:12px 15px;
+    color:var(--text-muted);
+    font-size:0.8rem;
+    line-height:1.6;
+    margin-top:10px;
+  }
+  .ctrl-hint strong { color:var(--primary); }
+
+  /* ===== Stage Screen (TV) ===== */
+  .stage-screen {
+    display:none;
+    min-height:100vh;
+    padding:30px;
+    position:relative; z-index:5;
+  }
+  .stage-screen.show { display:block; }
+
+  .stage-layout {
+    max-width:1400px;
+    margin:0 auto;
+    min-height:calc(100vh - 60px);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .stage-title {
+    text-align:center;
+    color:var(--primary);
+    font-size:2.2rem;
+    font-weight:900;
+    margin-bottom:30px;
+    text-shadow:0 0 30px rgba(0,210,255,0.5);
+  }
+
+  .stage-scores {
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:40px;
+    align-items:center;
+    margin-bottom:40px;
+  }
+
+  @media (max-width:900px) {
+    .stage-scores { grid-template-columns:1fr; gap:20px; }
+  }
+
+  .stage-team {
+    background:rgba(255,255,255,0.05);
+    border-radius:24px;
+    padding:30px;
+    text-align:center;
+    border:3px solid transparent;
+    transition:all 0.3s;
+  }
+  .stage-team.a { border-color:#4A90D9; }
+  .stage-team.b { border-color:#E74C3C; }
+
+  .stage-team.active {
+    background:rgba(255,215,0,0.12);
+    box-shadow:0 0 50px rgba(255,215,0,0.4);
+    transform:scale(1.03);
+  }
+
+  .stage-team .icon {
+    font-size:4rem;
+    margin-bottom:10px;
+    display:block;
+  }
+
+  .stage-team .name {
+    color:var(--text);
+    font-size:1.5rem;
+    font-weight:800;
+    margin-bottom:15px;
+  }
+
+  .stage-team .pts {
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000;
+    font-size:4rem;
+    font-weight:900;
+    padding:10px 30px;
+    border-radius:16px;
+    display:inline-block;
+    min-width:120px;
+    box-shadow:0 10px 30px rgba(255,215,0,0.4);
+    transition:all 0.3s;
+  }
+
+  .stage-team.active .pts {
+    animation:scorePulse 1.5s infinite;
+  }
+
+  @keyframes scorePulse {
+    0%,100% { transform:scale(1); }
+    50% { transform:scale(1.08); }
+  }
+
+  .stage-timer-box {
+    text-align:center;
+    padding:20px;
+  }
+
+  .stage-timer-box .big-num {
+    font-size:7rem;
+    font-weight:900;
+    color:var(--gold);
+    text-shadow:0 0 50px rgba(255,215,0,0.7);
+    line-height:1;
+  }
+
+  .stage-timer-box .label {
+    color:var(--text-muted);
+    font-size:1.2rem;
+    margin-top:10px;
+  }
+
+  .stage-info {
+    text-align:center;
+    background:rgba(0,0,0,0.3);
+    border-radius:20px;
+    padding:25px;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+
+  .stage-info .round {
+    color:var(--gold);
+    font-size:1.3rem;
+    font-weight:800;
+    margin-bottom:10px;
+  }
+
+  .stage-info .message {
+    color:var(--text);
+    font-size:1.6rem;
+    font-weight:700;
+    line-height:1.5;
+  }
+
+  .stage-waiting {
+    text-align:center;
+    padding:60px 20px;
+  }
+  .stage-waiting .icon {
+    font-size:5rem;
+    margin-bottom:20px;
+    display:block;
+    animation:iconBounce 1.5s infinite;
+  }
+  @keyframes iconBounce {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-20px); }
+  }
+  .stage-waiting .title {
+    color:var(--primary);
+    font-size:2rem;
+    font-weight:900;
+    margin-bottom:15px;
+  }
+  .stage-waiting .sub {
+    color:var(--text-muted);
+    font-size:1.1rem;
+  }
+
+  /* ===== Overlay Result ===== */
+  .overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.9);
+    display:none;
+    justify-content:center; align-items:center;
+    z-index:1000;
+    backdrop-filter:blur(10px);
+    padding:20px;
+  }
+  .overlay.show { display:flex; animation:fadeIn 0.5s; }
+
+  .overlay-content {
+    text-align:center;
+    padding:40px;
+    max-width:600px;
+  }
+
+  .overlay-icon {
+    font-size:6rem;
+    margin-bottom:20px;
+    animation:iconBounce 1s infinite;
+  }
+
+  .overlay-title {
+    color:var(--gold);
+    font-size:2.5rem;
+    font-weight:900;
+    margin-bottom:15px;
+    text-shadow:0 0 30px rgba(255,215,0,0.8);
+  }
+
+  .overlay-subtitle {
+    color:var(--text);
+    font-size:1.2rem;
+    margin-bottom:30px;
+    line-height:1.7;
+  }
+
+  .overlay-btn {
+    padding:15px 40px;
+    border:none;
+    border-radius:50px;
+    font-size:1.1rem;
+    font-weight:900;
+    cursor:pointer;
+    transition:all 0.3s;
+    font-family:'Tajawal',sans-serif;
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#000;
+    box-shadow:0 10px 30px rgba(255,215,0,0.5);
+    margin:0 5px;
+  }
+  .overlay-btn.secondary {
+    background:rgba(255,255,255,0.15);
+    color:var(--text);
+    border:2px solid rgba(255,255,255,0.3);
+    box-shadow:none;
+  }
+  .overlay-btn:hover { transform:translateY(-3px) scale(1.05); }
+
+  /* ===== Toast ===== */
+  .toast {
+    position:fixed; bottom:30px; left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:rgba(0,0,0,0.9);
+    color:#fff;
+    padding:14px 28px;
+    border-radius:50px;
+    font-weight:700;
+    border:2px solid var(--primary);
+    z-index:2000;
+    opacity:0;
+    transition:all 0.4s;
+    font-size:0.95rem;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+  .toast.success { border-color:var(--success); color:var(--success); }
+  .toast.error { border-color:var(--danger); color:var(--danger); }
+
+  /* ===== Confetti ===== */
+  .confetti {
+    position:fixed;
+    width:12px; height:12px;
+    top:-20px;
+    z-index:999;
+    animation:confettiFall 4s linear forwards;
+    pointer-events:none;
+  }
+  @keyframes confettiFall {
+    0% { transform:translateY(0) rotate(0deg); opacity:1; }
+    100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+  }
+
+  /* ===== Screen Switcher ===== */
+  .screen-switcher {
+    position:fixed;
+    top:15px;
+    left:15px;
+    z-index:100;
+    display:flex;
+    gap:8px;
+  }
+  .screen-switcher button {
+    padding:8px 16px;
+    border-radius:10px;
+    border:2px solid rgba(0,210,255,0.4);
+    background:rgba(0,0,0,0.6);
+    color:var(--primary);
+    font-family:'Tajawal',sans-serif;
+    font-weight:700;
+    font-size:0.85rem;
+    cursor:pointer;
+    transition:all 0.3s;
+    backdrop-filter:blur(10px);
+  }
+  .screen-switcher button:hover {
+    background:rgba(0,210,255,0.2);
+    transform:translateY(-2px);
+  }
+  .screen-switcher button.active {
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    border-color:transparent;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Background ===== -->
+<div class="bg-animation">
+  <div class="bg-circle c1"></div>
+  <div class="bg-circle c2"></div>
+  <div class="bg-circle c3"></div>
+</div>
+
+<!-- ===== Screen Switcher (untuk pindah mode) ===== -->
+<div class="screen-switcher" id="screenSwitcher" style="display:none;">
+  <button id="switchToCtrl" class="active">🖥️ الشاشة الحاكمة</button>
+  <button id="switchToStage">📺 شاشة العرض</button>
+</div>
+
+<!-- ===== Menu Utama ===== -->
+<div class="menu-screen" id="menuScreen">
+  <div class="menu-card">
+    <div class="menu-title">💬 خَمِّنِ الجُمْلَة المُفِيدَة</div>
+    <div class="menu-sub">Tebak Kalimat — Satu siswa memperagakan, tim menjawab</div>
+
+    <div class="menu-options">
+      <div class="menu-option" id="modeController">
+        <span class="icon">🖥️</span>
+        <h3>الشاشة الحاكمة</h3>
+        <p>Untuk <strong>laptop</strong> Anda<br>(menampilkan kalimat + kontrol)</p>
+      </div>
+      <div class="menu-option" id="modeStage">
+        <span class="icon">📺</span>
+        <h3>شاشة العرض</h3>
+        <p>Untuk <strong>TV/proyektor</strong><br>(hanya skor + timer)</p>
+      </div>
+    </div>
+
+    <div class="menu-info">
+      <strong>🎯 Cara Setup:</strong><br>
+      1. Hubungkan laptop ke TV dengan HDMI<br>
+      2. Di Windows: tekan <strong>Win + P</strong> → pilih <strong>Extend</strong><br>
+      3. Buka file ini <strong>2x</strong> di browser<br>
+      4. Window pertama: klik <strong>🖥️ الشاشة الحاكمة</strong>, taruh di laptop<br>
+      5. Window kedua: drag ke TV, klik <strong>📺 شاشة العرض</strong><br>
+      6. Tekan F11 di kedua window untuk fullscreen<br>
+      <strong>✨ Selesai! Kalimat hanya tampil di laptop, TV hanya tampil skor.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Setup Screen (untuk controller) ===== -->
+<div class="setup-screen hide" id="setupScreen">
+  <div class="setup-card">
+    <button class="back-btn" id="backToMenu">← رجوع</button>
+
+    <div class="setup-title">⚙️ إعداد اللعبة</div>
+    <div class="setup-sub">Tebak Kalimat — Setup</div>
+
+    <div class="team-inputs">
+      <div class="team-input-group a">
+        <label>🔵 الفريق الأول</label>
+        <input type="text" id="teamAName" value="الفريق الأزرق" maxlength="20">
+      </div>
+      <div class="team-input-group b">
+        <label>🔴 الفريق الثاني</label>
+        <input type="text" id="teamBName" value="الفريق الأحمر" maxlength="20">
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <div class="setting-item">
+        <label>⏱️ وقت لكل سؤال</label>
+        <select id="timerSetting">
+          <option value="30">٣٠ ثانية</option>
+          <option value="45">٤٥ ثانية</option>
+          <option value="60" selected>٦٠ ثانية</option>
+          <option value="90">٩٠ ثانية</option>
+          <option value="120">١٢٠ ثانية</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🎯 عدد الأسئلة</label>
+        <select id="countSetting">
+          <option value="5">٥ أسئلة</option>
+          <option value="10" selected>١٠ أسئلة</option>
+          <option value="15">١٥ سؤالاً</option>
+          <option value="20">٢٠ سؤالاً</option>
+          <option value="0">كل الأسئلة</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>🏆 نقاط الفوز</label>
+        <select id="maxScoreSetting">
+          <option value="3">٣ نقاط</option>
+          <option value="5" selected>٥ نقاط</option>
+          <option value="7">٧ نقاط</option>
+          <option value="10">١٠ نقاط</option>
+          <option value="999">بدون حد (كل الأسئلة)</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="editor-toggle" id="editorToggle">📝 إدارة الجمل (Tambah/Hapus)</button>
+
+    <div class="editor-panel" id="editorPanel">
+      <h3>
+        <span>📋 قائمة الجمل (<span id="questionCount">٠</span>)</span>
+      </h3>
+
+      <div class="editor-actions">
+        <button class="editor-btn add" id="addQuestionBtn">➕ إضافة جملة</button>
+        <button class="editor-btn random" id="shuffleBtn">🔀 خلط عشوائي</button>
+        <button class="editor-btn export" id="exportBtn">📤 تصدير JSON</button>
+        <button class="editor-btn import" id="importBtn">📥 استيراد JSON</button>
+        <button class="editor-btn restore" id="restoreBtn">↩️ استعادة الافتراضي</button>
+        <button class="editor-btn clear" id="clearBtn">🗑️ حذف الكل</button>
+      </div>
+
+      <div class="add-form" id="addForm">
+        <label>الجملة المفيدة (بالعربية)</label>
+        <textarea id="newSentence" placeholder="مثال: أَذْهَبُ إِلَى المَسْجِدِ لِصَلَاةِ الجُمُعَة" dir="rtl"></textarea>
+
+        <label>الفئة (اختياري)</label>
+        <input type="text" id="newCategory" placeholder="مثال: العِبَادَة، الطَّعَام، السَّفَر" dir="rtl">
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button class="editor-btn add" id="saveQuestionBtn" style="flex:1;">💾 حفظ</button>
+          <button class="editor-btn clear" id="cancelAddBtn" style="flex:1;">✖️ إلغاء</button>
+        </div>
+      </div>
+
+      <div class="question-list" id="questionList"></div>
+    </div>
+
+    <div style="text-align:center;">
+      <span class="info-badge">💾 جميع الجمل محفوظة محليًا — لا تختفي عند التحديث</span>
+    </div>
+
+    <button class="start-btn" id="startBtn">🚀 ابدأ اللعب</button>
+  </div>
+</div>
+
+<!-- ===== Controller Screen (Laptop) ===== -->
+<div class="controller-screen" id="controllerScreen">
+  <div class="ctrl-header">
+    <h2>🖥️ الشاشة الحاكمة — Tebak Kalimat</h2>
+    <div class="ctrl-header-info">
+      السؤال <strong id="ctrlQNum">١</strong> / <strong id="ctrlQTotal">١٠</strong>
+      &nbsp;|&nbsp;
+      الفريق النشط: <strong id="ctrlActiveTeam">—</strong>
+    </div>
+    <button class="back-btn" id="ctrlBackToSetup" style="margin:0;">⚙️ الإعدادات</button>
+  </div>
+
+  <div class="ctrl-grid">
+    <!-- Kiri: Kalimat -->
+    <div>
+      <div class="sentence-display">
+        <div class="sentence-label">🎭 الجملة المفيدة — اعرضها للطالب الممثل</div>
+        <div class="sentence-text sentence-hidden" id="sentenceText">جار التحميل...</div>
+      </div>
+    </div>
+
+    <!-- Kanan: Info & Kontrol -->
+    <div>
+      <!-- Skor Tim -->
+      <div class="ctrl-info-box">
+        <h3>🏆 النقاط</h3>
+        <div class="team-score-display">
+          <div class="team-score-row a" id="ctrlTeamARow">
+            <span class="name">🔵 <span id="ctrlTeamAName">الفريق الأزرق</span></span>
+            <span class="pts" id="ctrlTeamAScore">٠</span>
+          </div>
+          <div class="team-score-row b" id="ctrlTeamBRow">
+            <span class="name">🔴 <span id="ctrlTeamBName">الفريق الأحمر</span></span>
+            <span class="pts" id="ctrlTeamBScore">٠</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timer -->
+      <div class="ctrl-info-box">
+        <h3>⏱️ المؤقت</h3>
+        <div class="ctrl-timer">
+          <div class="big-timer" id="ctrlTimer">٦٠</div>
+          <div class="label" id="ctrlTimerLabel">جاهز</div>
+        </div>
+        <button class="ctrl-btn start-timer" id="startTimerBtn" style="width:100%;">▶️ ابدأ المؤقت</button>
+      </div>
+
+      <!-- Tombol Kontrol -->
+      <div class="ctrl-info-box">
+        <h3>🎮 التحكم</h3>
+        <div class="ctrl-actions" style="flex-direction:column;">
+          <button class="ctrl-btn reveal" id="revealBtn">👁️ إظهار الجملة للممثل</button>
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="ctrl-btn correct" id="teamACorrect">✓ الفريق ١</button>
+            <button class="ctrl-btn correct" id="teamBCorrect">✓ الفريق ٢</button>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="ctrl-btn wrong" id="wrongBtn">✗ خطأ</button>
+            <button class="ctrl-btn next" id="nextBtn">➡️ التالي</button>
+          </div>
+          <button class="ctrl-btn skip" id="skipBtn" style="width:100%; margin-top:10px;">⏭️ تخطي</button>
+        </div>
+      </div>
+
+      <!-- Hint -->
+      <div class="ctrl-hint">
+        <strong>💡 كيف تلعب:</strong><br>
+        1. اضغط <strong>👁️ إظهار الجملة</strong> ليعرضها الممثل فقط<br>
+        2. الممثل يقرأ الجملة ويعرضها بإشارات بدون كلام<br>
+        3. الفريق يخمن الجملة بصوت عالٍ<br>
+        4. إذا صح: اضغط <strong>✓ الفريق</strong> الذي أجاب<br>
+        5. إذا انتهى الوقت: اضغط <strong>✗ خطأ</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Stage Screen (TV) ===== -->
+<div class="stage-screen" id="stageScreen">
+  <div class="stage-layout">
+    <div class="stage-title">💬 خَمِّنِ الجُمْلَة المُفِيدَة</div>
+
+    <div id="stageWaiting" class="stage-waiting">
+      <span class="icon">⏳</span>
+      <div class="title">في انتظار البدء...</div>
+      <div class="sub">سيظهر هنا المؤقت والنقاط عند بدء اللعبة</div>
+    </div>
+
+    <div id="stageGame" style="display:none;">
+      <div class="stage-scores">
+        <div class="stage-team a" id="stageTeamA">
+          <span class="icon">🔵</span>
+          <div class="name" id="stageTeamAName">الفريق الأزرق</div>
+          <div class="pts" id="stageTeamAScore">٠</div>
+        </div>
+
+        <div class="stage-timer-box">
+          <div class="big-num" id="stageTimer">٦٠</div>
+          <div class="label">⏱️ الوقت</div>
+        </div>
+
+        <div class="stage-team b" id="stageTeamB">
+          <span class="icon">🔴</span>
+          <div class="name" id="stageTeamBName">الفريق الأحمر</div>
+          <div class="pts" id="stageTeamBScore">٠</div>
+        </div>
+      </div>
+
+      <div class="stage-info">
+        <div class="round" id="stageRound">السؤال ١ / ١٠</div>
+        <div class="message" id="stageMessage">🎭 الممثل يعرض الجملة...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Overlay Result ===== -->
+<div class="overlay" id="overlay">
+  <div class="overlay-content">
+    <div class="overlay-icon" id="overlayIcon">🏆</div>
+    <div class="overlay-title" id="overlayTitle">أحسنت!</div>
+    <div class="overlay-subtitle" id="overlaySubtitle"></div>
+    <div style="margin-top:20px;">
+      <button class="overlay-btn" id="playAgainBtn">🔄 العب مرة أخرى</button>
+      <button class="overlay-btn secondary" id="backToSetupBtn">⚙️ الإعدادات</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DEFAULT SENTENCES (dari kitab العربية بين يديك)
+============================================================ */
+const DEFAULT_QUESTIONS = [
+  // العبادة
+  { id:'s1',  sentence:'أَذْهَبُ إِلَى المَسْجِدِ لِصَلَاةِ الجُمُعَة', category:'العِبَادَة' },
+  { id:'s2',  sentence:'أَقْرَأُ القُرْآنَ بَعْدَ صَلَاةِ الفَجْر', category:'العِبَادَة' },
+  { id:'s3',  sentence:'أَصُومُ رَمَضَانَ وَأُصَلِّي التَّرَاوِيح', category:'العِبَادَة' },
+  { id:'s4',  sentence:'أَتَوَضَّأُ قَبْلَ الصَّلَاةِ', category:'العِبَادَة' },
+
+  // الطعام
+  { id:'s5',  sentence:'آكُلُ الفَطُورَ مَعَ أُسْرَتِي فِي الصَّبَاح', category:'الطَّعَام' },
+  { id:'s6',  sentence:'أَشْرَبُ القَهْوَةَ فِي المَقْهَى', category:'الطَّعَام' },
+  { id:'s7',  sentence:'تَطْبُخُ الأُمُّ الطَّعَامَ فِي المَطْبَخ', category:'الطَّعَام' },
+  { id:'s8',  sentence:'آكُلُ الأَرُزَّ وَالدَّجَاجَ فِي المَطْعَم', category:'الطَّعَام' },
+
+  // المدرسة
+  { id:'s9',  sentence:'يَذْهَبُ الطَّالِبُ إِلَى المَدْرَسَةِ صَبَاحًا', category:'المَدْرَسَة' },
+  { id:'s10', sentence:'يَقْرَأُ الطَّالِبُ الكِتَابَ فِي المَكْتَبَة', category:'المَدْرَسَة' },
+  { id:'s11', sentence:'يَكْتُبُ الطَّالِبُ الدَّرْسَ بِالقَلَم', category:'المَدْرَسَة' },
+  { id:'s12', sentence:'يَشْرَحُ المُعَلِّمُ الدَّرْسَ لِلطُّلَّاب', category:'المَدْرَسَة' },
+
+  // الأسرة
+  { id:'s13', sentence:'يَجْلِسُ الأَبُ مَعَ أُسْرَتِهِ فِي الغُرْفَة', category:'الأُسْرَة' },
+  { id:'s14', sentence:'تَنَامُ الأُخْتُ فِي غُرْفَةِ النَّوْم', category:'الأُسْرَة' },
+  { id:'s15', sentence:'يَلْعَبُ الأَخُ مَعَ صَدِيقِهِ فِي الحَدِيقَة', category:'الأُسْرَة' },
+
+  // السفر
+  { id:'s16', sentence:'أَذْهَبُ إِلَى المَطَارِ لِلسَّفَر', category:'السَّفَر' },
+  { id:'s17', sentence:'أَرْكَبُ الطَّائِرَةَ إِلَى بَلَدِي', category:'السَّفَر' },
+  { id:'s18', sentence:'أَنْزِلُ فِي الفُنْدُقِ لَيْلَةً وَاحِدَة', category:'السَّفَر' },
+
+  // التسوق
+  { id:'s19', sentence:'أَشْتَرِي الفَاكِهَةَ مِنَ السُّوق', category:'التَّسَوُّق' },
+  { id:'s20', sentence:'أَدْفَعُ النُّقُودَ لِلْبَائِع', category:'التَّسَوُّق' },
+  { id:'s21', sentence:'أَذْهَبُ إِلَى السُّوقِ مَعَ أُمِّي', category:'التَّسَوُّق' },
+
+  // العمل
+  { id:'s22', sentence:'يَعْمَلُ الأَبُ فِي الشَّرِكَة', category:'العَمَل' },
+  { id:'s23', sentence:'يُعَالِجُ الطَّبِيبُ المَرِيضَ فِي المُسْتَشْفَى', category:'العَمَل' },
+  { id:'s24', sentence:'يُعَلِّمُ المُدَرِّسُ الطُّلَّابَ فِي الفَصْل', category:'العَمَل' },
+
+  // الطبيعة
+  { id:'s25', sentence:'تَشْرُقُ الشَّمْسُ مِنَ الشَّرْق', category:'الطَّبِيعَة' },
+  { id:'s26', sentence:'تَنْزِلُ الأَمْطَارُ فِي فَصْلِ الشِّتَاء', category:'الطَّبِيعَة' },
+  { id:'s27', sentence:'تَنْبُتُ الأَزْهَارُ فِي فَصْلِ الرَّبِيع', category:'الطَّبِيعَة' },
+
+  // الرياضة
+  { id:'s28', sentence:'يَلْعَبُ الأَوْلَادُ كُرَةَ القَدَمِ فِي المَلْعَب', category:'الرِّيَاضَة' },
+  { id:'s29', sentence:'أَسْبَحُ فِي المَسْبَحِ مَعَ أَصْدِقَائِي', category:'الرِّيَاضَة' },
+
+  // الحج
+  { id:'s30', sentence:'يَذْهَبُ الحَاجُّ إِلَى مَكَّةَ لِلْحَج', category:'الحَجّ' },
+  { id:'s31', sentence:'يَطُوفُ الحَاجُّ حَوْلَ الكَعْبَةِ سَبْعَ مَرَّات', category:'الحَجّ' },
+  { id:'s32', sentence:'يَسْعَى الحَاجُّ بَيْنَ الصَّفَا وَالمَرْوَة', category:'الحَجّ' },
+];
+
+/* ============================================================
+   STORAGE
+============================================================ */
+const STORAGE_KEY = 'arab_guess_sentence_data';
+const SETTINGS_KEY = 'arab_guess_sentence_settings';
+
+function loadQuestions() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) { console.error(e); }
+  return JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+}
+
+function saveQuestions(qs) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(qs)); }
+  catch (e) { console.error(e); }
+}
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return null;
+}
+
+function saveSettings(s) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch (e) {}
+}
+
+/* ============================================================
+   STATE
+============================================================ */
+const state = {
+  screenMode: null, // 'controller' | 'stage'
+  teamA: { name: 'الفريق الأزرق', score: 0 },
+  teamB: { name: 'الفريق الأحمر', score: 0 },
+  questions: [],
+  allQuestions: [],
+  currentIndex: 0,
+  totalQuestions: 10,
+  maxScore: 5,
+  timerDuration: 60,
+  timeLeft: 60,
+  timerInterval: null,
+  timerRunning: false,
+  activeTeam: null,
+  revealed: false,
+  results: [],
+};
+
+/* ============================================================
+   HELPERS
+============================================================ */
+function toArabic(num) {
+  const d = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  return String(num).split('').map(x => d[parseInt(x)] || x).join('');
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* ============================================================
+   MENU HANDLERS
+============================================================ */
+document.getElementById('modeController').addEventListener('click', () => {
+  state.screenMode = 'controller';
+  document.getElementById('menuScreen').classList.add('hide');
+  document.getElementById('setupScreen').classList.remove('hide');
+});
+
+document.getElementById('modeStage').addEventListener('click', () => {
+  state.screenMode = 'stage';
+  document.getElementById('menuScreen').classList.add('hide');
+  document.getElementById('stageScreen').classList.add('show');
+  document.getElementById('screenSwitcher').style.display = 'none';
+  // Listen to broadcast channel for updates
+  setupStageListener();
+  // Auto-show waiting
+  document.getElementById('stageWaiting').style.display = 'block';
+});
+
+document.getElementById('backToMenu').addEventListener('click', () => {
+  document.getElementById('setupScreen').classList.add('hide');
+  document.getElementById('menuScreen').classList.remove('hide');
+});
+
+/* ============================================================
+   EDITOR
+============================================================ */
+const questionListEl = document.getElementById('questionList');
+const questionCount = document.getElementById('questionCount');
+const editorPanel = document.getElementById('editorPanel');
+const addForm = document.getElementById('addForm');
+
+function renderQuestionList() {
+  questionListEl.innerHTML = '';
+  questionCount.textContent = toArabic(state.allQuestions.length);
+
+  state.allQuestions.forEach((q, idx) => {
+    const item = document.createElement('div');
+    item.className = 'question-item';
+    item.innerHTML = `
+      <span class="q-num">${toArabic(idx + 1)}</span>
+      <span class="q-text">${q.sentence}</span>
+      <button class="del-btn" data-idx="${idx}" title="حذف">✖</button>
+    `;
+    item.querySelector('.del-btn').addEventListener('click', () => {
+      if (confirm(`حذف "${q.sentence}"؟`)) {
+        state.allQuestions.splice(idx, 1);
+        saveQuestions(state.allQuestions);
+        renderQuestionList();
+        toast('🗑️ تم الحذف', 'success');
+      }
+    });
+    questionListEl.appendChild(item);
+  });
+}
+
+document.getElementById('editorToggle').addEventListener('click', () => {
+  editorPanel.classList.toggle('show');
+});
+
+document.getElementById('addQuestionBtn').addEventListener('click', () => {
+  addForm.classList.toggle('show');
+  if (addForm.classList.contains('show')) {
+    document.getElementById('newSentence').focus();
+  }
+});
+
+document.getElementById('saveQuestionBtn').addEventListener('click', () => {
+  const sentence = document.getElementById('newSentence').value.trim();
+  const category = document.getElementById('newCategory').value.trim();
+
+  if (!sentence) {
+    toast('⚠️ اكتب الجملة', 'error');
+    return;
+  }
+
+  const newQ = {
+    id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    sentence,
+    category: category || '',
+  };
+
+  state.allQuestions.push(newQ);
+  saveQuestions(state.allQuestions);
+  renderQuestionList();
+  resetAddForm();
+  toast('✅ تم الحفظ', 'success');
+});
+
+document.getElementById('cancelAddBtn').addEventListener('click', resetAddForm);
+
+function resetAddForm() {
+  document.getElementById('newSentence').value = '';
+  document.getElementById('newCategory').value = '';
+  addForm.classList.remove('show');
+}
+
+document.getElementById('shuffleBtn').addEventListener('click', () => {
+  state.allQuestions = shuffle(state.allQuestions);
+  saveQuestions(state.allQuestions);
+  renderQuestionList();
+  toast('🔀 تم الخلط', 'success');
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (confirm('🗑️ حذف جميع الجمل؟ لا يمكن التراجع.')) {
+    state.allQuestions = [];
+    saveQuestions(state.allQuestions);
+    renderQuestionList();
+    toast('🗑️ تم الحذف الكامل', 'success');
+  }
+});
+
+document.getElementById('restoreBtn').addEventListener('click', () => {
+  if (confirm('↩️ استعادة الافتراضي؟ سيتم حذف جملك المخصصة.')) {
+    state.allQuestions = JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+    saveQuestions(state.allQuestions);
+    renderQuestionList();
+    toast('↩️ تم الاستعادة', 'success');
+  }
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = JSON.stringify(state.allQuestions, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'guess-sentence-questions.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📤 تم التصدير', 'success');
+});
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error('bad');
+        state.allQuestions = data;
+        saveQuestions(state.allQuestions);
+        renderQuestionList();
+        toast('📥 تم الاستيراد', 'success');
+      } catch (err) {
+        toast('⚠️ فشل الاستيراد', 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+});
+
+/* ============================================================
+   START GAME
+============================================================ */
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (state.allQuestions.length === 0) {
+    toast('⚠️ لا توجد جمل! أضف جملًا أولاً.', 'error');
+    return;
+  }
+
+  state.teamA.name = document.getElementById('teamAName').value || 'الفريق الأزرق';
+  state.teamB.name = document.getElementById('teamBName').value || 'الفريق الأحمر';
+  state.timerDuration = parseInt(document.getElementById('timerSetting').value);
+  state.maxScore = parseInt(document.getElementById('maxScoreSetting').value);
+  const requested = parseInt(document.getElementById('countSetting').value);
+  state.totalQuestions = requested === 0 ? state.allQuestions.length : Math.min(requested, state.allQuestions.length);
+
+  const shuffled = shuffle(state.allQuestions);
+  state.questions = shuffled.slice(0, state.totalQuestions);
+
+  state.teamA.score = 0;
+  state.teamB.score = 0;
+  state.currentIndex = 0;
+  state.results = [];
+
+  saveSettings({
+    teamAName: state.teamA.name,
+    teamBName: state.teamB.name,
+    timer: state.timerDuration,
+    maxScore: state.maxScore,
+    count: requested,
+  });
+
+  // Show controller screen
+  document.getElementById('setupScreen').classList.add('hide');
+  document.getElementById('controllerScreen').classList.add('show');
+  document.getElementById('screenSwitcher').style.display = 'flex';
+
+  updateControllerUI();
+  updateStageUI();
+  broadcastUpdate();
+  loadQuestion();
+});
+
+/* ============================================================
+   LOAD QUESTION
+============================================================ */
+function loadQuestion() {
+  clearInterval(state.timerInterval);
+  state.timerRunning = false;
+  state.revealed = false;
+  state.activeTeam = null;
+  state.timeLeft = state.timerDuration;
+
+  const q = state.questions[state.currentIndex];
+
+  // Controller: Tampilkan kalimat (masih tersembunyi/blur)
+  const sentEl = document.getElementById('sentenceText');
+  sentEl.textContent = q.sentence;
+  sentEl.classList.add('sentence-hidden');
+  sentEl.classList.remove('show');
+
+  // Update counter
+  document.getElementById('ctrlQNum').textContent = toArabic(state.currentIndex + 1);
+  document.getElementById('ctrlQTotal').textContent = toArabic(state.totalQuestions);
+
+  // Reset tombol
+  document.getElementById('revealBtn').disabled = false;
+  document.getElementById('teamACorrect').disabled = true;
+  document.getElementById('teamBCorrect').disabled = true;
+  document.getElementById('wrongBtn').disabled = true;
+  document.getElementById('nextBtn').disabled = true;
+  document.getElementById('skipBtn').disabled = false;
+  document.getElementById('startTimerBtn').disabled = false;
+
+  document.getElementById('ctrlTimer').textContent = toArabic(state.timeLeft);
+  document.getElementById('ctrlTimerLabel').textContent = 'جاهز للبدء';
+  document.getElementById('ctrlActiveTeam').textContent = '—';
+
+  // Reset stage
+  document.getElementById('stageMessage').textContent = '🎭 في انتظار بدء المؤقت...';
+  document.getElementById('stageTimer').textContent = toArabic(state.timeLeft);
+  document.getElementById('stageRound').textContent = `السؤال ${toArabic(state.currentIndex + 1)} / ${toArabic(state.totalQuestions)}`;
+  document.getElementById('stageTeamA').classList.remove('active');
+  document.getElementById('stageTeamB').classList.remove('active');
+
+  updateControllerUI();
+  updateStageUI();
+  broadcastUpdate();
+}
+
+/* ============================================================
+   REVEAL SENTENCE (hanya untuk siswa yang maju)
+============================================================ */
+document.getElementById('revealBtn').addEventListener('click', () => {
+  state.revealed = true;
+  const sentEl = document.getElementById('sentenceText');
+  sentEl.classList.remove('sentence-hidden');
+  sentEl.classList.add('show');
+  document.getElementById('revealBtn').disabled = true;
+  document.getElementById('startTimerBtn').disabled = false;
+  document.getElementById('ctrlTimerLabel').textContent = 'اضغط ▶️ لبدء المؤقت';
+});
+
+/* ============================================================
+   TIMER
+============================================================ */
+document.getElementById('startTimerBtn').addEventListener('click', () => {
+  if (state.timerRunning) return;
+  state.timerRunning = true;
+  document.getElementById('startTimerBtn').disabled = true;
+  document.getElementById('ctrlTimerLabel').textContent = 'الممثل يعرض الآن!';
+
+  document.getElementById('stageMessage').textContent = '🎭 الممثل يعرض الجملة...';
+  broadcastUpdate();
+
+  updateTimerDisplay();
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    updateStageUI();
+    broadcastUpdate();
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      state.timerRunning = false;
+      timeUp();
+    }
+  }, 1000);
+});
+
+function updateTimerDisplay() {
+  document.getElementById('ctrlTimer').textContent = toArabic(Math.max(0, state.timeLeft));
+  document.getElementById('stageTimer').textContent = toArabic(Math.max(0, state.timeLeft));
+}
+
+function timeUp() {
+  document.getElementById('ctrlTimerLabel').textContent = '⏰ انتهى الوقت!';
+  document.getElementById('stageMessage').textContent = '⏰ انتهى الوقت!';
+  document.getElementById('wrongBtn').disabled = false;
+  document.getElementById('teamACorrect').disabled = false;
+  document.getElementById('teamBCorrect').disabled = false;
+  document.getElementById('nextBtn').disabled = false;
+  broadcastUpdate();
+}
+
+/* ============================================================
+   TEAM CORRECT / WRONG
+============================================================ */
+document.getElementById('teamACorrect').addEventListener('click', () => {
+  if (state.results.find(r => r.idx === state.currentIndex)) return;
+  state.teamA.score++;
+  state.results.push({ idx: state.currentIndex, status: 'correct', team: 'a' });
+  markAnswered('a');
+});
+
+document.getElementById('teamBCorrect').addEventListener('click', () => {
+  if (state.results.find(r => r.idx === state.currentIndex)) return;
+  state.teamB.score++;
+  state.results.push({ idx: state.currentIndex, status: 'correct', team: 'b' });
+  markAnswered('b');
+});
+
+document.getElementById('wrongBtn').addEventListener('click', () => {
+  if (state.results.find(r => r.idx === state.currentIndex)) return;
+  state.results.push({ idx: state.currentIndex, status: 'wrong' });
+  markAnswered(null);
+});
+
+function markAnswered(team) {
+  clearInterval(state.timerInterval);
+  state.timerRunning = false;
+  document.getElementById('teamACorrect').disabled = true;
+  document.getElementById('teamBCorrect').disabled = true;
+  document.getElementById('wrongBtn').disabled = true;
+  document.getElementById('nextBtn').disabled = false;
+  document.getElementById('skipBtn').disabled = true;
+
+  if (team === 'a') {
+    document.getElementById('stageMessage').textContent = `✅ ${state.teamA.name} أجاب صحيح!`;
+    document.getElementById('stageTeamA').classList.add('active');
+    document.getElementById('ctrlTimerLabel').textContent = '✅ إجابة صحيحة!';
+  } else if (team === 'b') {
+    document.getElementById('stageMessage').textContent = `✅ ${state.teamB.name} أجاب صحيح!`;
+    document.getElementById('stageTeamB').classList.add('active');
+    document.getElementById('ctrlTimerLabel').textContent = '✅ إجابة صحيحة!';
+  } else {
+    document.getElementById('stageMessage').textContent = '❌ لم يجب أحد بشكل صحيح';
+    document.getElementById('ctrlTimerLabel').textContent = '❌ خطأ';
+  }
+
+  // Update scores everywhere
+  updateControllerUI();
+  updateStageUI();
+  broadcastUpdate();
+
+  // Check win
+  if (state.teamA.score >= state.maxScore || state.teamB.score >= state.maxScore) {
+    setTimeout(endGame, 1500);
+    return;
+  }
+
+  // Auto next setelah 2 detik
+  setTimeout(() => {
+    if (!document.getElementById('nextBtn').disabled) {
+      nextQuestion();
+    }
+  }, 2200);
+}
+
+document.getElementById('skipBtn').addEventListener('click', () => {
+  if (state.results.find(r => r.idx === state.currentIndex)) return;
+  state.results.push({ idx: state.currentIndex, status: 'skipped' });
+  clearInterval(state.timerInterval);
+  state.timerRunning = false;
+  nextQuestion();
+});
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  nextQuestion();
+});
+
+function nextQuestion() {
+  clearInterval(state.timerInterval);
+  if (state.currentIndex < state.questions.length - 1) {
+    state.currentIndex++;
+    loadQuestion();
+  } else {
+    endGame();
+  }
+}
+
+/* ============================================================
+   UPDATE UI
+============================================================ */
+function updateControllerUI() {
+  document.getElementById('ctrlTeamAName').textContent = state.teamA.name;
+  document.getElementById('ctrlTeamBName').textContent = state.teamB.name;
+  document.getElementById('ctrlTeamAScore').textContent = toArabic(state.teamA.score);
+  document.getElementById('ctrlTeamBScore').textContent = toArabic(state.teamB.score);
+}
+
+function updateStageUI() {
+  document.getElementById('stageTeamAName').textContent = state.teamA.name;
+  document.getElementById('stageTeamBName').textContent = state.teamB.name;
+  document.getElementById('stageTeamAScore').textContent = toArabic(state.teamA.score);
+  document.getElementById('stageTeamBScore').textContent = toArabic(state.teamB.score);
+  document.getElementById('stageWaiting').style.display = 'none';
+  document.getElementById('stageGame').style.display = 'block';
+}
+
+/* ============================================================
+   BROADCAST (sync antara laptop & TV)
+   Pakai BroadcastChannel + localStorage untuk sinkronisasi
+============================================================ */
+const CHANNEL_NAME = 'arab_guess_sentence_sync';
+let broadcastChannel = null;
+
+try {
+  broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
+} catch (e) {
+  console.warn('BroadcastChannel tidak didukung');
+}
+
+function broadcastUpdate() {
+  if (!broadcastChannel) {
+    // Fallback via localStorage event
+    localStorage.setItem('arab_guess_sentence_sync', JSON.stringify({
+      ts: Date.now(),
+      teamA: state.teamA,
+      teamB: state.teamB,
+      currentIndex: state.currentIndex,
+      totalQuestions: state.totalQuestions,
+      timeLeft: state.timeLeft,
+      message: document.getElementById('stageMessage')?.textContent || '',
+      activeTeam: state.activeTeam,
+      gameActive: document.getElementById('controllerScreen').classList.contains('show'),
+    }));
+    return;
+  }
+  broadcastChannel.postMessage({
+    teamA: state.teamA,
+    teamB: state.teamB,
+    currentIndex: state.currentIndex,
+    totalQuestions: state.totalQuestions,
+    timeLeft: state.timeLeft,
+    message: document.getElementById('stageMessage')?.textContent || '',
+    activeTeam: state.activeTeam,
+    gameActive: true,
+  });
+}
+
+function setupStageListener() {
+  if (broadcastChannel) {
+    broadcastChannel.onmessage = (e) => {
+      const data = e.data;
+      applyStageUpdate(data);
+    };
+  }
+
+  // Fallback: dengar perubahan localStorage
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'arab_guess_sentence_sync' && e.newValue) {
+      try {
+        const data = JSON.parse(e.newValue);
+        applyStageUpdate(data);
+      } catch (err) {}
+    }
+  });
+
+  // Polling fallback (untuk memastikan)
+  setInterval(() => {
+    const saved = localStorage.getItem('arab_guess_sentence_sync');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (Date.now() - data.ts < 3000) {
+          applyStageUpdate(data);
+        }
+      } catch (err) {}
+    }
+  }, 1000);
+}
+
+function applyStageUpdate(data) {
+  if (!data) return;
+  if (data.teamA) {
+    document.getElementById('stageTeamAName').textContent = data.teamA.name;
+    document.getElementById('stageTeamAScore').textContent = toArabic(data.teamA.score);
+  }
+  if (data.teamB) {
+    document.getElementById('stageTeamBName').textContent = data.teamB.name;
+    document.getElementById('stageTeamBScore').textContent = toArabic(data.teamB.score);
+  }
+  if (data.totalQuestions) {
+    document.getElementById('stageRound').textContent =
+      `السؤال ${toArabic((data.currentIndex || 0) + 1)} / ${toArabic(data.totalQuestions)}`;
+  }
+  if (data.timeLeft !== undefined) {
+    document.getElementById('stageTimer').textContent = toArabic(Math.max(0, data.timeLeft));
+  }
+  if (data.message) {
+    document.getElementById('stageMessage').textContent = data.message;
+  }
+  if (data.gameActive) {
+    document.getElementById('stageWaiting').style.display = 'none';
+    document.getElementById('stageGame').style.display = 'block';
+  }
+}
+
+/* ============================================================
+   END GAME
+============================================================ */
+function endGame() {
+  clearInterval(state.timerInterval);
+  const correctA = state.results.filter(r => r.status === 'correct' && r.team === 'a').length;
+  const correctB = state.results.filter(r => r.status === 'correct' && r.team === 'b').length;
+  const wrong = state.results.filter(r => r.status === 'wrong').length;
+  const skipped = state.results.filter(r => r.status === 'skipped').length;
+
+  const overlay = document.getElementById('overlay');
+  const icon = document.getElementById('overlayIcon');
+  const title = document.getElementById('overlayTitle');
+  const subtitle = document.getElementById('overlaySubtitle');
+
+  if (state.teamA.score > state.teamB.score) {
+    icon.textContent = '🏆';
+    title.textContent = `فاز ${state.teamA.name}!`;
+  } else if (state.teamB.score > state.teamA.score) {
+    icon.textContent = '🏆';
+    title.textContent = `فاز ${state.teamB.name}!`;
+  } else {
+    icon.textContent = '🤝';
+    title.textContent = 'تَعَادُل!';
+  }
+
+  subtitle.innerHTML = `
+    🔵 ${state.teamA.name}: <strong>${toArabic(state.teamA.score)}</strong>
+    &nbsp; — &nbsp;
+    🔴 ${state.teamB.name}: <strong>${toArabic(state.teamB.score)}</strong>
+    <br><br>
+    ✅ صحيح: ${toArabic(correctA + correctB)} &nbsp; | &nbsp;
+    ❌ خطأ: ${toArabic(wrong)} &nbsp; | &nbsp;
+    ⏭️ متخطى: ${toArabic(skipped)}
+  `;
+
+  overlay.classList.add('show');
+  launchConfetti();
+  broadcastUpdate();
+}
+
+function launchConfetti() {
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#95E1D3', '#F38181', '#AA96DA'];
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      c.style.animationDuration = (3 + Math.random() * 2) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }, i * 30);
+  }
+}
+
+/* ============================================================
+   OVERLAY BUTTONS
+============================================================ */
+document.getElementById('playAgainBtn').addEventListener('click', () => {
+  overlay.classList.remove('show');
+  const shuffled = shuffle(state.allQuestions);
+  state.questions = shuffled.slice(0, Math.min(state.totalQuestions, state.allQuestions.length));
+  state.teamA.score = 0;
+  state.teamB.score = 0;
+  state.currentIndex = 0;
+  state.results = [];
+  updateControllerUI();
+  updateStageUI();
+  loadQuestion();
+});
+
+document.getElementById('backToSetupBtn').addEventListener('click', () => {
+  overlay.classList.remove('show');
+  document.getElementById('controllerScreen').classList.remove('show');
+  document.getElementById('setupScreen').classList.remove('hide');
+});
+
+document.getElementById('ctrlBackToSetup').addEventListener('click', () => {
+  document.getElementById('controllerScreen').classList.remove('show');
+  document.getElementById('setupScreen').classList.remove('hide');
+  document.getElementById('screenSwitcher').style.display = 'none';
+});
+
+/* ============================================================
+   SCREEN SWITCHER (pindah mode di window yang sama)
+============================================================ */
+document.getElementById('switchToCtrl').addEventListener('click', () => {
+  document.getElementById('stageScreen').classList.remove('show');
+  document.getElementById('controllerScreen').classList.add('show');
+  document.getElementById('switchToCtrl').classList.add('active');
+  document.getElementById('switchToStage').classList.remove('active');
+});
+
+document.getElementById('switchToStage').addEventListener('click', () => {
+  document.getElementById('controllerScreen').classList.remove('show');
+  document.getElementById('stageScreen').classList.add('show');
+  document.getElementById('switchToStage').classList.add('active');
+  document.getElementById('switchToCtrl').classList.remove('active');
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+state.allQuestions = loadQuestions();
+renderQuestionList();
+
+const savedSettings = loadSettings();
+if (savedSettings) {
+  if (savedSettings.teamAName) document.getElementById('teamAName').value = savedSettings.teamAName;
+  if (savedSettings.teamBName) document.getElementById('teamBName').value = savedSettings.teamBName;
+  if (savedSettings.timer) document.getElementById('timerSetting').value = savedSettings.timer;
+  if (savedSettings.maxScore) document.getElementById('maxScoreSetting').value = savedSettings.maxScore;
+  if (savedSettings.count !== undefined) document.getElementById('countSetting').value = savedSettings.count;
+}
+</script>
+</body>
+</html>
